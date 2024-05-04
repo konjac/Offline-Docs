@@ -1,0 +1,570 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Date and Time Functions &#8212; Velox  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Array Functions" href="array.html" />
+    <link rel="prev" title="String Functions" href="string.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="array.html" title="Array Functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="string.html" title="String Functions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Velox  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../spark_functions.html" accesskey="U">Spark Functions</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Date and Time Functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="date-and-time-functions">
+<h1>Date and Time Functions<a class="headerlink" href="#date-and-time-functions" title="Permalink to this heading">¶</a></h1>
+<section id="convenience-extraction-functions">
+<h2>Convenience Extraction Functions<a class="headerlink" href="#convenience-extraction-functions" title="Permalink to this heading">¶</a></h2>
+<p>These functions support TIMESTAMP and DATE input types.</p>
+<dl class="spark function">
+<dt class="sig sig-object spark" id="add_months">
+<span class="sig-name descname"><span class="pre">add_months</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startDate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numMonths</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#add_months" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date that is <code class="docutils literal notranslate"><span class="pre">numMonths</span></code> after <code class="docutils literal notranslate"><span class="pre">startDate</span></code>.
+Adjusts result to a valid one, considering months have different total days, and especially
+February has 28 days in common year but 29 days in leap year.
+For example, add_months(‘2015-01-30’, 1) returns ‘2015-02-28’, because 28th is the last day
+in February of 2015.
+<code class="docutils literal notranslate"><span class="pre">numMonths</span></code> can be zero or negative. Throws an error when inputs lead to int overflow,
+e.g., add_months(‘2023-07-10’, -2147483648).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">add_months</span><span class="p">(</span><span class="s1">&#39;2015-01-01&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-11-01&#39;</span>
+<span class="n">SELECT</span> <span class="n">add_months</span><span class="p">(</span><span class="s1">&#39;2015-01-30&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-02-28&#39;</span>
+<span class="n">SELECT</span> <span class="n">add_months</span><span class="p">(</span><span class="s1">&#39;2015-01-30&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-01-30&#39;</span>
+<span class="n">SELECT</span> <span class="n">add_months</span><span class="p">(</span><span class="s1">&#39;2015-01-30&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2014-11-30&#39;</span>
+<span class="n">SELECT</span> <span class="n">add_months</span><span class="p">(</span><span class="s1">&#39;2015-03-31&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-02-28&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="date_add">
+<span class="sig-name descname"><span class="pre">date_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_days</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#date_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date that is <code class="docutils literal notranslate"><span class="pre">num_days</span></code> after <code class="docutils literal notranslate"><span class="pre">start_date</span></code>. According to the inputs,
+the returned date will wrap around between the minimum negative date and
+maximum positive date. date_add(‘1969-12-31’, 2147483647) get 5881580-07-10,
+and date_add(‘2024-01-22’, 2147483647) get -5877587-07-12.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">num_days</span></code> is a negative value then these amount of days will be
+deducted from <code class="docutils literal notranslate"><span class="pre">start_date</span></code>.
+Supported types for <code class="docutils literal notranslate"><span class="pre">num_days</span></code> are: TINYINT, SMALLINT, INTEGER.</p>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="date_from_unix_date">
+<span class="sig-name descname"><span class="pre">date_from_unix_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integer</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#date_from_unix_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates date from the number of days since 1970-01-01 in either direction. Returns null when input is null.</p>
+<blockquote>
+<div><p>SELECT date_from_unix_date(1); – ‘1970-01-02’
+SELECT date_from_unix_date(-1); – ‘1969-12-31’</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="date_sub">
+<span class="sig-name descname"><span class="pre">date_sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_days</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#date_sub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date that is <code class="docutils literal notranslate"><span class="pre">num_days</span></code> before <code class="docutils literal notranslate"><span class="pre">start_date</span></code>. According to the inputs,
+the returned date will wrap around between the minimum negative date and
+maximum positive date. date_sub(‘1969-12-31’, -2147483648) get 5881580-07-11,
+and date_sub(‘2023-07-10’, -2147483648) get -5877588-12-29.</p>
+<p><code class="docutils literal notranslate"><span class="pre">num_days</span></code> can be positive or negative.
+Supported types for <code class="docutils literal notranslate"><span class="pre">num_days</span></code> are: TINYINT, SMALLINT, INTEGER.</p>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="datediff">
+<span class="sig-name descname"><span class="pre">datediff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endDate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startDate</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#datediff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of days from startDate to endDate. Only DATE type is allowed
+for input.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">datediff</span><span class="p">(</span><span class="s1">&#39;2009-07-31&#39;</span><span class="p">,</span> <span class="s1">&#39;2009-07-30&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">1</span>
+<span class="n">SELECT</span> <span class="n">datediff</span><span class="p">(</span><span class="s1">&#39;2009-07-30&#39;</span><span class="p">,</span> <span class="s1">&#39;2009-07-31&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="dayofmonth">
+<span class="sig-name descname"><span class="pre">dayofmonth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#dayofmonth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the day of month of the date.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">dayofmonth</span><span class="p">(</span><span class="s1">&#39;2009-07-30&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">30</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="dayofyear">
+<span class="sig-name descname"><span class="pre">dayofyear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#dayofyear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the day of year of the date.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">dayofyear</span><span class="p">(</span><span class="s1">&#39;2016-04-09&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">100</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="dayofweek">
+<span class="sig-name descname"><span class="pre">dayofweek</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#dayofweek" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the day of the week for date (1 = Sunday, 2 = Monday, …, 7 = Saturday).</p>
+<blockquote>
+<div><p>SELECT dayofweek(‘2009-07-30’); – 5
+SELECT dayofweek(‘2023-08-22’); – 3</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="from_unixtime">
+<span class="sig-name descname"><span class="pre">from_unixtime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unixTime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">string</span></span></span><a class="headerlink" href="#from_unixtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjusts <code class="docutils literal notranslate"><span class="pre">unixTime</span></code> (elapsed seconds since UNIX epoch) to configured session timezone, then
+converts it to a formatted time string according to <code class="docutils literal notranslate"><span class="pre">format</span></code>. Only supports BIGINT type for
+<code class="docutils literal notranslate"><span class="pre">unixTime</span></code>.
+<a class="reference external" href="https://spark.apache.org/docs/latest/sql-ref-datetime-pattern.html">Valid patterns for date format</a>. Throws exception for
+invalid <code class="docutils literal notranslate"><span class="pre">format</span></code>. This function will convert input to milliseconds, and integer overflow is
+allowed in the conversion, which aligns with Spark. See the below third example where INT64_MAX
+is used, -1000 milliseconds are produced by INT64_MAX * 1000 due to integer overflow.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">from_unixtime</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;yyyy-MM-dd HH:mm:ss&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;1970-01-01 00:01:40&#39;</span>
+<span class="n">SELECT</span> <span class="n">from_unixtime</span><span class="p">(</span><span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;yyyy&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;1970&#39;</span>
+<span class="n">SELECT</span> <span class="n">from_unixtime</span><span class="p">(</span><span class="mi">9223372036854775807</span><span class="p">,</span> <span class="s2">&quot;yyyy-MM-dd HH:mm:ss&quot;</span><span class="p">);</span>  <span class="o">--</span> <span class="s1">&#39;1969-12-31 23:59:59&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="from_utc_timestamp">
+<span class="sig-name descname"><span class="pre">from_utc_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#from_utc_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the timestamp value from UTC timezone to the given timezone.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">from_utc_timestamp</span><span class="p">(</span><span class="s1">&#39;2015-07-24 07:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;America/Los_Angeles&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-07-24 00:00:00&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="get_timestamp">
+<span class="sig-name descname"><span class="pre">get_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateFormat</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#get_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns timestamp by parsing <code class="docutils literal notranslate"><span class="pre">string</span></code> according to the specified <code class="docutils literal notranslate"><span class="pre">dateFormat</span></code>.
+The format follows Spark’s
+<a class="reference external" href="https://spark.apache.org/docs/latest/sql-ref-datetime-pattern.html">Datetime patterns</a>.
+Returns NULL for parsing error or NULL input. Throws exception for invalid format.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">get_timestamp</span><span class="p">(</span><span class="s1">&#39;1970-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;yyyy-MM-dd);  -- timestamp `1970-01-01`</span>
+<span class="n">SELECT</span> <span class="n">get_timestamp</span><span class="p">(</span><span class="s1">&#39;1970-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;yyyy-MM&#39;</span><span class="p">);</span>  <span class="o">--</span> <span class="n">NULL</span> <span class="p">(</span><span class="n">parsing</span> <span class="n">error</span><span class="p">)</span>
+<span class="n">SELECT</span> <span class="n">get_timestamp</span><span class="p">(</span><span class="s1">&#39;1970-01-01&#39;</span><span class="p">,</span> <span class="n">null</span><span class="p">);</span>  <span class="o">--</span> <span class="n">NULL</span>
+<span class="n">SELECT</span> <span class="n">get_timestamp</span><span class="p">(</span><span class="s1">&#39;2020-06-10&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">);</span>  <span class="o">--</span> <span class="p">(</span><span class="n">throws</span> <span class="n">exception</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="hour">
+<span class="sig-name descname"><span class="pre">hour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#hour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the hour of <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">hour</span><span class="p">(</span><span class="s1">&#39;2009-07-30 12:58:59&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">12</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="last_day">
+<span class="sig-name descname"><span class="pre">last_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#last_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the last day of the month which the date belongs to.</p>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="make_date">
+<span class="sig-name descname"><span class="pre">make_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#make_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date from year, month and day fields.
+<code class="docutils literal notranslate"><span class="pre">year</span></code>, <code class="docutils literal notranslate"><span class="pre">month</span></code> and <code class="docutils literal notranslate"><span class="pre">day</span></code> must be <code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>.
+Throws an error if inputs are not valid.</p>
+<p>The valid inputs need to meet the following conditions,
+<code class="docutils literal notranslate"><span class="pre">month</span></code> need to be from 1 (January) to 12 (December).
+<code class="docutils literal notranslate"><span class="pre">day</span></code> need to be from 1 to 31, and matches the number of days in each month.
+days of <code class="docutils literal notranslate"><span class="pre">year-month-day</span> <span class="pre">-</span> <span class="pre">1970-01-01</span></code> need to be in the range of INTEGER type.</p>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="make_ym_interval">
+<span class="sig-name descname"><span class="pre">make_ym_interval</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">years</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">months</span></span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">interval</span> <span class="pre">year</span> <span class="pre">to</span> <span class="pre">month</span></span></span><a class="headerlink" href="#make_ym_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make year-month interval from <code class="docutils literal notranslate"><span class="pre">years</span></code> and <code class="docutils literal notranslate"><span class="pre">months</span></code> fields.
+Returns the actual year-month with month in the range of [0, 11].
+Both <code class="docutils literal notranslate"><span class="pre">years</span></code> and <code class="docutils literal notranslate"><span class="pre">months</span></code> can be zero, positive or negative.
+Throws an error when inputs lead to int overflow,
+e.g., make_ym_interval(178956970, 8).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="o">--</span> <span class="mi">1</span><span class="o">-</span><span class="mi">2</span>
+<span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="o">--</span> <span class="mi">1</span><span class="o">-</span><span class="mi">0</span>
+<span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="o">--</span> <span class="o">-</span><span class="mi">0</span><span class="o">-</span><span class="mi">11</span>
+<span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span> <span class="o">--</span> <span class="mi">9</span><span class="o">-</span><span class="mi">4</span>
+<span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">);</span> <span class="o">--</span> <span class="mi">2</span><span class="o">-</span><span class="mi">0</span>
+<span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">12</span><span class="p">);</span> <span class="o">--</span> <span class="mi">0</span><span class="o">-</span><span class="mi">0</span>
+<span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="o">--</span> <span class="mi">2</span><span class="o">-</span><span class="mi">0</span>
+<span class="n">SELECT</span> <span class="n">make_ym_interval</span><span class="p">();</span> <span class="o">--</span> <span class="mi">0</span><span class="o">-</span><span class="mi">0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="minute">
+<span class="sig-name descname"><span class="pre">minute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#minute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minutes of <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">minute</span><span class="p">(</span><span class="s1">&#39;2009-07-30 12:58:59&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">58</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="quarter">
+<span class="sig-name descname"><span class="pre">quarter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#quarter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the quarter of <code class="docutils literal notranslate"><span class="pre">date</span></code>. The value ranges from <code class="docutils literal notranslate"><span class="pre">1</span></code> to <code class="docutils literal notranslate"><span class="pre">4</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">quarter</span><span class="p">(</span><span class="s1">&#39;2009-07-30&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="make_timestamp">
+<span class="sig-name descname"><span class="pre">make_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">timezone</span></span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#make_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create timestamp from <code class="docutils literal notranslate"><span class="pre">year</span></code>, <code class="docutils literal notranslate"><span class="pre">month</span></code>, <code class="docutils literal notranslate"><span class="pre">day</span></code>, <code class="docutils literal notranslate"><span class="pre">hour</span></code>, <code class="docutils literal notranslate"><span class="pre">minute</span></code> and <code class="docutils literal notranslate"><span class="pre">second</span></code> fields.
+If the <code class="docutils literal notranslate"><span class="pre">timezone</span></code> parameter is provided,
+the function interprets the input time components as being in the specified <code class="docutils literal notranslate"><span class="pre">timezone</span></code>.
+Otherwise the function assumes the inputs are in the session’s configured time zone.
+Requires <code class="docutils literal notranslate"><span class="pre">session_timezone</span></code> to be set, or an exceptions will be thrown.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><ul class="simple">
+<li><p>year - the year to represent, within the Joda datetime</p></li>
+<li><p>month - the month-of-year to represent, from 1 (January) to 12 (December)</p></li>
+<li><p>day - the day-of-month to represent, from 1 to 31</p></li>
+<li><p>hour - the hour-of-day to represent, from 0 to 23</p></li>
+<li><p>minute - the minute-of-hour to represent, from 0 to 59</p></li>
+<li><p>second - the second-of-minute and its micro-fraction to represent, from 0 to 60.
+The value can be either an integer like 13, or a fraction like 13.123.
+The fractional part can have up to 6 digits to represent microseconds.
+If the sec argument equals to 60, the seconds field is set
+to 0 and 1 minute is added to the final timestamp.</p></li>
+<li><p>timezone - the time zone identifier. For example, CET, UTC and etc.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns the timestamp adjusted to the GMT time zone.
+Returns NULL for invalid or NULL input.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">make_timestamp</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">45.887</span><span class="p">);</span> <span class="o">--</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">28</span> <span class="mi">06</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="mf">45.887</span>
+<span class="n">SELECT</span> <span class="n">make_timestamp</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">45.887</span><span class="p">,</span> <span class="s1">&#39;CET&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">28</span> <span class="mi">05</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="mf">45.887</span>
+<span class="n">SELECT</span> <span class="n">make_timestamp</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">);</span> <span class="o">--</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
+<span class="n">SELECT</span> <span class="n">make_timestamp</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="o">--</span> <span class="mi">2019</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">30</span> <span class="mi">23</span><span class="p">:</span><span class="mi">59</span><span class="p">:</span><span class="mi">01</span>
+<span class="n">SELECT</span> <span class="n">make_timestamp</span><span class="p">(</span><span class="n">null</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="o">--</span> <span class="n">NULL</span>
+<span class="n">SELECT</span> <span class="n">make_timestamp</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">60.000001</span><span class="p">);</span> <span class="o">--</span> <span class="n">NULL</span>
+<span class="n">SELECT</span> <span class="n">make_timestamp</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">45.887</span><span class="p">);</span> <span class="o">--</span> <span class="n">NULL</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="month">
+<span class="sig-name descname"><span class="pre">month</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#month" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the month of <code class="docutils literal notranslate"><span class="pre">date</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">month</span><span class="p">(</span><span class="s1">&#39;2009-07-30&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">7</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="next_day">
+<span class="sig-name descname"><span class="pre">next_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">startDate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dayOfWeek</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#next_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first date which is later than <code class="docutils literal notranslate"><span class="pre">startDate</span></code> and named as <code class="docutils literal notranslate"><span class="pre">dayOfWeek</span></code>.
+Returns null if <code class="docutils literal notranslate"><span class="pre">dayOfWeek</span></code> is invalid.
+<code class="docutils literal notranslate"><span class="pre">dayOfWeek</span></code> is case insensitive and must be one of the following:
+<code class="docutils literal notranslate"><span class="pre">SU</span></code>, <code class="docutils literal notranslate"><span class="pre">SUN</span></code>, <code class="docutils literal notranslate"><span class="pre">SUNDAY</span></code>, <code class="docutils literal notranslate"><span class="pre">MO</span></code>, <code class="docutils literal notranslate"><span class="pre">MON</span></code>, <code class="docutils literal notranslate"><span class="pre">MONDAY</span></code>, <code class="docutils literal notranslate"><span class="pre">TU</span></code>, <code class="docutils literal notranslate"><span class="pre">TUE</span></code>, <code class="docutils literal notranslate"><span class="pre">TUESDAY</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WE</span></code>, <code class="docutils literal notranslate"><span class="pre">WED</span></code>, <code class="docutils literal notranslate"><span class="pre">WEDNESDAY</span></code>, <code class="docutils literal notranslate"><span class="pre">TH</span></code>, <code class="docutils literal notranslate"><span class="pre">THU</span></code>, <code class="docutils literal notranslate"><span class="pre">THURSDAY</span></code>, <code class="docutils literal notranslate"><span class="pre">FR</span></code>, <code class="docutils literal notranslate"><span class="pre">FRI</span></code>, <code class="docutils literal notranslate"><span class="pre">FRIDAY</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SA</span></code>, <code class="docutils literal notranslate"><span class="pre">SAT</span></code>, <code class="docutils literal notranslate"><span class="pre">SATURDAY</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">next_day</span><span class="p">(</span><span class="s1">&#39;2015-07-23&#39;</span><span class="p">,</span> <span class="s2">&quot;Mon&quot;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-07-27&#39;</span>
+<span class="n">SELECT</span> <span class="n">next_day</span><span class="p">(</span><span class="s1">&#39;2015-07-23&#39;</span><span class="p">,</span> <span class="s2">&quot;mo&quot;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-07-27&#39;</span>
+<span class="n">SELECT</span> <span class="n">next_day</span><span class="p">(</span><span class="s1">&#39;2015-07-23&#39;</span><span class="p">,</span> <span class="s2">&quot;Tue&quot;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-07-28&#39;</span>
+<span class="n">SELECT</span> <span class="n">next_day</span><span class="p">(</span><span class="s1">&#39;2015-07-23&#39;</span><span class="p">,</span> <span class="s2">&quot;tu&quot;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-07-28&#39;</span>
+<span class="n">SELECT</span> <span class="n">next_day</span><span class="p">(</span><span class="s1">&#39;2015-07-23&#39;</span><span class="p">,</span> <span class="s2">&quot;we&quot;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-07-29&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="second">
+<span class="sig-name descname"><span class="pre">second</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#second" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the seconds of <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">second</span><span class="p">(</span><span class="s1">&#39;2009-07-30 12:58:59&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">59</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="timestamp_micros">
+<span class="sig-name descname"><span class="pre">timestamp_micros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#timestamp_micros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns timestamp from the number of microseconds since UTC epoch.
+Supported types are: TINYINT, SMALLINT, INTEGER and BIGINT.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">timestamp_micros</span><span class="p">(</span><span class="mi">1230219000123123</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2008-12-25 15:30:00.123123&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="timestamp_millis">
+<span class="sig-name descname"><span class="pre">timestamp_millis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#timestamp_millis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns timestamp from the number of milliseconds since UTC epoch.
+Supported types are: TINYINT, SMALLINT, INTEGER and BIGINT.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">timestamp_millis</span><span class="p">(</span><span class="mi">1230219000123</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2008-12-25 15:30:00.123&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="to_unix_timestamp">
+<span class="sig-name descname"><span class="pre">to_unix_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#to_unix_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <code class="docutils literal notranslate"><span class="pre">unix_timestamp(string)</span> <span class="pre">-&gt;</span> <span class="pre">integer</span></code>.</p>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark">
+<span class="sig-name descname"><span class="pre">to_unix_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span></dt>
+<dd><blockquote>
+<div><p>Alias for <code class="docutils literal notranslate"><span class="pre">unix_timestamp(string,</span> <span class="pre">format)</span> <span class="pre">-&gt;</span> <span class="pre">integer</span></code>.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="to_utc_timestamp">
+<span class="sig-name descname"><span class="pre">to_utc_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#to_utc_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the timestamp value from the given timezone to UTC timezone.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">to_utc_timestamp</span><span class="p">(</span><span class="s1">&#39;2015-07-24 00:00:00&#39;</span><span class="p">,</span> <span class="s1">&#39;America/Los_Angeles&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;2015-07-24 07:00:00&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="unix_date">
+<span class="sig-name descname"><span class="pre">unix_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#unix_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of days since 1970-01-01.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">unix_date</span><span class="p">(</span><span class="s1">&#39;1970-01-01&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;0&#39;</span>
+<span class="n">SELECT</span> <span class="n">unix_date</span><span class="p">(</span><span class="s1">&#39;1970-01-02&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;1&#39;</span>
+<span class="n">SELECT</span> <span class="n">unix_date</span><span class="p">(</span><span class="s1">&#39;1969-12-31&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="s1">&#39;-1&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="unix_micros">
+<span class="sig-name descname"><span class="pre">unix_micros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bigint</span></span></span><a class="headerlink" href="#unix_micros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of microseconds since 1970-01-01 00:00:00 UTC.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">unix_micros</span><span class="p">(</span><span class="s1">&#39;1970-01-01 00:00:01&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">1000000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="unix_millis">
+<span class="sig-name descname"><span class="pre">unix_millis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bigint</span></span></span><a class="headerlink" href="#unix_millis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of milliseconds since 1970-01-01 00:00:00 UTC. Truncates
+higher levels of precision.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">unix_millis</span><span class="p">(</span><span class="s1">&#39;1970-01-01 00:00:01&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="unix_seconds">
+<span class="sig-name descname"><span class="pre">unix_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bigint</span></span></span><a class="headerlink" href="#unix_seconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of seconds since 1970-01-01 00:00:00 UTC.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">unix_seconds</span><span class="p">(</span><span class="s1">&#39;1970-01-01 00:00:01&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="unix_timestamp">
+<span class="sig-name descname"><span class="pre">unix_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#unix_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current UNIX timestamp in seconds.</p>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark">
+<span class="sig-name descname"><span class="pre">unix_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span></dt>
+<dd><blockquote>
+<div><p>Returns the UNIX timestamp of time specified by <code class="docutils literal notranslate"><span class="pre">string</span></code>. Assumes the
+format <code class="docutils literal notranslate"><span class="pre">yyyy-MM-dd</span> <span class="pre">HH:mm:ss</span></code>. Returns null if <code class="docutils literal notranslate"><span class="pre">string</span></code> does not match
+<code class="docutils literal notranslate"><span class="pre">format</span></code>.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark">
+<span class="sig-name descname"><span class="pre">unix_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span></dt>
+<dd><blockquote>
+<div><p>Returns the UNIX timestamp of time specified by <code class="docutils literal notranslate"><span class="pre">string</span></code> using the
+format described in the <code class="docutils literal notranslate"><span class="pre">format</span></code> string. The format follows Spark’s
+<a class="reference external" href="https://spark.apache.org/docs/latest/sql-ref-datetime-pattern.html">Datetime patterns for formatting and parsing</a>.
+Returns null if <code class="docutils literal notranslate"><span class="pre">string</span></code> does not match <code class="docutils literal notranslate"><span class="pre">format</span></code> or if <code class="docutils literal notranslate"><span class="pre">format</span></code>
+is invalid.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="week_of_year">
+<span class="sig-name descname"><span class="pre">week_of_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#week_of_year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_week_date">ISO-Week</a> of the year from x. The value ranges from <code class="docutils literal notranslate"><span class="pre">1</span></code> to <code class="docutils literal notranslate"><span class="pre">53</span></code>.
+A week is considered to start on a Monday and week 1 is the first week with &gt;3 days.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="weekday">
+<span class="sig-name descname"><span class="pre">weekday</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#weekday" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the day of the week for date (0 = Monday, 1 = Tuesday, …, 6 = Sunday).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SELECT</span> <span class="n">weekday</span><span class="p">(</span><span class="s1">&#39;2015-04-08&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">2</span>
+<span class="n">SELECT</span> <span class="n">weekday</span><span class="p">(</span><span class="s1">&#39;2024-02-10&#39;</span><span class="p">);</span> <span class="o">--</span> <span class="mi">5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="year">
+<span class="sig-name descname"><span class="pre">year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the year from <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd></dl>
+
+<dl class="spark function">
+<dt class="sig sig-object spark" id="year_of_week">
+<span class="sig-name descname"><span class="pre">year_of_week</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">integer</span></span></span><a class="headerlink" href="#year_of_week" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the ISO week-numbering year that <code class="docutils literal notranslate"><span class="pre">x</span></code> falls in. For example, 2005-01-02 is
+part of the 53rd week of year 2004, so the result is 2004. Only supports DATE type.</p>
+<blockquote>
+<div><p>SELECT year_of_week(‘2005-01-02’); – 2004</p>
+</div></blockquote>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Date and Time Functions</a><ul>
+<li><a class="reference internal" href="#convenience-extraction-functions">Convenience Extraction Functions</a><ul>
+<li><a class="reference internal" href="#add_months"><code class="docutils literal notranslate"><span class="pre">add_months()</span></code></a></li>
+<li><a class="reference internal" href="#date_add"><code class="docutils literal notranslate"><span class="pre">date_add()</span></code></a></li>
+<li><a class="reference internal" href="#date_from_unix_date"><code class="docutils literal notranslate"><span class="pre">date_from_unix_date()</span></code></a></li>
+<li><a class="reference internal" href="#date_sub"><code class="docutils literal notranslate"><span class="pre">date_sub()</span></code></a></li>
+<li><a class="reference internal" href="#datediff"><code class="docutils literal notranslate"><span class="pre">datediff()</span></code></a></li>
+<li><a class="reference internal" href="#dayofmonth"><code class="docutils literal notranslate"><span class="pre">dayofmonth()</span></code></a></li>
+<li><a class="reference internal" href="#dayofyear"><code class="docutils literal notranslate"><span class="pre">dayofyear()</span></code></a></li>
+<li><a class="reference internal" href="#dayofweek"><code class="docutils literal notranslate"><span class="pre">dayofweek()</span></code></a></li>
+<li><a class="reference internal" href="#from_unixtime"><code class="docutils literal notranslate"><span class="pre">from_unixtime()</span></code></a></li>
+<li><a class="reference internal" href="#from_utc_timestamp"><code class="docutils literal notranslate"><span class="pre">from_utc_timestamp()</span></code></a></li>
+<li><a class="reference internal" href="#get_timestamp"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
+<li><a class="reference internal" href="#hour"><code class="docutils literal notranslate"><span class="pre">hour()</span></code></a></li>
+<li><a class="reference internal" href="#last_day"><code class="docutils literal notranslate"><span class="pre">last_day()</span></code></a></li>
+<li><a class="reference internal" href="#make_date"><code class="docutils literal notranslate"><span class="pre">make_date()</span></code></a></li>
+<li><a class="reference internal" href="#make_ym_interval"><code class="docutils literal notranslate"><span class="pre">make_ym_interval()</span></code></a></li>
+<li><a class="reference internal" href="#minute"><code class="docutils literal notranslate"><span class="pre">minute()</span></code></a></li>
+<li><a class="reference internal" href="#quarter"><code class="docutils literal notranslate"><span class="pre">quarter()</span></code></a></li>
+<li><a class="reference internal" href="#make_timestamp"><code class="docutils literal notranslate"><span class="pre">make_timestamp()</span></code></a></li>
+<li><a class="reference internal" href="#month"><code class="docutils literal notranslate"><span class="pre">month()</span></code></a></li>
+<li><a class="reference internal" href="#next_day"><code class="docutils literal notranslate"><span class="pre">next_day()</span></code></a></li>
+<li><a class="reference internal" href="#second"><code class="docutils literal notranslate"><span class="pre">second()</span></code></a></li>
+<li><a class="reference internal" href="#timestamp_micros"><code class="docutils literal notranslate"><span class="pre">timestamp_micros()</span></code></a></li>
+<li><a class="reference internal" href="#timestamp_millis"><code class="docutils literal notranslate"><span class="pre">timestamp_millis()</span></code></a></li>
+<li><a class="reference internal" href="#to_unix_timestamp"><code class="docutils literal notranslate"><span class="pre">to_unix_timestamp()</span></code></a></li>
+<li><a class="reference internal" href="#to_utc_timestamp"><code class="docutils literal notranslate"><span class="pre">to_utc_timestamp()</span></code></a></li>
+<li><a class="reference internal" href="#unix_date"><code class="docutils literal notranslate"><span class="pre">unix_date()</span></code></a></li>
+<li><a class="reference internal" href="#unix_micros"><code class="docutils literal notranslate"><span class="pre">unix_micros()</span></code></a></li>
+<li><a class="reference internal" href="#unix_millis"><code class="docutils literal notranslate"><span class="pre">unix_millis()</span></code></a></li>
+<li><a class="reference internal" href="#unix_seconds"><code class="docutils literal notranslate"><span class="pre">unix_seconds()</span></code></a></li>
+<li><a class="reference internal" href="#unix_timestamp"><code class="docutils literal notranslate"><span class="pre">unix_timestamp()</span></code></a></li>
+<li><a class="reference internal" href="#week_of_year"><code class="docutils literal notranslate"><span class="pre">week_of_year()</span></code></a></li>
+<li><a class="reference internal" href="#weekday"><code class="docutils literal notranslate"><span class="pre">weekday()</span></code></a></li>
+<li><a class="reference internal" href="#year"><code class="docutils literal notranslate"><span class="pre">year()</span></code></a></li>
+<li><a class="reference internal" href="#year_of_week"><code class="docutils literal notranslate"><span class="pre">year_of_week()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="string.html"
+                          title="previous chapter">String Functions</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="array.html"
+                          title="next chapter">Array Functions</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/functions/spark/datetime.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="array.html" title="Array Functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="string.html" title="String Functions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Velox  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../spark_functions.html" >Spark Functions</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Date and Time Functions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright TBD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.0.
+    </div>
+  </body>
+</html>

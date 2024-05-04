@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Joins &#8212; Velox  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Anti joins" href="anti-join.html" />
+    <link rel="prev" title="Connectors" href="connectors.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="anti-join.html" title="Anti joins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="connectors.html" title="Connectors"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Velox  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../develop.html" accesskey="U">Developer Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Joins</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="joins">
+<h1>Joins<a class="headerlink" href="#joins" title="Permalink to this heading">¶</a></h1>
+<p>Velox supports inner, left, right, full outer, left semi filter, left semi
+project, right semi filter, right semi project, and anti hash joins using
+either partitioned or broadcast distribution strategies. Semi project and
+anti joins support additional null-aware flag to distinguish between IN
+(null aware) and EXISTS (regular) semantics. Velox also supports cross joins.</p>
+<p>Velox also supports inner and left merge join for the case where join inputs are
+sorted on the join keys. Right, full, left semi, right semi, and anti merge joins
+are not supported yet.</p>
+<section id="hash-join-implementation">
+<h2>Hash Join Implementation<a class="headerlink" href="#hash-join-implementation" title="Permalink to this heading">¶</a></h2>
+<p>Use HashJoinNode plan node to insert a join into a query plan. Specify the join
+type, an equi-clause, e.g. pairs of columns on the left and right side whose
+values need to match, and an optional filter to apply to join results.</p>
+<a class="reference internal image-reference" href="../_images/hash-join-node.png"><img alt="../_images/hash-join-node.png" class="align-center" src="../_images/hash-join-node.png" style="width: 400px;" /></a>
+<p>The join type can be one of kInner, kLeft, kRight, kFull, kLeftSemiFilter,
+kLeftSemiProject, kRightSemiFilter, kRightSemiProject, or kAnti.</p>
+<p>kLeftSemiProject, kRightSemiProject and kAnti joins support an additional
+nullAware flag to distinguish between IN (null aware) and EXISTS (regular)
+semantics.</p>
+<p>Filter is optional. If specified it can be any expression over the results of
+the join. This expression will be evaluated using the same expression
+evaluation engine as used by the FilterProject operator and HiveConnector.</p>
+<p>Inner join with a filter is equivalent to a join operator followed by
+FilterProject operator, but left join with a filter is different. Left join
+returns all rows from the left side along with all the matches on the build
+side that pass the filter. The results also include rows from the left side for
+which there is no match on the build side or neither match passed the filter.</p>
+<p>To illustrate the difference between the left join with a filter and a left join
+followed by a filter consider the following data.</p>
+<p>Left side:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>30</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>40</p></td>
+</tr>
+</tbody>
+</table>
+<p>Right side:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>‘a’</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>‘b’</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>‘c’</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>‘d’</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>‘e’</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>‘f’</p></td>
+</tr>
+</tbody>
+</table>
+<p>The result of the left join on left.id = right.id is:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>l.id</p></th>
+<th class="head"><p>l.value</p></th>
+<th class="head"><p>r.name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>null</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>20</p></td>
+<td><p>‘a’</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>20</p></td>
+<td><p>‘b’</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>30</p></td>
+<td><p>‘c’</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>30</p></td>
+<td><p>‘d’</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>30</p></td>
+<td><p>‘e’</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>40</p></td>
+<td><p>‘f’</p></td>
+</tr>
+</tbody>
+</table>
+<p>The result of the left join on left.id = right.id with a filter right.name IN
+(‘a’, ‘f’) is:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>l.id</p></th>
+<th class="head"><p>l.value</p></th>
+<th class="head"><p>r.name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>null</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>20</p></td>
+<td><p>‘a’</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>30</p></td>
+<td><p>null</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>40</p></td>
+<td><p>‘f’</p></td>
+</tr>
+</tbody>
+</table>
+<p>Compare this with the result of left join on left.id = right.id followed by
+filter right.name IN (‘a’, ‘f’):</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>l.id</p></th>
+<th class="head"><p>l.value</p></th>
+<th class="head"><p>r.name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>20</p></td>
+<td><p>‘a’</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>40</p></td>
+<td><p>‘f’</p></td>
+</tr>
+</tbody>
+</table>
+<p>To execute a plan with a join, Velox creates two separate pipelines. One
+pipeline processes the build side data and creates a hash table. The other
+pipeline processes the data on the probe side, joins it with the build side
+data by probing the hash table and continues execution as specified by
+downstream plan nodes. HashJoinNode is translated into two separate operators:
+HashProbe and HashBuild. HashProbe operator becomes part of the probe-side
+pipeline. HashBuild operator is installed as the last operator of the
+build-side pipeline. The output of the HashBuild operator is a
+<a class="reference external" href="hash-table.html">hash table</a> which
+HashProbe operator gets access to via a special mechanism: JoinBridge.</p>
+<a class="reference internal image-reference" href="../_images/join-pipelines.png"><img alt="../_images/join-pipelines.png" class="align-center" src="../_images/join-pipelines.png" style="width: 400px;" /></a>
+<p>Both HashBuild and HashAggregation operators use the same data structure for the
+hash table: <a class="reference external" href="hash-table.html">velox::exec::HashTable</a>. The payload, the non-join key columns
+referred to as dependent columns, are stored row-wise in the RowContainer.</p>
+<p>Using the hash table in join and aggregation allows for a future optimization
+where the hash table can be reused if the aggregation is followed by the join
+and aggregation and join keys are the same. We expect to implement this
+optimization in the near future, but it is currently not implemented.</p>
+<p>While processing input and building a hash table HashBuild operator analyzes the
+values of the join keys to determine whether these keys can be normalized
+(e.g. multiple keys can be merged into a single 64-bit integer key) or mapped
+to a small integer domain to allow for array-based lookup. This mechanism is
+implemented in the velox::exec::VectorHasher and is shared between aggregations
+and joins.</p>
+<p>Build and probe side pipelines can run multi-threaded and their parallelism can
+be specified independently. HashBuild operator has extra logic to support
+parallel building of the hash table where the operator that finishes building
+its table last is responsible for merging it with all the other hash tables
+before making the hash table available over the JoinBridge.</p>
+<section id="dynamic-filter-pushdown">
+<span id="dynamicfilterpushdown"></span><h3>Dynamic Filter Pushdown<a class="headerlink" href="#dynamic-filter-pushdown" title="Permalink to this heading">¶</a></h3>
+<p>In some queries the join runs in the same stage as the probe-side table scan.
+This happens if the join build side is broadcasted (when it is small enough) to
+all join nodes or if the query is using bucket-by-bucket execution mode. In
+these scenarios, it is often the case that only a small fraction of the join
+keys on the probe side match the build side and it is beneficial to filter out
+probe rows during table scan. This optimization is referred to as dynamic
+filtering or dynamic filter pushdown.</p>
+<a class="reference internal image-reference" href="../_images/join-plan-translation.png"><img alt="../_images/join-plan-translation.png" class="align-center" src="../_images/join-plan-translation.png" style="width: 800px;" /></a>
+<p>Velox implements this optimization by leveraging VectorHashers that contain full
+knowledge about the join key values on the build side. For each join key
+with not too many distinct values, an in-list filter is constructed using the set
+of distinct values stored in the corresponding VectorHasher. These filters
+are then pushed down into the TableScan operator and make their way into the
+HiveConnector which uses them to (1) prune files and row groups based on
+statistics and (2) filter out rows when reading the data.</p>
+<p>It is worth noting that the biggest wins come from using the dynamic filters to
+prune whole file and row groups during table scan.</p>
+<a class="reference internal image-reference" href="../_images/join-dynamic-filters.png"><img alt="../_images/join-dynamic-filters.png" class="align-center" src="../_images/join-dynamic-filters.png" style="width: 400px;" /></a>
+<p>Dynamic filter pushdown is possible only if the join key column comes from a
+collocated TableScan operator unmodified. HashProbe asks the Driver which
+columns support filter pushdown (e.g. which columns come unmodified from an
+operator which accepts dynamic filters) and generates filters only for such
+columns.</p>
+<p>In cases when the join has a single join key and no dependent columns and all
+join key values on the build side are unique it is possible to replace the join
+completely with the pushed down filter. Velox detects such opportunities and
+turns the join into a no-op after pushing the filter down.</p>
+<p>Dynamic filter pushdown optimization is enabled for inner, left semi, and
+right semi joins.</p>
+</section>
+<section id="broadcast-join">
+<h3>Broadcast Join<a class="headerlink" href="#broadcast-join" title="Permalink to this heading">¶</a></h3>
+<p>Broadcast join refers to a specific distributed execution strategy where the
+build side is small enough that it can be copied (broadcasted) to all the join
+nodes and that allows to avoid re-shuffling the probe and build sides to
+arrange for all rows with the same keys to appear on the same machine. Whether
+the join is executed using broadcast or partitioned strategy has no effect on
+the join execution itself. The only difference is that broadcast execution
+allows for dynamic filter pushdown while partitioned execution does not.</p>
+<p>PartitionedOutput operator and OutputBufferManager support
+broadcasting the results of the plan evaluation. This functionality is enabled
+by setting boolean flag “broadcast” in the PartitionedOutputNode to true.</p>
+</section>
+<section id="anti-joins">
+<h3>Anti Joins<a class="headerlink" href="#anti-joins" title="Permalink to this heading">¶</a></h3>
+<p>Null aware anti join is used for queries with NOT IN &lt;subquery&gt; clause, while
+regular anti join is used for queries with NOT EXISTS &lt;subquery&gt; clause.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- null-aware anti join</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="k">key</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">u</span><span class="p">)</span>
+
+<span class="c1">-- regular anti join</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">u</span><span class="p">.</span><span class="k">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="k">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Broadly-speaking anti join returns probe-side rows which have no match on
+the build side. However, the exact semantics are a bit tricky. These are
+described in detail in <a class="reference internal" href="anti-join.html"><span class="doc">Anti joins</span></a>.</p>
+<p>At a high level, null-aware anti join without extra filter behaves as follows:</p>
+<ol class="arabic simple">
+<li><p>return empty dataset if the build side contains an entry with a null in any
+of the join keys;</p></li>
+<li><p>return all rows from the probe side, including rows with nulls in the join key,
+when the build side is empty;</p></li>
+<li><p>returns probe-side rows with non-null join keys and no match in the build
+side when build side is not empty.</p></li>
+</ol>
+<p>When a query runs on multiple machines, the cases (1) and (2) cannot be easily
+identified locally (unless the join runs in broadcast mode) as they require
+knowledge about the whole build side. It is necessary to know whether the
+combined build side across all nodes is empty and if not if it contains a null
+key. To provide this information locally, PartitionedOutput operator supports a
+mode where it replicates all rows with nulls in the partitioning keys to all
+destinations and in case there are no rows with null keys replicates one
+arbitrary chosen row to all destinations. This mode is enabled by setting
+the “replicateNullsAndAny” flag to true in the PartitionedOutputNode plan node.</p>
+<p>Replicate-nulls-and-any function of the PartitionedOutput operator ensures that
+all nodes receive rows with nulls in join keys and therefore can implement the
+semantics described in (1). It also ensures that local build sides are empty
+only if the whole build side is empty, allowing to implement semantic
+(2). Sending one row with a non-null key to multiple “wrong” destinations is
+safe because that row cannot possibly match anything on these destinations.</p>
+</section>
+</section>
+<section id="semi-joins">
+<h2>Semi Joins<a class="headerlink" href="#semi-joins" title="Permalink to this heading">¶</a></h2>
+<p>Semi filter joins are used for queries with IN &lt;subquery&gt; and EXISTS &lt;subquery&gt;
+clauses. Left semi filter join should be used when cardinality of the outer
+query is greater than cardinality of the subquery. Right semi join can be used
+when cardinality of the subquery is greater.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="k">key</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">u</span><span class="p">)</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">u</span><span class="p">.</span><span class="k">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="k">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Left semi filter join returns probe-side rows which have at least one match on
+the build side. Right semi filter join returns build-side rows which have at
+least one match on the probe side.</p>
+<p>Semi project joins are used for queries where IN &lt;subquery&gt; or EXISTS &lt;subquery&gt;
+expressions are combined with other expressions.</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="k">key</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">col</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">10</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="k">key</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(...)</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">key2</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(...)</span>
+</pre></div>
+</div>
+<p>Left semi project join returns all probe-side rows with an extra boolean column
+(match) indicating whether there is a match on the build side. Right semi
+project join returns all build-side rows with the ‘match’ column indicating
+whether there is a match on the probe side.</p>
+<p>Semi project joins support null-aware flag to distinguish between IN and EXISTS
+semantics. Null-aware semi project join may return NULL value if it is not
+possible to definitively say whether there is a match or not. For example, left
+semi project join without extra filter returns NULL for a probe-side row with a
+NULL in the join key as long as build-side is not empty.</p>
+<p>The results of the anti join are equivalent to the results of a semi project
+join followed by a ‘NOT match’ filter.</p>
+<section id="empty-build-side">
+<h3>Empty Build Side<a class="headerlink" href="#empty-build-side" title="Permalink to this heading">¶</a></h3>
+<p>For inner, left semi, and right semi joins, when the build side is empty,
+Velox implements an optimization to finish the join early and return an empty
+set of results without waiting to receive all the probe side input. In this case
+all upstream operators are canceled to avoid unnecessary computation.</p>
+</section>
+<section id="skipping-duplicate-keys">
+<h3>Skipping Duplicate Keys<a class="headerlink" href="#skipping-duplicate-keys" title="Permalink to this heading">¶</a></h3>
+<p>When building a hash table for left semi or anti join, HashBuild operator skips
+entries with duplicate keys as these are not needed. This is achieved by
+configuring exec::HashTable to set the “allowDuplicates” flag to false. This
+optimization reduces memory usage of the hash table in case the build side
+contains duplicate join keys.</p>
+</section>
+<section id="execution-statistics">
+<h3>Execution Statistics<a class="headerlink" href="#execution-statistics" title="Permalink to this heading">¶</a></h3>
+<p>HashBuild operator reports the range and number of distinct values for each join
+key if these are not too large and allow for array-based join or use of
+normalized keys.</p>
+<ul class="simple">
+<li><p>rangeKey&lt;N&gt; - the range of values for the join key #N</p></li>
+<li><p>distinctKey&lt;N&gt; - the number of distinct values for the join key #N</p></li>
+</ul>
+<p>HashProbe operator reports whether it replaced itself with the pushed down
+filter entirely and became a no-op.</p>
+<ul class="simple">
+<li><p>replacedWithDynamicFilterRows - the number of rows which were passed through
+without any processing after filter was pushed down</p></li>
+</ul>
+<p>HashProbe also reports the number of dynamic filters it generated for push
+down.</p>
+<ul class="simple">
+<li><p>dynamicFiltersProduced - number of dynamic filters generated (at most one per
+join key)</p></li>
+<li><p>maxSpillLevel - the max spill level that has been triggered with zero for the
+initial spill.</p></li>
+</ul>
+<p>TableScan operator reports the number of dynamic filters it received and passed
+to HiveConnector.</p>
+<ul class="simple">
+<li><p>dynamicFiltersAccepted - number of dynamic filters received</p></li>
+</ul>
+</section>
+</section>
+<section id="memory-layout">
+<h2>Memory Layout<a class="headerlink" href="#memory-layout" title="Permalink to this heading">¶</a></h2>
+<p>Inside hash table we keep the row values in <cite>RowContainer</cite>.  This is a row-wise
+storage and each row consists the following components:</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Null flags (1 bit per item) for</dt><dd><ol class="arabic simple">
+<li><p>Keys (only if nullable)</p></li>
+<li><p>Dependants</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p>Has-probed flag (1 bit)</p></li>
+<li><p>Free flag (1 bit)</p></li>
+<li><p>Keys</p></li>
+<li><p>Dependants</p></li>
+<li><p>Variable size (32 bit)</p></li>
+<li><p>Next offset (64 bit pointer)</p></li>
+</ol>
+</section>
+<section id="merge-join-implementation">
+<h2>Merge Join Implementation<a class="headerlink" href="#merge-join-implementation" title="Permalink to this heading">¶</a></h2>
+<p>Use MergeJoinNode plan node to insert a merge join into a query plan. Make sure
+both left and right sides of the join produce results sorted on the join keys.
+Specify the join type, an equi-clause, e.g. pairs of columns on the left and
+right side whose values need to match, and an optional filter to apply to join
+results.</p>
+<p>To execute a plan with a merge join, Velox creates two separate pipelines. One
+pipeline processes the right side data and puts it into MergeJoinSource. The
+other pipeline processes the data on the left side, joins it with the right
+side data and continues execution as specified by downstream plan nodes.
+MergeJoinNode is translated into MergeJoin operator and a CallbackSink backed
+by MergeJoinSource. MergeJoin operator becomes part of the left-side
+pipeline. CallbackSink is installed at the end of the right-side pipeline.</p>
+<a class="reference internal image-reference" href="../_images/merge-join-pipelines.png"><img alt="../_images/merge-join-pipelines.png" class="align-center" src="../_images/merge-join-pipelines.png" style="width: 800px;" /></a>
+</section>
+<section id="usage-examples">
+<h2>Usage Examples<a class="headerlink" href="#usage-examples" title="Permalink to this heading">¶</a></h2>
+<p>Check out velox/exec/tests/HashJoinTest.cpp and MergeJoinTest.cpp for examples
+of how to build and execute a plan with a hash or merge join.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Joins</a><ul>
+<li><a class="reference internal" href="#hash-join-implementation">Hash Join Implementation</a><ul>
+<li><a class="reference internal" href="#dynamic-filter-pushdown">Dynamic Filter Pushdown</a></li>
+<li><a class="reference internal" href="#broadcast-join">Broadcast Join</a></li>
+<li><a class="reference internal" href="#anti-joins">Anti Joins</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#semi-joins">Semi Joins</a><ul>
+<li><a class="reference internal" href="#empty-build-side">Empty Build Side</a></li>
+<li><a class="reference internal" href="#skipping-duplicate-keys">Skipping Duplicate Keys</a></li>
+<li><a class="reference internal" href="#execution-statistics">Execution Statistics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#memory-layout">Memory Layout</a></li>
+<li><a class="reference internal" href="#merge-join-implementation">Merge Join Implementation</a></li>
+<li><a class="reference internal" href="#usage-examples">Usage Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="connectors.html"
+                          title="previous chapter">Connectors</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="anti-join.html"
+                          title="next chapter">Anti joins</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/develop/joins.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="anti-join.html" title="Anti joins"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="connectors.html" title="Connectors"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Velox  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../develop.html" >Developer Guide</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Joins</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright TBD.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.0.
+    </div>
+  </body>
+</html>
