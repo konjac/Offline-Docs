@@ -1,0 +1,8 @@
+name: offline-docs-generation
+run-name: Offline documents generation by ${{ github.actor }}
+on: [workflow_dispatch]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 Hello Github workflow"
