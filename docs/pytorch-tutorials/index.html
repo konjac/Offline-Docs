@@ -1,0 +1,3768 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Welcome to PyTorch Tutorials &#8212; PyTorch Tutorials 2.8.0+cu128 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=536c50fe" />
+    <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=047068a3" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/katex-math.css?v=91adb8b6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=bffbcef7"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/katex.min.js?v=be8ff15f"></script>
+    <script src="_static/auto-render.min.js?v=ad136472"></script>
+    <script src="_static/katex_autorenderer.js?v=bebc588a"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <link rel="canonical" href="https://docs.pytorch.org/tutorials/index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Intro" href="intro.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+<script>
+  if (window.location.hostname === 'docs.pytorch.org' || window.location.hostname === 'docs-preview.pytorch.org') {
+    const script = document.createElement('script');
+    script.src = 'https://cmp.osano.com/16A0DbT9yDNIaQkvZ/31b1b91a-e0b6-47ea-bde2-7f2bd13dbe5c/osano.js?variant=one';
+    document.head.appendChild(script);
+  }
+</script>
+<script>
+  // Cookie banner for non-LF projects
+  document.addEventListener('DOMContentLoaded', function () {
+    // Hide cookie banner on local environments and LF owned docs
+    if (window.location.hostname === 'localhost' ||
+      window.location.hostname === '0.0.0.0' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === 'docs.pytorch.org' ||
+      window.location.hostname === 'docs-preview.pytorch.org' ||
+      window.location.hostname.startsWith('192.168.')) {
+      const banner = document.querySelector('.cookie-banner-wrapper');
+      if (banner) {
+        banner.style.display = 'none';
+      }
+    }
+  });
+</script>
+<!-- Conditional CSS for header and footer height adjustment -->
+
+
+<link rel="stylesheet" type="text/css" href="_static/css/theme.css" crossorigin="anonymous">
+<script type="text/javascript" src="_static/js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+<meta property="og:image" content="_static/img/pytorch_seo.png" />
+<link rel="stylesheet" href="_static/webfonts/all.min.css" crossorigin="anonymous">
+<meta http-equiv="Content-Security-Policy"
+  content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval' blob:;">
+<meta name="pytorch_project" content="tutorials">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T8XT4PS" height="0" width="0"
+    style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<!-- Google Tag Manager -->
+<script>(function (w, d, s, l, i) {
+    w[l] = w[l] || []; w[l].push({
+      'gtm.start':
+        new Date().getTime(), event: 'gtm.js'
+    }); var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    j.onload = function () {
+      window.dispatchEvent(new Event('gtm_loaded'));
+      console.log('GTM loaded successfully');
+    };
+  })(window, document, 'script', 'dataLayer', 'GTM-T8XT4PS');
+</script>
+<!-- End Google Tag Manager -->
+<!-- Facebook Pixel Code -->
+<script>
+  !function (f, b, e, v, n, t, s) {
+    if (f.fbq) return; n = f.fbq = function () {
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+    n.queue = []; t = b.createElement(e); t.async = !0;
+    t.src = v; s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s)
+  }(window, document, 'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '243028289693773');
+  fbq('track', 'PageView');
+</script>
+<script>
+  document.documentElement.setAttribute('data-version', 'v2.8.0+cu128');
+</script>
+<noscript>
+  <img height="1" width="1" src="https://www.facebook.com/tr?id=243028289693773&ev=PageView&noscript=1" />
+</noscript>
+<script>
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+</script>
+<!-- End Facebook Pixel Code -->
+<!-- Repository configuration for tutorials -->
+
+<script>
+  // Define repository configuration for tutorial buttons using existing html_context variables
+  // Only injected when tutorial buttons are shown AND github variables are defined
+  // If either condition is false, JavaScript will fallback to default PyTorch tutorial links
+  window.repoConfig = {
+    github_repo: "pytorch/tutorials",
+    github_branch: "main",
+    colab_repo: "pytorch/tutorials",
+    colab_branch: ""
+  };
+</script>
+
+<!-- Script to Fix scrolling -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Fix anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+          const headerHeight =
+            (document.querySelector('.header-holder') ? document.querySelector('.header-holder').offsetHeight : 0) +
+            (document.querySelector('.bd-header') ? document.querySelector('.bd-header').offsetHeight : 0) + 20;
+
+          const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+
+          // Update URL hash without scrolling
+          history.pushState(null, null, '#' + targetId);
+        }
+      });
+    });
+  });
+</script>
+
+<script async src="https://cse.google.com/cse.js?cx=e65585f8c3ea1440e"></script>
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+
+  </head>
+
+<body data-feedback-url="https://github.com/pytorch/tutorials" class="pytorch-body">
+  
+    <div class="container-fluid header-holder tutorials-header" id="header-holder">
+   <div class="header-container-wrapper">
+    <div class="header-container">
+      <a class="header-logo" href="https://pytorch.org/" aria-label="PyTorch"></a>
+
+      <div class="main-menu">
+        <ul>
+
+          <li class="main-menu-item">
+          <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="with-down-arrow">
+                <span>Learn</span>
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/get-started/locally">
+                  <span class=dropdown-title>Get Started</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://docs.pytorch.org/tutorials">
+                  <span class="dropdown-title">Tutorials</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/basics/intro.html">
+                  <span class="dropdown-title">Learn the Basics</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/tutorials/recipes/recipes_index.html">
+                  <span class="dropdown-title">PyTorch Recipes</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/introyt.html">
+                  <span class="dropdown-title">Intro to PyTorch - YouTube Series</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/webinars/">
+                  <span class="dropdown-title">Webinars</span>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="main-menu-item">
+          <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="with-down-arrow">
+              <span>Community</span>
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://landscape.pytorch.org/" target="_blank">
+                  <span class="dropdown-title">Landscape</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/join-ecosystem">
+                  <span class="dropdown-title">Join the Ecosystem</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/community-hub/">
+                  <span class="dropdown-title">Community Hub</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://discuss.pytorch.org/">
+                  <span class="dropdown-title">Forums</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/resources">
+                  <span class=dropdown-title>Developer Resources</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/contributor-awards/">
+                  <span class="dropdown-title">Contributor Awards</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/community-events/">
+                  <span class="dropdown-title">Community Events</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/programs/ambassadors/">
+                  <span class="dropdown-title">PyTorch Ambassadors</span>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="main-menu-item">
+          <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="with-down-arrow">
+              <span>Projects</span>
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/projects/pytorch/">
+                  <span class="dropdown-title">PyTorch</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/projects/vllm/">
+                  <span class="dropdown-title">vLLM</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/projects/deepspeed/">
+                  <span class="dropdown-title">DeepSpeed</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/projects/host-your-project/">
+                  <span class="dropdown-title">Host Your Project</span>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="main-menu-item">
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="with-down-arrow">
+              <span> Docs</span>
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://docs.pytorch.org/docs/stable/index.html">
+                  <span class="dropdown-title">PyTorch</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/domains">
+                  <span class="dropdown-title">Domains</span>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="main-menu-item">
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="with-down-arrow">
+              <span>Blogs & News</span>
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/blog/">
+                  <span class="dropdown-title">Blog</span>
+                </a>
+                 <a class="nav-dropdown-item" href="https://pytorch.org/announcements">
+                  <span class="dropdown-title">Announcements</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/case-studies/">
+                  <span class="dropdown-title">Case Studies</span>
+                <a class="nav-dropdown-item" href="https://pytorch.org/events">
+                  <span class="dropdown-title">Events</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/newsletter">
+                  <span class="dropdown-title">Newsletter</span>
+                </a>
+            </div>
+          </li>
+
+          <li class="main-menu-item">
+            <div id="resourcesDropdownButton" data-toggle="resources-dropdown" class="resources-dropdown">
+              <a class="with-down-arrow">
+              <span>About</span>
+              </a>
+              <div class="resources-dropdown-menu">
+                <a class="nav-dropdown-item" href="https://pytorch.org/foundation">
+                  <span class="dropdown-title">PyTorch Foundation</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/members">
+                  <span class="dropdown-title">Members</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/governing-board">
+                  <span class="dropdown-title">Governing Board</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/tac">
+                  <span class="dropdown-title">Technical Advisory Council</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/credits">
+                  <span class="dropdown-title">Cloud Credit Program</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/staff">
+                  <span class="dropdown-title">Staff</span>
+                </a>
+                <a class="nav-dropdown-item" href="https://pytorch.org/contact">
+                  <span class="dropdown-title">Contact</span>
+                </a>
+              </div>
+            </div>
+          </li>
+
+          <li class="main-menu-item">
+            <div class="no-dropdown main-menu-button">
+              <a href="https://pytorch.org/join" data-cta="join">
+                JOIN
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <a class="main-menu-open-button" href="#" data-behavior="open-mobile-menu">
+        <i class="fa-solid fa-ellipsis"></i>
+      </a>
+    </div>
+  </div>
+ </div>
+
+ <!-- Begin Mobile Menu -->
+
+<div class="mobile-main-menu">
+  <div class="container-fluid">
+    <div class="header-container-wrapper">
+      <div class="mobile-main-menu-header-container">
+        <a class="main-menu-close-button" href="#" data-behavior="close-mobile-menu">
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-main-menu-links-container">
+    <div class="main-menu">
+      <ul>
+         <li class="resources-mobile-menu-title">
+           <a>Learn</a>
+         </li>
+         <ul class="resources-mobile-menu-items">
+           <li>
+             <a href="https://pytorch.org/get-started/locally">Get Started</a>
+           </li>
+           <li>
+             <a href="https://docs.pytorch.org/tutorials">Tutorials</a>
+           </li>
+           <li>
+             <a href="https://pytorch.org/tutorials/beginner/basics/intro.html">Learn the Basics</a>
+           </li>
+           <li>
+             <a href="https://pytorch.org/tutorials/recipes/recipes_index.html">PyTorch Recipes</a>
+           </li>
+           <li>
+             <a href="https://pytorch.org/tutorials/beginner/introyt.html">Introduction to PyTorch - YouTube Series</a>
+           </li>
+           <li>
+            <a href="https://pytorch.org/webinars/">Webinars</a>
+          </li>
+        </ul>
+         <li class="resources-mobile-menu-title">
+           <a>Community</a>
+         </li>
+         <ul class="resources-mobile-menu-items">
+          <li>
+            <a href="https://landscape.pytorch.org/">Landscape</a>
+          </li>
+          <li>
+             <a href="https://pytorch.org/join-ecosystem">Join the Ecosystem</a>
+           </li>
+           <li>
+             <a href="https://pytorch.org/community-hub/">Community Hub</a>
+           </li>
+           <li>
+             <a href="https://discuss.pytorch.org/">Forums</a>
+           </li>
+           <li>
+             <a href="https://pytorch.org/resources">Developer Resources</a>
+           </li>
+           <li>
+             <a href="https://pytorch.org/contributor-awards/">Contributor Awards</a>
+           </li>
+           <li>
+            <a href="https://pytorch.org/community-events/">Community Events</a>
+          </li>
+          <li>
+            <a href="https://pytorch.org/programs/ambassadors/">PyTorch Ambassadors</a>
+          </li>
+       </ul>
+
+         <li class="resources-mobile-menu-title">
+           <a>Projects</a>
+         </li>
+
+         <ul class="resources-mobile-menu-items">
+           <li>
+             <a href="https://pytorch.org/projects/pytorch/">PyTorch</a>
+           </li>
+
+           <li>
+             <a href="https://pytorch.org/projects/vllm/">vLLM</a>
+           </li>
+           <li>
+            <a href="https://pytorch.org/projects/deepspeed/">DeepSpeed</a>
+          </li>
+          <li>
+             <a href="https://pytorch.org/projects/host-your-project/">Host Your Project</a>
+           </li>
+         </ul>
+
+         <li class="resources-mobile-menu-title">
+           <a>Docs</a>
+         </li>
+
+         <ul class="resources-mobile-menu-items">
+          <li>
+            <a href="https://docs.pytorch.org/docs/stable/index.html">PyTorch</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/domains">Domains</a>
+          </li>
+        </ul>
+
+        <li class="resources-mobile-menu-title">
+          <a>Blog & News</a>
+        </li>
+
+         <ul class="resources-mobile-menu-items">
+          <li>
+            <a href="https://pytorch.org/blog/">Blog</a>
+          </li>
+          <li>
+            <a href="https://pytorch.org/announcements">Announcements</a>
+          </li>
+
+          <li>
+            <a href="https://pytorch.org/case-studies/">Case Studies</a>
+          </li>
+          <li>
+            <a href="https://pytorch.org/events">Events</a>
+          </li>
+          <li>
+             <a href="https://pytorch.org/newsletter">Newsletter</a>
+           </li>
+        </ul>
+
+        <li class="resources-mobile-menu-title">
+          <a>About</a>
+        </li>
+
+        <ul class="resources-mobile-menu-items">
+          <li>
+            <a href="https://pytorch.org/foundation">PyTorch Foundation</a>
+          </li>
+          <li>
+            <a href="https://pytorch.org/members">Members</a>
+          </li>
+          <li>
+            <a href="https://pytorch.org/governing-board">Governing Board</a>
+          </li>
+          <li>
+            <a href="https://pytorch.org/tac">Technical Advisory Council</a>
+         </li>
+         <li>
+             <a href="https://pytorch.org/credits">Cloud Credit Program</a>
+          </li>
+          <li>
+             <a href="https://pytorch.org/staff">Staff</a>
+          </li>
+          <li>
+             <a href="https://pytorch.org/contact">Contact</a>
+          </li>
+        </ul>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- End Mobile Menu -->
+  
+  
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+  <a href="#" class="version">v2.8.0+cu128</a>
+</div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="intro.html">
+    Intro
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="compilers_index.html">
+    Compilers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="domains.html">
+    Domains
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="distributed.html">
+    Distributed
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="extension.html">
+    Extension
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="recipes_index.html">
+    Recipes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+  
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://x.com/PyTorch" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-x-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pytorch/tutorials" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://dev-discuss.pytorch.org/" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/torch/" title="PyPi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPi</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="intro.html">
+    Intro
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="compilers_index.html">
+    Compilers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="domains.html">
+    Domains
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="distributed.html">
+    Distributed
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="extension.html">
+    Extension
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="recipes_index.html">
+    Recipes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+  
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://x.com/PyTorch" title="X" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-x-twitter fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">X</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pytorch/tutorials" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://dev-discuss.pytorch.org/" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/torch/" title="PyPi" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPi</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+  
+<div id="searchbox"></div>
+  <article class="bd-article" id="pytorch-article">
+    <!-- Hidden breadcrumb schema for SEO only -->
+    <div style="display:none;" itemscope itemtype="https://schema.org/BreadcrumbList">
+      
+      <div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <meta itemprop="name" content="Welcome to PyTorch Tutorials">
+        <meta itemprop="position" content="1">
+      </div>
+    </div>
+
+    
+    <script>
+      if ((window.location.href.indexOf("/unstable/") != -1) && (window.location.href.indexOf("/unstable/unstable_index") < 1)) {
+        var div = '<div class="prototype-banner"><i class="fa fa-flask" aria-hidden="true"></i> <strong>Unstable feature:</strong> Not typically available in binary distributions like PyPI. Early stage for feedback and testing.</div>'
+        document.addEventListener('DOMContentLoaded', function () {
+          document.getElementById("pytorch-article").insertAdjacentHTML('afterBegin', div);
+        });
+      }
+    </script>
+    
+    
+    <div class="pytorch-call-to-action-links">
+      <div id="tutorial-type">index</div>
+      <a id="colab-link" data-behavior="call-to-action-event" data-response="Run in Google Colab" target="_blank">
+        <div id="google-colab-link">
+          <img class="call-to-action-img" src="_static/img/pytorch-colab.svg" />
+          <div class="call-to-action-desktop-view">Run in Google Colab</div>
+          <div class="call-to-action-mobile-view">Colab</div>
+        </div>
+      </a>
+      <a id="notebook-link" data-behavior="call-to-action-event" data-response="Download Notebook">
+        <div id="download-notebook-link">
+          <img class="call-to-action-notebook-img" src="_static/img/pytorch-download.svg" />
+          <div class="call-to-action-desktop-view">Download Notebook</div>
+          <div class="call-to-action-mobile-view">Notebook</div>
+        </div>
+      </a>
+      <a id="github-link" data-behavior="call-to-action-event" data-response="View on Github" target="_blank">
+        <div id="github-view-link">
+          <img class="call-to-action-img" src="_static/img/pytorch-github.svg" />
+          <div class="call-to-action-desktop-view">View on GitHub</div>
+          <div class="call-to-action-mobile-view">GitHub</div>
+        </div>
+      </a>
+    </div>
+    
+
+    
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="welcome-to-pytorch-tutorials">
+<h1>Welcome to PyTorch Tutorials<a class="headerlink" href="#welcome-to-pytorch-tutorials" title="Link to this heading">#</a></h1>
+<p><strong>What’s new in PyTorch tutorials?</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pytorch.org/tutorials/advanced/cpp_custom_ops_sycl.html">Integrating Custom Operators with SYCL for Intel GPU</a></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/tutorials/advanced/custom_class_pt2.html">Supporting Custom C++ Classes in torch.compile/torch.export</a></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/tutorials/unstable/gpu_direct_storage.html">Accelerating torch.save and torch.load with GPUDirect Storage</a></p></li>
+<li><p><a class="reference external" href="https://docs.pytorch.org/tutorials/intermediate/FSDP_tutorial.html">Getting Started with Fully Sharded Data Parallel (FSDP2)</a></p></li>
+</ul>
+<div class="tutorials-callout-container">
+    <div class="row"><p><div class="col-md-6">
+    <div class="text-container">
+        <h3>Learn the Basics</h3>
+        <p class="body-paragraph">Familiarize yourself with PyTorch concepts and modules. Learn how to load data, build deep neural networks, train and save your models in this quickstart guide.</p>
+        <a class="btn callout-button" href="beginner/basics/intro.html">Get started with PyTorch</a>
+    </div>
+</div></p>
+<p><div class="col-md-6">
+    <div class="text-container">
+        <h3>PyTorch Recipes</h3>
+        <p class="body-paragraph">Bite-size, ready-to-deploy PyTorch code examples.</p>
+        <a class="btn callout-button" href="recipes_index.html">Explore Recipes</a>
+    </div>
+</div></p>
+    </div>
+</div>
+
+<div id="tutorial-cards-container">
+
+<nav class="navbar navbar-expand-lg navbar-light tutorials-nav col-12">
+    <div class="tutorial-tags-container">
+        <div id="dropdown-filter-tags">
+            <div class="tutorial-filter-menu">
+                <div class="tutorial-filter filter-btn all-tag-selected" data-tag="all">All</div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<hr class="tutorials-hr">
+
+<div class="row">
+
+<div id="tutorial-cards">
+<div class="list"><p><div class="col-md-12 tutorials-card-container" data-tags=Getting-Started>
+
+<div class="card tutorials-card">
+
+<a href="beginner/basics/intro.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Learn the Basics</h4>
+</div>
+
+<p class="card-summary">A step-by-step guide to building a complete ML workflow with PyTorch.</p>
+
+<p class="tags">Getting-Started</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/60-min-blitz.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Getting-Started>
+
+<div class="card tutorials-card">
+
+<a href="beginner/introyt/introyt_index.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Introduction to PyTorch on YouTube</h4>
+</div>
+
+<p class="card-summary">An introduction to building a complete ML workflow with PyTorch. Follows the PyTorch Beginner Series on YouTube.</p>
+
+<p class="tags">Getting-Started</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Getting-Started>
+
+<div class="card tutorials-card">
+
+<a href="beginner/pytorch_with_examples.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Learning PyTorch with Examples</h4>
+</div>
+
+<p class="card-summary">This tutorial introduces the fundamental concepts of PyTorch through self-contained examples.</p>
+
+<p class="tags">Getting-Started</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/learning-pytorch-with-examples.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Getting-Started>
+
+<div class="card tutorials-card">
+
+<a href="beginner/nn_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>What is torch.nn really?</h4>
+</div>
+
+<p class="card-summary">Use torch.nn to create and train a neural network.</p>
+
+<p class="tags">Getting-Started</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torch-nn.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Interpretability,Getting-Started,TensorBoard>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/tensorboard_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Visualizing Models, Data, and Training with TensorBoard</h4>
+</div>
+
+<p class="card-summary">Learn to use TensorBoard to visualize data and model training.</p>
+
+<p class="tags">Interpretability,Getting-Started,TensorBoard</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/visualizing-with-tensorboard.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Getting-Started>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/pinmem_nonblock.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Good usage of `non_blocking` and `pin_memory()` in PyTorch</h4>
+</div>
+
+<p class="card-summary">A guide on best practices to copy data from CPU to GPU.</p>
+
+<p class="tags">Getting-Started</p>
+
+<div class="tutorials-image"><img src='_static/img/pinmem.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Getting-Started>
+
+<div class="card tutorials-card">
+
+<a href="beginner/understanding_leaf_vs_nonleaf_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Understanding requires_grad, retain_grad, Leaf, and Non-leaf Tensors</h4>
+</div>
+
+<p class="card-summary">Learn the subtleties of requires_grad, retain_grad, leaf, and non-leaf tensors</p>
+
+<p class="tags">Getting-Started</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/understanding_leaf_vs_nonleaf.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Getting-Started>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/visualizing_gradients_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Visualizing Gradients in PyTorch</h4>
+</div>
+
+<p class="card-summary">Visualize the gradient flow of a network.</p>
+
+<p class="tags">Getting-Started</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/visualizing_gradients_tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Image/Video>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/torchvision_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>TorchVision Object Detection Finetuning Tutorial</h4>
+</div>
+
+<p class="card-summary">Finetune a pre-trained Mask R-CNN model.</p>
+
+<p class="tags">Image/Video</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/TorchVision-Object-Detection-Finetuning-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Image/Video>
+
+<div class="card tutorials-card">
+
+<a href="beginner/transfer_learning_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Transfer Learning for Computer Vision Tutorial</h4>
+</div>
+
+<p class="card-summary">Train a convolutional neural network for image classification using transfer learning.</p>
+
+<p class="tags">Image/Video</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Transfer-Learning-for-Computer-Vision-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Image/Video>
+
+<div class="card tutorials-card">
+
+<a href="beginner/fgsm_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Adversarial Example Generation</h4>
+</div>
+
+<p class="card-summary">Train a convolutional neural network for image classification using transfer learning.</p>
+
+<p class="tags">Image/Video</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Adversarial-Example-Generation.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Image/Video>
+
+<div class="card tutorials-card">
+
+<a href="beginner/dcgan_faces_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>DCGAN Tutorial</h4>
+</div>
+
+<p class="card-summary">Train a generative adversarial network (GAN) to generate new celebrities.</p>
+
+<p class="tags">Image/Video</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/DCGAN-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Image/Video>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/spatial_transformer_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Spatial Transformer Networks Tutorial</h4>
+</div>
+
+<p class="card-summary">Learn how to augment your network using a visual attention mechanism.</p>
+
+<p class="tags">Image/Video</p>
+
+<div class="tutorials-image"><img src='_static/img/stn/Five.gif'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Image/Video>
+
+<div class="card tutorials-card">
+
+<a href="advanced/usb_semisup_learn.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Semi-Supervised Learning Tutorial Based on USB</h4>
+</div>
+
+<p class="card-summary">Learn how to train semi-supervised learning algorithms (on custom data) using USB and PyTorch.</p>
+
+<p class="tags">Image/Video</p>
+
+<div class="tutorials-image"><img src='_static/img/usb_semisup_learn/code.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="beginner/audio_io_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Audio IO</h4>
+</div>
+
+<p class="card-summary">Learn to load data with torchaudio.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="beginner/audio_resampling_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Audio Resampling</h4>
+</div>
+
+<p class="card-summary">Learn to resample audio waveforms using torchaudio.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="beginner/audio_data_augmentation_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Audio Data Augmentation</h4>
+</div>
+
+<p class="card-summary">Learn to apply data augmentations using torchaudio.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="beginner/audio_feature_extractions_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Audio Feature Extractions</h4>
+</div>
+
+<p class="card-summary">Learn to extract features using torchaudio.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="beginner/audio_feature_augmentation_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Audio Feature Augmentation</h4>
+</div>
+
+<p class="card-summary">Learn to augment features using torchaudio.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="beginner/audio_datasets_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Audio Datasets</h4>
+</div>
+
+<p class="card-summary">Learn to use torchaudio datasets.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/speech_recognition_pipeline_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Automatic Speech Recognition with Wav2Vec2 in torchaudio</h4>
+</div>
+
+<p class="card-summary">Learn how to use torchaudio's pretrained models for building a speech recognition application.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-asr.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/speech_command_classification_with_torchaudio_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Speech Command Classification</h4>
+</div>
+
+<p class="card-summary">Learn how to correctly format an audio dataset and then train/test an audio classifier network on the dataset.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-speech.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/text_to_speech_with_torchaudio.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Text-to-Speech with torchaudio</h4>
+</div>
+
+<p class="card-summary">Learn how to use torchaudio's pretrained models for building a text-to-speech application.</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-speech.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Audio>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/forced_alignment_with_torchaudio_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Forced Alignment with Wav2Vec2 in torchaudio</h4>
+</div>
+
+<p class="card-summary">Learn how to use torchaudio's Wav2Vec2 pretrained models for aligning text to speech</p>
+
+<p class="tags">Audio</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/torchaudio-alignment.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=NLP>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/char_rnn_classification_tutorial">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>NLP from Scratch: Classifying Names with a Character-level RNN</h4>
+</div>
+
+<p class="card-summary">Build and train a basic character-level RNN to classify word from scratch without the use of torchtext. First in a series of three tutorials.</p>
+
+<p class="tags">NLP</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/NLP-From-Scratch-Classifying-Names-with-a-Character-Level-RNN.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=NLP>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/char_rnn_generation_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>NLP from Scratch: Generating Names with a Character-level RNN</h4>
+</div>
+
+<p class="card-summary">After using character-level RNN to classify names, learn how to generate names from languages. Second in a series of three tutorials.</p>
+
+<p class="tags">NLP</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/NLP-From-Scratch-Generating-Names-with-a-Character-Level-RNN.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=NLP>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/seq2seq_translation_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>NLP from Scratch: Translation with a Sequence-to-sequence Network and Attention</h4>
+</div>
+
+<p class="card-summary">This is the third and final tutorial on doing “NLP From Scratch”, where we write our own classes and functions to preprocess the data to do our NLP modeling tasks.</p>
+
+<p class="tags">NLP</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/NLP-From-Scratch-Translation-with-a-Sequence-to-Sequence-Network-and-Attention.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Production,ONNX,Backends>
+
+<div class="card tutorials-card">
+
+<a href="beginner/onnx/export_simple_model_to_onnx_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Exporting a PyTorch model to ONNX using TorchDynamo backend and Running it using ONNX Runtime</h4>
+</div>
+
+<p class="card-summary">Build a image classifier model in PyTorch and convert it to ONNX before deploying it with ONNX Runtime.</p>
+
+<p class="tags">Production,ONNX,Backends</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Exporting-PyTorch-Models-to-ONNX-Graphs.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Production,ONNX,Backends>
+
+<div class="card tutorials-card">
+
+<a href="beginner/onnx/onnx_registry_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Extending the ONNX exporter operator support</h4>
+</div>
+
+<p class="card-summary">Demonstrate end-to-end how to address unsupported operators in ONNX.</p>
+
+<p class="tags">Production,ONNX,Backends</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Exporting-PyTorch-Models-to-ONNX-Graphs.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Production,ONNX,Backends>
+
+<div class="card tutorials-card">
+
+<a href="beginner/onnx/export_control_flow_model_to_onnx_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Exporting a model with control flow to ONNX</h4>
+</div>
+
+<p class="card-summary">Demonstrate how to handle control flow logic while exporting a PyTorch model to ONNX.</p>
+
+<p class="tags">Production,ONNX,Backends</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Exporting-PyTorch-Models-to-ONNX-Graphs.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Reinforcement-Learning>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/reinforcement_q_learning.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Reinforcement Learning (DQN)</h4>
+</div>
+
+<p class="card-summary">Learn how to use PyTorch to train a Deep Q Learning (DQN) agent on the CartPole-v0 task from the OpenAI Gym.</p>
+
+<p class="tags">Reinforcement-Learning</p>
+
+<div class="tutorials-image"><img src='_static/img/cartpole.gif'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Reinforcement-Learning>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/reinforcement_ppo.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Reinforcement Learning (PPO) with TorchRL</h4>
+</div>
+
+<p class="card-summary">Learn how to use PyTorch and TorchRL to train a Proximal Policy Optimization agent on the Inverted Pendulum task from Gym.</p>
+
+<p class="tags">Reinforcement-Learning</p>
+
+<div class="tutorials-image"><img src='_static/img/invpendulum.gif'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Reinforcement-Learning>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/mario_rl_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Train a Mario-playing RL Agent</h4>
+</div>
+
+<p class="card-summary">Use PyTorch to train a Double Q-learning agent to play Mario.</p>
+
+<p class="tags">Reinforcement-Learning</p>
+
+<div class="tutorials-image"><img src='_static/img/mario.gif'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Reinforcement-Learning>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/dqn_with_rnn_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Recurrent DQN</h4>
+</div>
+
+<p class="card-summary">Use TorchRL to train recurrent policies</p>
+
+<p class="tags">Reinforcement-Learning</p>
+
+<div class="tutorials-image"><img src='_static/img/rollout_recurrent.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Reinforcement-Learning>
+
+<div class="card tutorials-card">
+
+<a href="advanced/coding_ddpg.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Code a DDPG Loss</h4>
+</div>
+
+<p class="card-summary">Use TorchRL to code a DDPG Loss</p>
+
+<p class="tags">Reinforcement-Learning</p>
+
+<div class="tutorials-image"><img src='_static/img/half_cheetah.gif'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Reinforcement-Learning>
+
+<div class="card tutorials-card">
+
+<a href="advanced/pendulum.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Writing your environment and transforms</h4>
+</div>
+
+<p class="card-summary">Use TorchRL to code a Pendulum</p>
+
+<p class="tags">Reinforcement-Learning</p>
+
+<div class="tutorials-image"><img src='_static/img/pendulum.gif'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Profiling>
+
+<div class="card tutorials-card">
+
+<a href="beginner/profiler.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Profiling PyTorch</h4>
+</div>
+
+<p class="card-summary">Learn how to profile a PyTorch application</p>
+
+<p class="tags">Profiling</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Profiling>
+
+<div class="card tutorials-card">
+
+<a href="beginner/hta_intro_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Profiling PyTorch</h4>
+</div>
+
+<p class="card-summary">Introduction to Holistic Trace Analysis</p>
+
+<p class="tags">Profiling</p>
+
+<div class="tutorials-image">_static/img/thumbnails/default.png</div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Profiling>
+
+<div class="card tutorials-card">
+
+<a href="beginner/hta_trace_diff_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Profiling PyTorch</h4>
+</div>
+
+<p class="card-summary">Trace Diff using Holistic Trace Analysis</p>
+
+<p class="tags">Profiling</p>
+
+<div class="tutorials-image">_static/img/thumbnails/default.png</div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=FX>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/fx_profiling_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Building a Simple Performance Profiler with FX</h4>
+</div>
+
+<p class="card-summary">Build a simple FX interpreter to record the runtime of op, module, and function calls and report statistics</p>
+
+<p class="tags">FX</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Deploying-PyTorch-in-Python-via-a-REST-API-with-Flask.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Memory-Format,Best-Practice,Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/memory_format_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>(beta) Channels Last Memory Format in PyTorch</h4>
+</div>
+
+<p class="card-summary">Get an overview of Channels Last memory format and understand how it is used to order NCHW tensors in memory preserving dimensions.</p>
+
+<p class="tags">Memory-Format,Best-Practice,Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/experimental-Channels-Last-Memory-Format-in-PyTorch.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Frontend-APIs,C++>
+
+<div class="card tutorials-card">
+
+<a href="advanced/cpp_frontend.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Using the PyTorch C++ Frontend</h4>
+</div>
+
+<p class="card-summary">Walk through an end-to-end example of training a model with the C++ frontend by training a DCGAN – a kind of generative model – to generate images of MNIST digits.</p>
+
+<p class="tags">Frontend-APIs,C++</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Using-the-PyTorch-Cpp-Frontend.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs,C++,CUDA>
+
+<div class="card tutorials-card">
+
+<a href="advanced/custom_ops_landing_page.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>PyTorch Custom Operators Landing Page</h4>
+</div>
+
+<p class="card-summary">This is the landing page for all things related to custom operators in PyTorch.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs,C++,CUDA</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Custom-Cpp-and-CUDA-Extensions.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs,C++,CUDA>
+
+<div class="card tutorials-card">
+
+<a href="advanced/python_custom_ops.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Custom Python Operators</h4>
+</div>
+
+<p class="card-summary">Create Custom Operators in Python. Useful for black-boxing a Python function for use with torch.compile.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs,C++,CUDA</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Custom-Cpp-and-CUDA-Extensions.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,CUDA>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/compiled_autograd_tutorial">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Compiled Autograd: Capturing a larger backward graph for ``torch.compile``</h4>
+</div>
+
+<p class="card-summary">Learn how to use compiled autograd to capture a larger backward graph.</p>
+
+<p class="tags">Model-Optimization,CUDA</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs,C++,CUDA>
+
+<div class="card tutorials-card">
+
+<a href="advanced/cpp_custom_ops.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Custom C++ and CUDA Operators</h4>
+</div>
+
+<p class="card-summary">How to extend PyTorch with custom C++ and CUDA operators.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs,C++,CUDA</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Custom-Cpp-and-CUDA-Extensions.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Frontend-APIs,C++>
+
+<div class="card tutorials-card">
+
+<a href="advanced/cpp_autograd.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Autograd in C++ Frontend</h4>
+</div>
+
+<p class="card-summary">The autograd package helps build flexible and dynamic neural netorks. In this tutorial, explore several examples of doing autograd in PyTorch C++ frontend</p>
+
+<p class="tags">Frontend-APIs,C++</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Autograd-in-Cpp-Frontend.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs,C++>
+
+<div class="card tutorials-card">
+
+<a href="advanced/dispatcher.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Registering a Dispatched Operator in C++</h4>
+</div>
+
+<p class="card-summary">The dispatcher is an internal component of PyTorch which is responsible for figuring out what code should actually get run when you call a function like torch::add.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs,C++</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs,C++>
+
+<div class="card tutorials-card">
+
+<a href="advanced/extend_dispatcher.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Extending Dispatcher For a New Backend in C++</h4>
+</div>
+
+<p class="card-summary">Learn how to extend the dispatcher to add a new device living outside of the pytorch/pytorch repo and maintain it to keep in sync with native PyTorch devices.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs,C++</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs,C++>
+
+<div class="card tutorials-card">
+
+<a href="advanced/privateuseone.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Facilitating New Backend Integration by PrivateUse1</h4>
+</div>
+
+<p class="card-summary">Learn how to integrate a new backend living outside of the pytorch/pytorch repo and maintain it to keep in sync with the native PyTorch backend.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs,C++</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/custom_function_double_backward_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Custom Function Tutorial: Double Backward</h4>
+</div>
+
+<p class="card-summary">Learn how to write a custom autograd Function that supports double backward.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Extending-PyTorch,Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/custom_function_conv_bn_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Custom Function Tutorial: Fusing Convolution and Batch Norm</h4>
+</div>
+
+<p class="card-summary">Learn how to create a custom autograd Function that fuses batch norm into a convolution to improve memory usage.</p>
+
+<p class="tags">Extending-PyTorch,Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/forward_ad_usage.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Forward-mode Automatic Differentiation</h4>
+</div>
+
+<p class="card-summary">Learn how to use forward-mode automatic differentiation.</p>
+
+<p class="tags">Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/jacobians_hessians.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Jacobians, Hessians, hvp, vhp, and more</h4>
+</div>
+
+<p class="card-summary">Learn how to compute advanced autodiff quantities using torch.func</p>
+
+<p class="tags">Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/ensembling.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Model Ensembling</h4>
+</div>
+
+<p class="card-summary">Learn how to ensemble models using torch.vmap</p>
+
+<p class="tags">Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/per_sample_grads.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Per-Sample-Gradients</h4>
+</div>
+
+<p class="card-summary">Learn how to compute per-sample-gradients using torch.func</p>
+
+<p class="tags">Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/neural_tangent_kernels.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Neural Tangent Kernels</h4>
+</div>
+
+<p class="card-summary">Learn how to compute neural tangent kernels using torch.func</p>
+
+<p class="tags">Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Best-Practice,Profiling>
+
+<div class="card tutorials-card">
+
+<a href="beginner/profiler.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Performance Profiling in PyTorch</h4>
+</div>
+
+<p class="card-summary">Learn how to use the PyTorch Profiler to benchmark your module's performance.</p>
+
+<p class="tags">Model-Optimization,Best-Practice,Profiling</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/profiler.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Best-Practice,Profiling,TensorBoard>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/tensorboard_profiler_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Performance Profiling in TensorBoard</h4>
+</div>
+
+<p class="card-summary">Learn how to use the TensorBoard plugin to profile and analyze your model's performance.</p>
+
+<p class="tags">Model-Optimization,Best-Practice,Profiling,TensorBoard</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/profiler.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Best-Practice>
+
+<div class="card tutorials-card">
+
+<a href="beginner/hyperparameter_tuning_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Hyperparameter Tuning Tutorial</h4>
+</div>
+
+<p class="card-summary">Learn how to use Ray Tune to find the best performing set of hyperparameters for your model.</p>
+
+<p class="tags">Model-Optimization,Best-Practice</p>
+
+<div class="tutorials-image"><img src='_static/img/ray-tune.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Best-Practice>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/parametrizations.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Parametrizations Tutorial</h4>
+</div>
+
+<p class="card-summary">Learn how to use torch.nn.utils.parametrize to put constraints on your parameters (e.g. make them orthogonal, symmetric positive definite, low-rank...)</p>
+
+<p class="tags">Model-Optimization,Best-Practice</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/parametrizations.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Best-Practice>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/pruning_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Pruning Tutorial</h4>
+</div>
+
+<p class="card-summary">Learn how to use torch.nn.utils.prune to sparsify your neural networks, and how to extend it to implement your own custom pruning technique.</p>
+
+<p class="tags">Model-Optimization,Best-Practice</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Pruning-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Best-Practice,CUDA,Frontend-APIs>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/optimizer_step_in_backward_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>How to save memory by fusing the optimizer step into the backward pass</h4>
+</div>
+
+<p class="card-summary">Learn a memory-saving technique through fusing the optimizer step into the backward pass using memory snapshots.</p>
+
+<p class="tags">Model-Optimization,Best-Practice,CUDA,Frontend-APIs</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Text,Model-Optimization>
+
+<div class="card tutorials-card">
+
+<a href="advanced/semi_structured_sparse.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>(beta) Accelerating BERT with semi-structured sparsity</h4>
+</div>
+
+<p class="card-summary">Train BERT, prune it to be 2:4 sparse, and then accelerate it to achieve 2x inference speedups with semi-structured sparsity and torch.compile.</p>
+
+<p class="tags">Text,Model-Optimization</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Pruning-Tutorial.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Best-Practice,Ax,TorchX>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/ax_multiobjective_nas_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Multi-Objective Neural Architecture Search with Ax</h4>
+</div>
+
+<p class="card-summary">Learn how to use Ax to search over architectures find optimal tradeoffs between accuracy and latency.</p>
+
+<p class="tags">Model-Optimization,Best-Practice,Ax,TorchX</p>
+
+<div class="tutorials-image"><img src='_static/img/ax_logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/torch_compile_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>torch.compile Tutorial</h4>
+</div>
+
+<p class="card-summary">Speed up your models with minimal code changes using torch.compile, the latest PyTorch compiler solution.</p>
+
+<p class="tags">Model-Optimization</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/torch_compile_conv_bn_fuser.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Building a Convolution/Batch Norm fuser in torch.compile</h4>
+</div>
+
+<p class="card-summary">Build a simple pattern matcher pass that fuses batch norm into convolution to improve performance during inference.</p>
+
+<p class="tags">Model-Optimization</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/inductor_debug_cpu.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Inductor CPU Backend Debugging and Profiling</h4>
+</div>
+
+<p class="card-summary">Learn the usage, debugging and performance profiling for ``torch.compile`` with Inductor CPU backend.</p>
+
+<p class="tags">Model-Optimization</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/generic-pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Attention,Transformer>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/scaled_dot_product_attention_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>(beta) Implementing High-Performance Transformers with SCALED DOT PRODUCT ATTENTION</h4>
+</div>
+
+<p class="card-summary">This tutorial explores the new torch.nn.functional.scaled_dot_product_attention and how it can be used to construct Transformer components.</p>
+
+<p class="tags">Model-Optimization,Attention,Transformer</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Model-Optimization,Image/Video>
+
+<div class="card tutorials-card">
+
+<a href="beginner/knowledge_distillation_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Knowledge Distillation in Convolutional Neural Networks</h4>
+</div>
+
+<p class="card-summary">Learn how to improve the accuracy of lightweight models using more powerful models as teachers.</p>
+
+<p class="tags">Model-Optimization,Image/Video</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/knowledge_distillation_pytorch_logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Transformer>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/transformer_building_blocks.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Accelerating PyTorch Transformers by replacing nn.Transformer with Nested Tensors and torch.compile()</h4>
+</div>
+
+<p class="card-summary">This tutorial goes over recommended best practices for implementing Transformers with native PyTorch.</p>
+
+<p class="tags">Transformer</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/pytorch-logo.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="beginner/dist_overview.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>PyTorch Distributed Overview</h4>
+</div>
+
+<p class="card-summary">Briefly go over all concepts and features in the distributed package. Use this document to find the distributed training technology that can best serve your application.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/PyTorch-Distributed-Overview.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="beginner/ddp_series_intro.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Distributed Data Parallel in PyTorch - Video Tutorials</h4>
+</div>
+
+<p class="card-summary">This series of video tutorials walks you through distributed training in PyTorch via DDP.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/PyTorch-Distributed-Overview.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/model_parallel_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Single-Machine Model Parallel Best Practices</h4>
+</div>
+
+<p class="card-summary">Learn how to implement model parallel, a distributed training technique which splits a single model onto different GPUs, rather than replicating the entire model on each GPU</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Model-Parallel-Best-Practices.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/ddp_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Getting Started with Distributed Data Parallel</h4>
+</div>
+
+<p class="card-summary">Learn the basics of when to use distributed data paralle versus data parallel and work through an example to set it up.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Getting-Started-with-Distributed-Data-Parallel.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/dist_tuto.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Writing Distributed Applications with PyTorch</h4>
+</div>
+
+<p class="card-summary">Set up the distributed package of PyTorch, use the different communication strategies, and go over some the internals of the package.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Writing-Distributed-Applications-with-PyTorch.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/TP_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Large Scale Transformer model training with Tensor Parallel</h4>
+</div>
+
+<p class="card-summary">Learn how to train large models with Tensor Parallel package.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Large-Scale-Transformer-model-training-with-Tensor-Parallel.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/process_group_cpp_extension_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Customize Process Group Backends Using Cpp Extensions</h4>
+</div>
+
+<p class="card-summary">Extend ProcessGroup with custom collective communication implementations.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Customize-Process-Group-Backends-Using-Cpp-Extensions.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/rpc_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Getting Started with Distributed RPC Framework</h4>
+</div>
+
+<p class="card-summary">Learn how to build distributed training using the torch.distributed.rpc package.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Getting Started with Distributed-RPC-Framework.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/rpc_param_server_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Implementing a Parameter Server Using Distributed RPC Framework</h4>
+</div>
+
+<p class="card-summary">Walk through a through a simple example of implementing a parameter server using PyTorch’s Distributed RPC framework.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Implementing-a-Parameter-Server-Using-Distributed-RPC-Framework.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/pipelining_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Introduction to Distributed Pipeline Parallelism</h4>
+</div>
+
+<p class="card-summary">Demonstrate how to implement pipeline parallelism using torch.distributed.pipelining</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Introduction-to-Distributed-Pipeline-Parallelism.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/rpc_async_execution.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Implementing Batch RPC Processing Using Asynchronous Executions</h4>
+</div>
+
+<p class="card-summary">Learn how to use rpc.functions.async_execution to implement batch RPC</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Implementing-Batch-RPC-Processing-Using-Asynchronous-Executions.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="advanced/rpc_ddp_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Combining Distributed DataParallel with Distributed RPC Framework</h4>
+</div>
+
+<p class="card-summary">Walk through a through a simple example of how to combine distributed data parallelism with distributed model parallelism.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Combining-Distributed-DataParallel-with-Distributed-RPC-Framework.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/FSDP_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Getting Started with Fully Sharded Data Parallel (FSDP2)</h4>
+</div>
+
+<p class="card-summary">Learn how to train models with Fully Sharded Data Parallel (fully_shard) package.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Getting-Started-with-FSDP.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Parallel-and-Distributed-Training>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/TCPStore_libuv_backend.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Introduction to Libuv TCPStore Backend</h4>
+</div>
+
+<p class="card-summary">TCPStore now uses a new server backend for faster connection and better scalability.</p>
+
+<p class="tags">Parallel-and-Distributed-Training</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/cropped/Introduction-to-Libuv-Backend-TCPStore.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Edge>
+
+<div class="card tutorials-card">
+
+<a href="https://pytorch.org/executorch/stable/tutorials/export-to-executorch-tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Exporting to ExecuTorch Tutorial</h4>
+</div>
+
+<p class="card-summary">Learn about how to use ExecuTorch, a unified ML stack for lowering PyTorch models to edge devices.</p>
+
+<p class="tags">Edge</p>
+
+<div class="tutorials-image"><img src='_static/img/ExecuTorch-Logo-cropped.svg'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Edge>
+
+<div class="card tutorials-card">
+
+<a href="https://pytorch.org/executorch/stable/running-a-model-cpp-tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Running an ExecuTorch Model in C++ Tutorial</h4>
+</div>
+
+<p class="card-summary">Learn how to load and execute an ExecuTorch model in C++</p>
+
+<p class="tags">Edge</p>
+
+<div class="tutorials-image"><img src='_static/img/ExecuTorch-Logo-cropped.svg'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Edge>
+
+<div class="card tutorials-card">
+
+<a href="https://docs.pytorch.org/executorch/main/tutorials/devtools-integration-tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Using the ExecuTorch SDK to Profile a Model</h4>
+</div>
+
+<p class="card-summary">Explore how to use the ExecuTorch SDK to profile, debug, and visualize ExecuTorch models</p>
+
+<p class="tags">Edge</p>
+
+<div class="tutorials-image"><img src='_static/img/ExecuTorch-Logo-cropped.svg'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Edge>
+
+<div class="card tutorials-card">
+
+<a href="https://github.com/meta-pytorch/executorch-examples/tree/main/mv3/apple/ExecuTorchDemo">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Building an ExecuTorch iOS Demo App</h4>
+</div>
+
+<p class="card-summary">Explore how to set up the ExecuTorch iOS Demo App, which uses the MobileNet v3 model to process live camera images leveraging three different backends: XNNPACK, Core ML, and Metal Performance Shaders (MPS).</p>
+
+<p class="tags">Edge</p>
+
+<div class="tutorials-image"><img src='_static/img/ExecuTorch-Logo-cropped.svg'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Edge>
+
+<div class="card tutorials-card">
+
+<a href="https://github.com/meta-pytorch/executorch-examples/tree/main/dl3/android/DeepLabV3Demo#executorch-android-demo-app">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Building an ExecuTorch Android Demo App</h4>
+</div>
+
+<p class="card-summary">Learn how to set up the ExecuTorch Android Demo App for image segmentation tasks using the DeepLab v3 model and XNNPACK FP32 backend.</p>
+
+<p class="tags">Edge</p>
+
+<div class="tutorials-image"><img src='_static/img/ExecuTorch-Logo-cropped.svg'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=Edge>
+
+<div class="card tutorials-card">
+
+<a href="https://pytorch.org/executorch/stable/examples-end-to-end-to-lower-model-to-delegate.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Lowering a Model as a Delegate</h4>
+</div>
+
+<p class="card-summary">Learn to accelerate your program using ExecuTorch by applying delegates through three methods: lowering the whole module, composing it with another module, and partitioning parts of a module.</p>
+
+<p class="tags">Edge</p>
+
+<div class="tutorials-image"><img src='_static/img/ExecuTorch-Logo-cropped.svg'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=TorchRec,Recommender>
+
+<div class="card tutorials-card">
+
+<a href="intermediate/torchrec_intro_tutorial.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Introduction to TorchRec</h4>
+</div>
+
+<p class="card-summary">TorchRec is a PyTorch domain library built to provide common sparsity & parallelism primitives needed for large-scale recommender systems.</p>
+
+<p class="tags">TorchRec,Recommender</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/torchrec.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+<p><div class="col-md-12 tutorials-card-container" data-tags=TorchRec,Recommender>
+
+<div class="card tutorials-card">
+
+<a href="advanced/sharding.html">
+
+<div class="card-body">
+
+<div class="card-title-container">
+    <h4>Exploring TorchRec sharding</h4>
+</div>
+
+<p class="card-summary">This tutorial covers the sharding schemes of embedding tables by using <code>EmbeddingPlanner</code> and <code>DistributedModelParallel</code> API.</p>
+
+<p class="tags">TorchRec,Recommender</p>
+
+<div class="tutorials-image"><img src='_static/img/thumbnails/torchrec.png'></div>
+
+</div>
+
+</a>
+
+</div>
+
+</div></p>
+</div>
+
+<div class="pagination d-flex justify-content-center"></div>
+
+</div>
+
+</div>
+<br>
+<br></section>
+<section id="additional-resources">
+<h1>Additional Resources<a class="headerlink" href="#additional-resources" title="Link to this heading">#</a></h1>
+<div class="tutorials-callout-container">
+    <div class="row"><p><div class="col-md-6">
+    <div class="text-container">
+        <h3>Examples of PyTorch</h3>
+        <p class="body-paragraph">A set of examples around PyTorch in Vision, Text, Reinforcement Learning that you can incorporate in your existing work.</p>
+        <a class="btn callout-button" href="https://pytorch.org/examples?utm_source=examples&utm_medium=examples-landing">Check Out Examples</a>
+    </div>
+</div></p>
+<p><div class="col-md-6">
+    <div class="text-container">
+        <h3>Run Tutorials on Google Colab</h3>
+        <p class="body-paragraph">Learn how to copy tutorial data into Google Drive so that you can run tutorials on Google Colab.</p>
+        <a class="btn callout-button" href="beginner/colab.html">Open</a>
+    </div>
+</div></p>
+    </div>
+</div>
+
+<div style='clear:both'></div><div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+                </article>
+              
+  </article>
+  
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="intro.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Intro</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc">
+<div class="sidebar-secondary-items sidebar-secondary__inner">
+    
+       <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Welcome to PyTorch Tutorials</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-resources">Additional Resources</a><ul class="visible nav section-nav flex-column">
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+    
+       <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/pytorch/tutorials/edit/main/./index.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+    
+       <div class="sidebar-secondary-item">
+    <div class="tocsection sourcelink">
+      <a href="_sources/index.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+      </a>
+    </div>
+</div>
+    
+
+
+
+
+<div class="sidebar-secondary-item">
+  <div class="sidebar-heading">PyTorch Libraries</div>
+  <ul style="list-style-type: none; padding: 0; padding-bottom: 80px;">
+  
+   <li><a class="nav-link nav-external" href="https://docs.pytorch.org/ao" style="color: var(--pst-color-text-muted)">torchao</a></li>
+  
+   <li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchrec" style="color: var(--pst-color-text-muted)">torchrec</a></li>
+  
+   <li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchft" style="color: var(--pst-color-text-muted)">torchft</a></li>
+  
+   <li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchcodec" style="color: var(--pst-color-text-muted)">TorchCodec</a></li>
+  
+   <li><a class="nav-link nav-external" href="https://docs.pytorch.org/vision" style="color: var(--pst-color-text-muted)">torchvision</a></li>
+  
+   <li><a class="nav-link nav-external" href="https://docs.pytorch.org/executorch" style="color: var(--pst-color-text-muted)">ExecuTorch</a></li>
+  
+   <li><a class="nav-link nav-external" href="https://docs.pytorch.org/xla" style="color: var(--pst-color-text-muted)">PyTorch on XLA Devices</a></li>
+  
+  </ul>
+</div>
+
+</div>
+</div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Docs</h2>
+        <p>Access comprehensive developer documentation for PyTorch</p>
+        <a class="with-right-arrow" href="https://docs.pytorch.org/docs/stable/index.html">View Docs</a>
+      </div>
+
+      <div class="col-md-4">
+        <h2>Tutorials</h2>
+        <p>Get in-depth tutorials for beginners and advanced developers</p>
+        <a class="with-right-arrow" href="https://docs.pytorch.org/tutorials">View Tutorials</a>
+      </div>
+
+      <div class="col-md-4">
+        <h2>Resources</h2>
+        <p>Find development resources and get your questions answered</p>
+        <a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer-container">
+
+    
+    <div class="newsletter" id="newsletter">
+
+      <p class="newsletter__title is-style-max-width-800"><strong>Stay in touch</strong> for updates, event info, and
+        the latest news</p>
+
+
+      <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
+      <script>
+        hbspt.forms.create({
+          region: "na1",
+          portalId: "8112310",
+          formId: "2fb2231c-000b-4ec5-88a0-1ab242549c9e"
+        });
+      </script>
+
+
+      <p class="newsletter__privacy">By submitting this form, I consent to receive marketing emails from the LF and its
+        projects regarding their events, training, research, developments, and related announcements. I understand that
+        I can unsubscribe at any time using the links in the footers of the emails I receive. <a
+          href="https://www.linuxfoundation.org/privacy/">Privacy Policy</a>.</p>
+
+    </div>
+    
+
+    <div class="lf-grid">
+      <ul class="social-links">
+        <li><a href="https://www.facebook.com/pytorch" target="_blank" title="PyTorch on Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" viewbox="-0.51 -0.26 26.45 26.45" aria-label="Facebook">
+              <path fill="currentColor"
+                d="M25.497 13.075c0-2.45-.698-4.848-2.011-6.911a12.765 12.765 0 0 0-5.398-4.73A12.671 12.671 0 0 0 11.008.38a12.705 12.705 0 0 0-6.529 2.95A12.827 12.827 0 0 0 .563 9.358a12.896 12.896 0 0 0-.07 7.201 12.831 12.831 0 0 0 3.801 6.103 12.709 12.709 0 0 0 6.471 3.078v-8.957H7.53v-3.708h3.235v-2.824c0-3.213 1.903-4.988 4.813-4.988.956.014 1.909.097 2.852.25V8.67h-1.607a1.83 1.83 0 0 0-1.518.497 1.854 1.854 0 0 0-.561 1.505v2.404h3.535l-.563 3.708h-2.97v8.957a12.725 12.725 0 0 0 7.697-4.337 12.87 12.87 0 0 0 3.054-8.328z" />
+            </svg>
+          </a></li>
+        <li><a href="https://twitter.com/pytorch" target="_blank" title="PyTorch on X">
+            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 300 300" aria-label="X">
+              <path fill="currentColor"
+                d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34M36.01 19.54H76.66l187.13 262.13h-40.66" />
+            </svg>
+          </a></li>
+        <li><a href="https://www.youtube.com/pytorch" target="_blank" title="PyTorch on YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0.21 0.27 34.45 25.07" aria-label="YouTube">
+              <path fill="currentColor"
+                d="M33.729 6.084s-.327-2.33-1.317-3.356a4.691 4.691 0 0 0-3.32-1.432c-4.634-.34-11.589-.34-11.589-.34h-.014s-6.954 0-11.59.342a4.692 4.692 0 0 0-3.32 1.432c-.993 1.025-1.315 3.354-1.315 3.354a52.189 52.189 0 0 0-.331 5.473v2.566c.014 1.829.125 3.656.331 5.472 0 0 .322 2.33 1.316 3.36 1.26 1.345 2.916 1.3 3.653 1.445 2.65.26 11.263.34 11.263.34s6.96-.01 11.597-.353a4.691 4.691 0 0 0 3.32-1.432c.993-1.026 1.316-3.356 1.316-3.356.206-1.817.316-3.644.33-5.473v-2.57a52.26 52.26 0 0 0-.33-5.472zM14.076 17.232V7.729l8.951 4.768-8.95 4.735z" />
+            </svg>
+          </a></li>
+        <li><a href="https://www.linkedin.com/company/pytorch" target="_blank" title="PyTorch on LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewbox="-10.23 -10.23 531.96 531.96" aria-label="LinkedIn">
+              <rect width="512" height="512" rx="0" fill="currentColor" />
+              <circle fill="#000" cx="142" cy="138" r="37" />
+              <path stroke="#000" stroke-width="66" d="M244 194v198M142 194v198" />
+              <path fill="#000"
+                d="M276 282c0-20 13-40 36-40 24 0 33 18 33 45v105h66V279c0-61-32-89-76-89-34 0-51 19-59 32" />
+            </svg>
+          </a></li>
+        <li><a href="https://pytorch.slack.com" target="_blank" title="PyTorch Slack">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0.16 -0.03 21.19 21.19" aria-label="Slack">
+              <path fill="currentColor"
+                d="M4.896 13.27a2.147 2.147 0 0 1-2.141 2.142A2.147 2.147 0 0 1 .613 13.27c0-1.178.963-2.141 2.142-2.141h2.141v2.141zm1.08 0c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.363a2.147 2.147 0 0 1-2.142 2.141 2.147 2.147 0 0 1-2.141-2.142V13.27zm2.141-8.6a2.147 2.147 0 0 1-2.141-2.14c0-1.18.962-2.142 2.141-2.142s2.142.963 2.142 2.141v2.142H8.117zm0 1.08c1.179 0 2.141.962 2.141 2.141a2.147 2.147 0 0 1-2.141 2.142H2.755A2.147 2.147 0 0 1 .613 7.89c0-1.179.963-2.141 2.142-2.141h5.362zm8.599 2.141c0-1.179.963-2.141 2.141-2.141 1.179 0 2.143.962 2.143 2.14a2.147 2.147 0 0 1-2.142 2.142h-2.141V7.89zm-1.08 0a2.147 2.147 0 0 1-2.141 2.142 2.147 2.147 0 0 1-2.141-2.142V2.53c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.362zm-2.141 8.6c1.179 0 2.142.962 2.142 2.14a2.147 2.147 0 0 1-2.142 2.142 2.147 2.147 0 0 1-2.141-2.141V16.49h2.141zm0-1.08a2.147 2.147 0 0 1-2.141-2.141c0-1.179.962-2.142 2.141-2.142h5.362c1.179 0 2.142.963 2.142 2.142a2.147 2.147 0 0 1-2.142 2.142h-5.362z">
+              </path>
+            </svg>
+          </a></li>
+        <li><a href="https://pytorch.org/wechat" title="PyTorch on WeChat">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0.14 -0.17 38.02 33.02" aria-label="WeChat">
+              <path fill="currentColor"
+                d="M26.289 10.976a12.972 12.972 0 0 0-8.742 3.53 10.386 10.386 0 0 0-3.224 8.795c-1.326-.164-2.535-.345-3.75-.448a2.332 2.332 0 0 0-1.273.216c-1.18.666-2.311 1.418-3.652 2.255.246-1.112.405-2.087.687-3.024a1.15 1.15 0 0 0-.523-1.52C1.737 17.902.02 13.601 1.307 9.165c1.189-4.1 4.11-6.587 8.077-7.884A13.54 13.54 0 0 1 24.18 5.617a10.135 10.135 0 0 1 2.109 5.359zM10.668 9.594a1.564 1.564 0 0 0-2.095-1.472 1.52 1.52 0 0 0-.895 1.964 1.502 1.502 0 0 0 1.391.966 1.545 1.545 0 0 0 1.598-1.46v.002zm8.15-1.566a1.567 1.567 0 0 0-1.528 1.543 1.528 1.528 0 0 0 1.571 1.492 1.52 1.52 0 0 0 1.375-2.117 1.518 1.518 0 0 0-1.415-.919l-.003.001z">
+              </path>
+              <path fill="currentColor"
+                d="M33.914 32.137c-1.075-.478-2.062-1.196-3.11-1.306-1.049-.11-2.145.494-3.24.605a10.821 10.821 0 0 1-8.781-2.864c-4.682-4.33-4.013-10.97 1.403-14.518 4.811-3.154 11.874-2.102 15.268 2.273a8.671 8.671 0 0 1-1.002 12.095c-1.046.929-1.422 1.693-.751 2.917.102.257.174.525.213.798zM21.68 20.292a1.264 1.264 0 1 0 .01-2.528 1.264 1.264 0 0 0-.01 2.528zm7.887-2.526a1.266 1.266 0 0 0-1.256 1.21 1.247 1.247 0 1 0 1.256-1.21z">
+              </path>
+            </svg>
+          </a></li>
+      </ul>
+    </div>
+
+    <div class="privacy-policy">
+      <div class="copyright">
+        
+        <p>
+          &copy; PyTorch. Copyright © The Linux Foundation®. All rights reserved. The Linux Foundation has registered
+          trademarks and uses trademarks. For more information, including terms of use, privacy policy, and trademark
+          usage, please see our <a href="https://www.linuxfoundation.org/legal/policies">Policies</a> page. <a
+            href="https://www.linuxfoundation.org/trademark-usage">Trademark Usage</a>. <a
+            href="http://www.linuxfoundation.org/privacy">Privacy Policy</a>.
+        </p>
+        
+      </div>
+    </div>
+
+
+  </div>
+</footer>
+
+<div class="cookie-banner-wrapper">
+  <div class="container">
+    <p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+    <img class="close-button" src="_static/img/pytorch-x.svg">
+  </div>
+</div>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, PyTorch.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  <script type="application/ld+json">
+    {
+       "@context": "https://schema.org",
+       "@type": "Article",
+       "name": "Welcome to PyTorch Tutorials",
+       "headline": "Welcome to PyTorch Tutorials",
+       "description": "PyTorch Documentation. Explore PyTorch, an open-source machine learning library that accelerates the path from research prototyping to production deployment. Discover tutorials, API references, and guides to help you build and deploy deep learning models efficiently.",
+       "url": "/index.html",
+       "articleBody": "Welcome to PyTorch Tutorials# What\u2019s new in PyTorch tutorials? Integrating Custom Operators with SYCL for Intel GPU Supporting Custom C++ Classes in torch.compile/torch.export Accelerating torch.save and torch.load with GPUDirect Storage Getting Started with Fully Sharded Data Parallel (FSDP2) Learn the Basics Familiarize yourself with PyTorch concepts and modules. Learn how to load data, build deep neural networks, train and save your models in this quickstart guide. Get started with PyTorch PyTorch Recipes Bite-size, ready-to-deploy PyTorch code examples. Explore Recipes All Learn the Basics A step-by-step guide to building a complete ML workflow with PyTorch. Getting-Started Introduction to PyTorch on YouTube An introduction to building a complete ML workflow with PyTorch. Follows the PyTorch Beginner Series on YouTube. Getting-Started Learning PyTorch with Examples This tutorial introduces the fundamental concepts of PyTorch through self-contained examples. Getting-Started What is torch.nn really? Use torch.nn to create and train a neural network. Getting-Started Visualizing Models, Data, and Training with TensorBoard Learn to use TensorBoard to visualize data and model training. Interpretability,Getting-Started,TensorBoard Good usage of `non_blocking` and `pin_memory()` in PyTorch A guide on best practices to copy data from CPU to GPU. Getting-Started Understanding requires_grad, retain_grad, Leaf, and Non-leaf Tensors Learn the subtleties of requires_grad, retain_grad, leaf, and non-leaf tensors Getting-Started Visualizing Gradients in PyTorch Visualize the gradient flow of a network. Getting-Started TorchVision Object Detection Finetuning Tutorial Finetune a pre-trained Mask R-CNN model. Image/Video Transfer Learning for Computer Vision Tutorial Train a convolutional neural network for image classification using transfer learning. Image/Video Adversarial Example Generation Train a convolutional neural network for image classification using transfer learning. Image/Video DCGAN Tutorial Train a generative adversarial network (GAN) to generate new celebrities. Image/Video Spatial Transformer Networks Tutorial Learn how to augment your network using a visual attention mechanism. Image/Video Semi-Supervised Learning Tutorial Based on USB Learn how to train semi-supervised learning algorithms (on custom data) using USB and PyTorch. Image/Video Audio IO Learn to load data with torchaudio. Audio Audio Resampling Learn to resample audio waveforms using torchaudio. Audio Audio Data Augmentation Learn to apply data augmentations using torchaudio. Audio Audio Feature Extractions Learn to extract features using torchaudio. Audio Audio Feature Augmentation Learn to augment features using torchaudio. Audio Audio Datasets Learn to use torchaudio datasets. Audio Automatic Speech Recognition with Wav2Vec2 in torchaudio Learn how to use torchaudio\u0027s pretrained models for building a speech recognition application. Audio Speech Command Classification Learn how to correctly format an audio dataset and then train/test an audio classifier network on the dataset. Audio Text-to-Speech with torchaudio Learn how to use torchaudio\u0027s pretrained models for building a text-to-speech application. Audio Forced Alignment with Wav2Vec2 in torchaudio Learn how to use torchaudio\u0027s Wav2Vec2 pretrained models for aligning text to speech Audio NLP from Scratch: Classifying Names with a Character-level RNN Build and train a basic character-level RNN to classify word from scratch without the use of torchtext. First in a series of three tutorials. NLP NLP from Scratch: Generating Names with a Character-level RNN After using character-level RNN to classify names, learn how to generate names from languages. Second in a series of three tutorials. NLP NLP from Scratch: Translation with a Sequence-to-sequence Network and Attention This is the third and final tutorial on doing \u201cNLP From Scratch\u201d, where we write our own classes and functions to preprocess the data to do our NLP modeling tasks. NLP Exporting a PyTorch model to ONNX using TorchDynamo backend and Running it using ONNX Runtime Build a image classifier model in PyTorch and convert it to ONNX before deploying it with ONNX Runtime. Production,ONNX,Backends Extending the ONNX exporter operator support Demonstrate end-to-end how to address unsupported operators in ONNX. Production,ONNX,Backends Exporting a model with control flow to ONNX Demonstrate how to handle control flow logic while exporting a PyTorch model to ONNX. Production,ONNX,Backends Reinforcement Learning (DQN) Learn how to use PyTorch to train a Deep Q Learning (DQN) agent on the CartPole-v0 task from the OpenAI Gym. Reinforcement-Learning Reinforcement Learning (PPO) with TorchRL Learn how to use PyTorch and TorchRL to train a Proximal Policy Optimization agent on the Inverted Pendulum task from Gym. Reinforcement-Learning Train a Mario-playing RL Agent Use PyTorch to train a Double Q-learning agent to play Mario. Reinforcement-Learning Recurrent DQN Use TorchRL to train recurrent policies Reinforcement-Learning Code a DDPG Loss Use TorchRL to code a DDPG Loss Reinforcement-Learning Writing your environment and transforms Use TorchRL to code a Pendulum Reinforcement-Learning Profiling PyTorch Learn how to profile a PyTorch application Profiling Profiling PyTorch Introduction to Holistic Trace Analysis Profiling _static/img/thumbnails/default.png Profiling PyTorch Trace Diff using Holistic Trace Analysis Profiling _static/img/thumbnails/default.png Building a Simple Performance Profiler with FX Build a simple FX interpreter to record the runtime of op, module, and function calls and report statistics FX (beta) Channels Last Memory Format in PyTorch Get an overview of Channels Last memory format and understand how it is used to order NCHW tensors in memory preserving dimensions. Memory-Format,Best-Practice,Frontend-APIs Using the PyTorch C++ Frontend Walk through an end-to-end example of training a model with the C++ frontend by training a DCGAN \u2013 a kind of generative model \u2013 to generate images of MNIST digits. Frontend-APIs,C++ PyTorch Custom Operators Landing Page This is the landing page for all things related to custom operators in PyTorch. Extending-PyTorch,Frontend-APIs,C++,CUDA Custom Python Operators Create Custom Operators in Python. Useful for black-boxing a Python function for use with torch.compile. Extending-PyTorch,Frontend-APIs,C++,CUDA Compiled Autograd: Capturing a larger backward graph for ``torch.compile`` Learn how to use compiled autograd to capture a larger backward graph. Model-Optimization,CUDA Custom C++ and CUDA Operators How to extend PyTorch with custom C++ and CUDA operators. Extending-PyTorch,Frontend-APIs,C++,CUDA Autograd in C++ Frontend The autograd package helps build flexible and dynamic neural netorks. In this tutorial, explore several examples of doing autograd in PyTorch C++ frontend Frontend-APIs,C++ Registering a Dispatched Operator in C++ The dispatcher is an internal component of PyTorch which is responsible for figuring out what code should actually get run when you call a function like torch::add. Extending-PyTorch,Frontend-APIs,C++ Extending Dispatcher For a New Backend in C++ Learn how to extend the dispatcher to add a new device living outside of the pytorch/pytorch repo and maintain it to keep in sync with native PyTorch devices. Extending-PyTorch,Frontend-APIs,C++ Facilitating New Backend Integration by PrivateUse1 Learn how to integrate a new backend living outside of the pytorch/pytorch repo and maintain it to keep in sync with the native PyTorch backend. Extending-PyTorch,Frontend-APIs,C++ Custom Function Tutorial: Double Backward Learn how to write a custom autograd Function that supports double backward. Extending-PyTorch,Frontend-APIs Custom Function Tutorial: Fusing Convolution and Batch Norm Learn how to create a custom autograd Function that fuses batch norm into a convolution to improve memory usage. Extending-PyTorch,Frontend-APIs Forward-mode Automatic Differentiation Learn how to use forward-mode automatic differentiation. Frontend-APIs Jacobians, Hessians, hvp, vhp, and more Learn how to compute advanced autodiff quantities using torch.func Frontend-APIs Model Ensembling Learn how to ensemble models using torch.vmap Frontend-APIs Per-Sample-Gradients Learn how to compute per-sample-gradients using torch.func Frontend-APIs Neural Tangent Kernels Learn how to compute neural tangent kernels using torch.func Frontend-APIs Performance Profiling in PyTorch Learn how to use the PyTorch Profiler to benchmark your module\u0027s performance. Model-Optimization,Best-Practice,Profiling Performance Profiling in TensorBoard Learn how to use the TensorBoard plugin to profile and analyze your model\u0027s performance. Model-Optimization,Best-Practice,Profiling,TensorBoard Hyperparameter Tuning Tutorial Learn how to use Ray Tune to find the best performing set of hyperparameters for your model. Model-Optimization,Best-Practice Parametrizations Tutorial Learn how to use torch.nn.utils.parametrize to put constraints on your parameters (e.g. make them orthogonal, symmetric positive definite, low-rank...) Model-Optimization,Best-Practice Pruning Tutorial Learn how to use torch.nn.utils.prune to sparsify your neural networks, and how to extend it to implement your own custom pruning technique. Model-Optimization,Best-Practice How to save memory by fusing the optimizer step into the backward pass Learn a memory-saving technique through fusing the optimizer step into the backward pass using memory snapshots. Model-Optimization,Best-Practice,CUDA,Frontend-APIs (beta) Accelerating BERT with semi-structured sparsity Train BERT, prune it to be 2:4 sparse, and then accelerate it to achieve 2x inference speedups with semi-structured sparsity and torch.compile. Text,Model-Optimization Multi-Objective Neural Architecture Search with Ax Learn how to use Ax to search over architectures find optimal tradeoffs between accuracy and latency. Model-Optimization,Best-Practice,Ax,TorchX torch.compile Tutorial Speed up your models with minimal code changes using torch.compile, the latest PyTorch compiler solution. Model-Optimization Building a Convolution/Batch Norm fuser in torch.compile Build a simple pattern matcher pass that fuses batch norm into convolution to improve performance during inference. Model-Optimization Inductor CPU Backend Debugging and Profiling Learn the usage, debugging and performance profiling for ``torch.compile`` with Inductor CPU backend. Model-Optimization (beta) Implementing High-Performance Transformers with SCALED DOT PRODUCT ATTENTION This tutorial explores the new torch.nn.functional.scaled_dot_product_attention and how it can be used to construct Transformer components. Model-Optimization,Attention,Transformer Knowledge Distillation in Convolutional Neural Networks Learn how to improve the accuracy of lightweight models using more powerful models as teachers. Model-Optimization,Image/Video Accelerating PyTorch Transformers by replacing nn.Transformer with Nested Tensors and torch.compile() This tutorial goes over recommended best practices for implementing Transformers with native PyTorch. Transformer PyTorch Distributed Overview Briefly go over all concepts and features in the distributed package. Use this document to find the distributed training technology that can best serve your application. Parallel-and-Distributed-Training Distributed Data Parallel in PyTorch - Video Tutorials This series of video tutorials walks you through distributed training in PyTorch via DDP. Parallel-and-Distributed-Training Single-Machine Model Parallel Best Practices Learn how to implement model parallel, a distributed training technique which splits a single model onto different GPUs, rather than replicating the entire model on each GPU Parallel-and-Distributed-Training Getting Started with Distributed Data Parallel Learn the basics of when to use distributed data paralle versus data parallel and work through an example to set it up. Parallel-and-Distributed-Training Writing Distributed Applications with PyTorch Set up the distributed package of PyTorch, use the different communication strategies, and go over some the internals of the package. Parallel-and-Distributed-Training Large Scale Transformer model training with Tensor Parallel Learn how to train large models with Tensor Parallel package. Parallel-and-Distributed-Training Customize Process Group Backends Using Cpp Extensions Extend ProcessGroup with custom collective communication implementations. Parallel-and-Distributed-Training Getting Started with Distributed RPC Framework Learn how to build distributed training using the torch.distributed.rpc package. Parallel-and-Distributed-Training Implementing a Parameter Server Using Distributed RPC Framework Walk through a through a simple example of implementing a parameter server using PyTorch\u2019s Distributed RPC framework. Parallel-and-Distributed-Training Introduction to Distributed Pipeline Parallelism Demonstrate how to implement pipeline parallelism using torch.distributed.pipelining Parallel-and-Distributed-Training Implementing Batch RPC Processing Using Asynchronous Executions Learn how to use rpc.functions.async_execution to implement batch RPC Parallel-and-Distributed-Training Combining Distributed DataParallel with Distributed RPC Framework Walk through a through a simple example of how to combine distributed data parallelism with distributed model parallelism. Parallel-and-Distributed-Training Getting Started with Fully Sharded Data Parallel (FSDP2) Learn how to train models with Fully Sharded Data Parallel (fully_shard) package. Parallel-and-Distributed-Training Introduction to Libuv TCPStore Backend TCPStore now uses a new server backend for faster connection and better scalability. Parallel-and-Distributed-Training Exporting to ExecuTorch Tutorial Learn about how to use ExecuTorch, a unified ML stack for lowering PyTorch models to edge devices. Edge Running an ExecuTorch Model in C++ Tutorial Learn how to load and execute an ExecuTorch model in C++ Edge Using the ExecuTorch SDK to Profile a Model Explore how to use the ExecuTorch SDK to profile, debug, and visualize ExecuTorch models Edge Building an ExecuTorch iOS Demo App Explore how to set up the ExecuTorch iOS Demo App, which uses the MobileNet v3 model to process live camera images leveraging three different backends: XNNPACK, Core ML, and Metal Performance Shaders (MPS). Edge Building an ExecuTorch Android Demo App Learn how to set up the ExecuTorch Android Demo App for image segmentation tasks using the DeepLab v3 model and XNNPACK FP32 backend. Edge Lowering a Model as a Delegate Learn to accelerate your program using ExecuTorch by applying delegates through three methods: lowering the whole module, composing it with another module, and partitioning parts of a module. Edge Introduction to TorchRec TorchRec is a PyTorch domain library built to provide common sparsity \u0026 parallelism primitives needed for large-scale recommender systems. TorchRec,Recommender Exploring TorchRec sharding This tutorial covers the sharding schemes of embedding tables by using EmbeddingPlanner and DistributedModelParallel API. TorchRec,Recommender Additional Resources# Examples of PyTorch A set of examples around PyTorch in Vision, Text, Reinforcement Learning that you can incorporate in your existing work. Check Out Examples Run Tutorials on Google Colab Learn how to copy tutorial data into Google Drive so that you can run tutorials on Google Colab. Open",
+       "author": {
+         "@type": "Organization",
+         "name": "PyTorch Contributors",
+         "url": "https://pytorch.org"
+       },
+       "image": "_static/img/pytorch_seo.png",
+       "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "/index.html"
+       },
+       "datePublished": "2023-01-01T00:00:00Z",
+       "dateModified": "2023-01-01T00:00:00Z"
+     }
+ </script>
+  <script>
+    // Tutorials Call to action event tracking
+    $("[data-behavior='call-to-action-event']").on('click', function () {
+      fbq('trackCustom', "Download", {
+        tutorialTitle: $('h1:first').text(),
+        downloadLink: this.href,
+        tutorialLink: window.location.href,
+        downloadTitle: $(this).attr("data-response")
+      });
+      if (typeof gtag === 'function') {
+        gtag('event', 'click', {
+          'event_category': $(this).attr("data-response"),
+          'event_label': $("h1").first().text(),
+          'tutorial_link': window.location.href
+        });
+      }
+    });
+  </script>
+  
+  </body>
+</html>

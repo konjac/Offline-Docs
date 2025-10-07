@@ -1,0 +1,1667 @@
+
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Inductor CPU backend debugging and profiling — PyTorch Tutorials 2.8.0+cu128 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css?v=536c50fe" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/theme.css?v=047068a3" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=d2d258e8" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex-math.css?v=91adb8b6" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/documentation_options.js?v=bffbcef7"></script>
+<script src="../_static/doctools.js?v=888ff710"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/katex.min.js?v=be8ff15f"></script>
+<script src="../_static/auto-render.min.js?v=ad136472"></script>
+<script src="../_static/katex_autorenderer.js?v=bebc588a"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'intermediate/inductor_debug_cpu';</script>
+<link href="https://docs.pytorch.org/tutorials/intermediate/inductor_debug_cpu.html" rel="canonical"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="../recipes/torch_compiler_set_stance_tutorial.html" rel="next" title="Dynamic Compilation Control with torch.compiler.set_stance"/>
+<link href="compiled_autograd_tutorial.html" rel="prev" title="Compiled Autograd: Capturing a larger backward graph for torch.compile"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+<script>
+  if (window.location.hostname === 'docs.pytorch.org' || window.location.hostname === 'docs-preview.pytorch.org') {
+    const script = document.createElement('script');
+    script.src = 'https://cmp.osano.com/16A0DbT9yDNIaQkvZ/31b1b91a-e0b6-47ea-bde2-7f2bd13dbe5c/osano.js?variant=one';
+    document.head.appendChild(script);
+  }
+</script>
+<script>
+  // Cookie banner for non-LF projects
+  document.addEventListener('DOMContentLoaded', function () {
+    // Hide cookie banner on local environments and LF owned docs
+    if (window.location.hostname === 'localhost' ||
+      window.location.hostname === '0.0.0.0' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === 'docs.pytorch.org' ||
+      window.location.hostname === 'docs-preview.pytorch.org' ||
+      window.location.hostname.startsWith('192.168.')) {
+      const banner = document.querySelector('.cookie-banner-wrapper');
+      if (banner) {
+        banner.style.display = 'none';
+      }
+    }
+  });
+</script>
+<!-- Conditional CSS for header and footer height adjustment -->
+<link crossorigin="anonymous" href="../_static/css/theme.css" rel="stylesheet" type="text/css"/>
+<script src="../_static/js/theme.js" type="text/javascript"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&amp;display=swap" rel="stylesheet"/>
+<meta content="../_static/img/pytorch_seo.png" property="og:image"/>
+<link crossorigin="anonymous" href="../_static/webfonts/all.min.css" rel="stylesheet"/>
+<meta content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval' blob:;" http-equiv="Content-Security-Policy"/>
+<meta content="tutorials" name="pytorch_project"/>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-T8XT4PS" style="display:none;visibility:hidden" width="0"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<!-- Google Tag Manager -->
+<script>(function (w, d, s, l, i) {
+    w[l] = w[l] || []; w[l].push({
+      'gtm.start':
+        new Date().getTime(), event: 'gtm.js'
+    }); var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    j.onload = function () {
+      window.dispatchEvent(new Event('gtm_loaded'));
+      console.log('GTM loaded successfully');
+    };
+  })(window, document, 'script', 'dataLayer', 'GTM-T8XT4PS');
+</script>
+<!-- End Google Tag Manager -->
+<!-- Facebook Pixel Code -->
+<script>
+  !function (f, b, e, v, n, t, s) {
+    if (f.fbq) return; n = f.fbq = function () {
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+    n.queue = []; t = b.createElement(e); t.async = !0;
+    t.src = v; s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s)
+  }(window, document, 'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '243028289693773');
+  fbq('track', 'PageView');
+</script>
+<script>
+  document.documentElement.setAttribute('data-version', 'v2.8.0+cu128');
+</script>
+<noscript>
+<img height="1" src="https://www.facebook.com/tr?id=243028289693773&amp;ev=PageView&amp;noscript=1" width="1"/>
+</noscript>
+<script>
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+</script>
+<!-- End Facebook Pixel Code -->
+<!-- Repository configuration for tutorials -->
+<script>
+  // Define repository configuration for tutorial buttons using existing html_context variables
+  // Only injected when tutorial buttons are shown AND github variables are defined
+  // If either condition is false, JavaScript will fallback to default PyTorch tutorial links
+  window.repoConfig = {
+    github_repo: "pytorch/tutorials",
+    github_branch: "main",
+    colab_repo: "pytorch/tutorials",
+    colab_branch: ""
+  };
+</script>
+<!-- Script to Fix scrolling -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Fix anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+          const headerHeight =
+            (document.querySelector('.header-holder') ? document.querySelector('.header-holder').offsetHeight : 0) +
+            (document.querySelector('.bd-header') ? document.querySelector('.bd-header').offsetHeight : 0) + 20;
+
+          const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+
+          // Update URL hash without scrolling
+          history.pushState(null, null, '#' + targetId);
+        }
+      });
+    });
+  });
+</script>
+<script async="" src="https://cse.google.com/cse.js?cx=e65585f8c3ea1440e"></script>
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="en" name="docsearch:language">
+</meta></meta></head>
+<body class="pytorch-body" data-feedback-url="https://github.com/pytorch/tutorials">
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+<div class="header-container-wrapper">
+<div class="header-container">
+<a aria-label="PyTorch" class="header-logo" href="https://pytorch.org/"></a>
+<div class="main-menu">
+<ul>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Learn</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/get-started/locally">
+<span class="dropdown-title">Get Started</span>
+</a>
+<a class="nav-dropdown-item" href="https://docs.pytorch.org/tutorials">
+<span class="dropdown-title">Tutorials</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/basics/intro.html">
+<span class="dropdown-title">Learn the Basics</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/recipes/recipes_index.html">
+<span class="dropdown-title">PyTorch Recipes</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/introyt.html">
+<span class="dropdown-title">Intro to PyTorch - YouTube Series</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/webinars/">
+<span class="dropdown-title">Webinars</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Community</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://landscape.pytorch.org/" target="_blank">
+<span class="dropdown-title">Landscape</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/join-ecosystem">
+<span class="dropdown-title">Join the Ecosystem</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/community-hub/">
+<span class="dropdown-title">Community Hub</span>
+</a>
+<a class="nav-dropdown-item" href="https://discuss.pytorch.org/">
+<span class="dropdown-title">Forums</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/resources">
+<span class="dropdown-title">Developer Resources</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/contributor-awards/">
+<span class="dropdown-title">Contributor Awards</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/community-events/">
+<span class="dropdown-title">Community Events</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/programs/ambassadors/">
+<span class="dropdown-title">PyTorch Ambassadors</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Projects</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/pytorch/">
+<span class="dropdown-title">PyTorch</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/vllm/">
+<span class="dropdown-title">vLLM</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/deepspeed/">
+<span class="dropdown-title">DeepSpeed</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/host-your-project/">
+<span class="dropdown-title">Host Your Project</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span> Docs</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://docs.pytorch.org/docs/stable/index.html">
+<span class="dropdown-title">PyTorch</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/domains">
+<span class="dropdown-title">Domains</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Blogs &amp; News</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/blog/">
+<span class="dropdown-title">Blog</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/announcements">
+<span class="dropdown-title">Announcements</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/case-studies/">
+<span class="dropdown-title">Case Studies</span>
+<a class="nav-dropdown-item" href="https://pytorch.org/events">
+<span class="dropdown-title">Events</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/newsletter">
+<span class="dropdown-title">Newsletter</span>
+</a>
+</a></div>
+</div></li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>About</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/foundation">
+<span class="dropdown-title">PyTorch Foundation</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/members">
+<span class="dropdown-title">Members</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/governing-board">
+<span class="dropdown-title">Governing Board</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tac">
+<span class="dropdown-title">Technical Advisory Council</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/credits">
+<span class="dropdown-title">Cloud Credit Program</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/staff">
+<span class="dropdown-title">Staff</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/contact">
+<span class="dropdown-title">Contact</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="no-dropdown main-menu-button">
+<a data-cta="join" href="https://pytorch.org/join">
+                JOIN
+              </a>
+</div>
+</li>
+</ul>
+</div>
+<a class="main-menu-open-button" data-behavior="open-mobile-menu" href="#">
+<i class="fa-solid fa-ellipsis"></i>
+</a>
+</div>
+</div>
+</div>
+<!-- Begin Mobile Menu -->
+<div class="mobile-main-menu">
+<div class="container-fluid">
+<div class="header-container-wrapper">
+<div class="mobile-main-menu-header-container">
+<a class="main-menu-close-button" data-behavior="close-mobile-menu" href="#">
+</a>
+</div>
+</div>
+</div>
+<div class="mobile-main-menu-links-container">
+<div class="main-menu">
+<ul>
+<li class="resources-mobile-menu-title">
+<a>Learn</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/get-started/locally">Get Started</a>
+</li>
+<li>
+<a href="https://docs.pytorch.org/tutorials">Tutorials</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/basics/intro.html">Learn the Basics</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/recipes/recipes_index.html">PyTorch Recipes</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/introyt.html">Introduction to PyTorch - YouTube Series</a>
+</li>
+<li>
+<a href="https://pytorch.org/webinars/">Webinars</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Community</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://landscape.pytorch.org/">Landscape</a>
+</li>
+<li>
+<a href="https://pytorch.org/join-ecosystem">Join the Ecosystem</a>
+</li>
+<li>
+<a href="https://pytorch.org/community-hub/">Community Hub</a>
+</li>
+<li>
+<a href="https://discuss.pytorch.org/">Forums</a>
+</li>
+<li>
+<a href="https://pytorch.org/resources">Developer Resources</a>
+</li>
+<li>
+<a href="https://pytorch.org/contributor-awards/">Contributor Awards</a>
+</li>
+<li>
+<a href="https://pytorch.org/community-events/">Community Events</a>
+</li>
+<li>
+<a href="https://pytorch.org/programs/ambassadors/">PyTorch Ambassadors</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Projects</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/projects/pytorch/">PyTorch</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/vllm/">vLLM</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/deepspeed/">DeepSpeed</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/host-your-project/">Host Your Project</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Docs</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://docs.pytorch.org/docs/stable/index.html">PyTorch</a>
+</li>
+<li>
+<a href="https://pytorch.org/domains">Domains</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Blog &amp; News</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/blog/">Blog</a>
+</li>
+<li>
+<a href="https://pytorch.org/announcements">Announcements</a>
+</li>
+<li>
+<a href="https://pytorch.org/case-studies/">Case Studies</a>
+</li>
+<li>
+<a href="https://pytorch.org/events">Events</a>
+</li>
+<li>
+<a href="https://pytorch.org/newsletter">Newsletter</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>About</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/foundation">PyTorch Foundation</a>
+</li>
+<li>
+<a href="https://pytorch.org/members">Members</a>
+</li>
+<li>
+<a href="https://pytorch.org/governing-board">Governing Board</a>
+</li>
+<li>
+<a href="https://pytorch.org/tac">Technical Advisory Council</a>
+</li>
+<li>
+<a href="https://pytorch.org/credits">Cloud Credit Program</a>
+</li>
+<li>
+<a href="https://pytorch.org/staff">Staff</a>
+</li>
+<li>
+<a href="https://pytorch.org/contact">Contact</a>
+</li>
+</ul>
+</ul>
+</div>
+</div>
+</div>
+<!-- End Mobile Menu -->
+<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<input class="sidebar-toggle" id="pst-primary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+<input class="sidebar-toggle" id="pst-secondary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+</div>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="version" href="../index.html">v2.8.0+cu128</a>
+</div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../intro.html">
+    Intro
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../compilers_index.html">
+    Compilers
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../domains.html">
+    Domains
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../distributed.html">
+    Distributed
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../extension.html">
+    Extension
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../recipes_index.html">
+    Recipes
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://x.com/PyTorch" rel="noopener" target="_blank" title="X"><i aria-hidden="true" class="fa-brands fa-x-twitter fa-lg"></i>
+<span class="sr-only">X</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/pytorch/tutorials" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://dev-discuss.pytorch.org/" rel="noopener" target="_blank" title="Discourse"><i aria-hidden="true" class="fa-brands fa-discourse fa-lg"></i>
+<span class="sr-only">Discourse</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/torch/" rel="noopener" target="_blank" title="PyPi"><i aria-hidden="true" class="fa-brands fa-python fa-lg"></i>
+<span class="sr-only">PyPi</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../intro.html">
+    Intro
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../compilers_index.html">
+    Compilers
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../domains.html">
+    Domains
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../distributed.html">
+    Distributed
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../extension.html">
+    Extension
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../recipes_index.html">
+    Recipes
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://x.com/PyTorch" rel="noopener" target="_blank" title="X"><i aria-hidden="true" class="fa-brands fa-x-twitter fa-lg"></i>
+<span class="sr-only">X</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/pytorch/tutorials" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://dev-discuss.pytorch.org/" rel="noopener" target="_blank" title="Discourse"><i aria-hidden="true" class="fa-brands fa-discourse fa-lg"></i>
+<span class="sr-only">Discourse</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/torch/" rel="noopener" target="_blank" title="PyPi"><i aria-hidden="true" class="fa-brands fa-python fa-lg"></i>
+<span class="sr-only">PyPi</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../beginner/profiler.html">Profiling your PyTorch Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parametrizations.html">Parametrizations Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruning_tutorial.html">Pruning Tutorial</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Inductor CPU backend debugging and profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scaled_dot_product_attention_tutorial.html">(Beta) Implementing High-Performance Transformers with Scaled Dot Product Attention (SDPA)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../beginner/knowledge_distillation_tutorial.html">Knowledge Distillation Tutorial</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frontend APIs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="memory_format_tutorial.html">Channels Last Memory Format in PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="forward_ad_usage.html">Forward-mode Automatic Differentiation (Beta)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jacobians_hessians.html">Jacobians, Hessians, hvp, vhp, and more: composing function transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ensembling.html">Model ensembling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="per_sample_grads.html">Per-sample-gradients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/cpp_frontend.html">Using the PyTorch C++ Frontend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/cpp_autograd.html">Autograd in C++ Frontend</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="../compilers_index.html">Compilers</a></li>
+<li aria-current="page" class="breadcrumb-item active">Inductor...</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="header-article-items__end">
+<div class="header-article-item">
+<div class="rating">
+    Rate this Page
+    <div class="stars">
+<span class="star" data-behavior="tutorial-rating" data-count="1" data-value="1">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="2" data-value="2">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="3" data-value="3">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="4" data-value="4">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="5" data-value="5">★</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article" id="pytorch-article">
+<!-- Hidden breadcrumb schema for SEO only -->
+<div itemscope="" itemtype="https://schema.org/BreadcrumbList" style="display:none;">
+<div itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<link href="../compilers_index.html" itemprop="item"/>
+<meta content="Compilers" itemprop="name"/>
+<meta content="1" itemprop="position"/>
+</div>
+<div itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<meta content="Inductor CPU backend debugging and profiling" itemprop="name"/>
+<meta content="2" itemprop="position"/>
+</div>
+</div>
+<script>
+      if ((window.location.href.indexOf("/unstable/") != -1) && (window.location.href.indexOf("/unstable/unstable_index") < 1)) {
+        var div = '<div class="prototype-banner"><i class="fa fa-flask" aria-hidden="true"></i> <strong>Unstable feature:</strong> Not typically available in binary distributions like PyPI. Early stage for feedback and testing.</div>'
+        document.addEventListener('DOMContentLoaded', function () {
+          document.getElementById("pytorch-article").insertAdjacentHTML('afterBegin', div);
+        });
+      }
+    </script>
+<div class="pytorch-call-to-action-links">
+<div id="tutorial-type">intermediate/inductor_debug_cpu</div>
+<a data-behavior="call-to-action-event" data-response="Run in Google Colab" id="colab-link" target="_blank">
+<div id="google-colab-link">
+<img class="call-to-action-img" src="../_static/img/pytorch-colab.svg"/>
+<div class="call-to-action-desktop-view">Run in Google Colab</div>
+<div class="call-to-action-mobile-view">Colab</div>
+</div>
+</a>
+<a data-behavior="call-to-action-event" data-response="Download Notebook" id="notebook-link">
+<div id="download-notebook-link">
+<img class="call-to-action-notebook-img" src="../_static/img/pytorch-download.svg"/>
+<div class="call-to-action-desktop-view">Download Notebook</div>
+<div class="call-to-action-mobile-view">Notebook</div>
+</div>
+</a>
+<a data-behavior="call-to-action-event" data-response="View on Github" id="github-link" target="_blank">
+<div id="github-view-link">
+<img class="call-to-action-img" src="../_static/img/pytorch-github.svg"/>
+<div class="call-to-action-desktop-view">View on GitHub</div>
+<div class="call-to-action-mobile-view">GitHub</div>
+</div>
+</a>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-intermediate-inductor-debug-cpu-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="inductor-cpu-backend-debugging-and-profiling">
+<span id="sphx-glr-intermediate-inductor-debug-cpu-py"></span><h1>Inductor CPU backend debugging and profiling<a class="headerlink" href="#inductor-cpu-backend-debugging-and-profiling" title="Link to this heading">#</a></h1><p class="date-info-last-verified" style="color: #6c6c6d; font-size: small;">Created On: Oct 02, 2025 | Last Updated: Oct 02, 2025 | Last Verified: Nov 05, 2024</p>
+<p><strong>Authors</strong>: <a class="reference external" href="https://github.com/Valentine233">Xuan Liao</a>, <a class="reference external" href="https://github.com/zhuhaozhe">Haozhe Zhu</a>, <a class="reference external" href="https://github.com/jgong5">Jiong Gong</a>, <a class="reference external" href="https://github.com/EikanWang">Weihan Wang</a></p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>PyTorch 2.0 introduced the compilation API called <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code>.
+This new feature offers a significant speedup over eager mode execution through graph-level optimization powered by the default Inductor backend.</p>
+<p>This tutorial is intended to provide an in-depth introduction on the debugging
+and performance profiling on Inductor CPU backend by delving into the intricacies of <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code>.</p>
+<p>Meanwhile, you may also find related tutorials about <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code>
+around <a class="reference external" href="https://pytorch.org/tutorials/intermediate/torch_compile_tutorial.html">basic usage</a>,
+comprehensive <a class="reference external" href="https://pytorch.org/docs/stable/torch.compiler_troubleshooting.html">troubleshooting</a>
+and GPU-specific knowledge like <a class="reference external" href="https://pytorch.org/docs/stable/torch.compiler_inductor_profiling.html">GPU performance profiling</a>.</p>
+<p>We will start debugging with a motivating example that triggers compilation issues and accuracy problems
+by demonstrating the process of debugging to pinpoint the problems.</p>
+<p>By enabling logging and exploring the underlying generated code,
+you can learn how to narrow down the failure step by step and finally figure out the route cause.</p>
+<p>Following that, we will proceed to discuss how to profile the compiled code and,
+through a performance comparison with eager mode,
+elaborate on the reasons why <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> can provide an additional performance boost compared to its eager counterpart.</p>
+</section>
+<section id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">#</a></h2>
+<p>Here is a simple example to run the <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code> using Inductor and compare its result with eager mode:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">foo1</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.neg.html#torch.neg" title="torch.neg"><span class="n">torch</span><span class="o">.</span><span class="n">neg</span></a><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.maximum.html#torch.maximum" title="torch.maximum"><span class="n">torch</span><span class="o">.</span><span class="n">maximum</span></a><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html#torch.cat" title="torch.cat"><span class="n">torch</span><span class="o">.</span><span class="n">cat</span></a><span class="p">([</span><span class="n">b</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">y</span>
+
+<span class="n">x1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.randint.html#torch.randint" title="torch.randint"><span class="n">torch</span><span class="o">.</span><span class="n">randint</span></a><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">x2</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.randint.html#torch.randint" title="torch.randint"><span class="n">torch</span><span class="o">.</span><span class="n">randint</span></a><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="p">(</span><span class="mi">8390</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+<span class="n">compiled_foo1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="torch.compile"><span class="n">torch</span><span class="o">.</span><span class="n">compile</span></a><span class="p">(</span><span class="n">foo1</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">compiled_foo1</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The correct implementation of <code class="docutils literal notranslate"><span class="pre">neg</span></code> in the <code class="docutils literal notranslate"><span class="pre">cpp</span></code> codegen is as follows:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">neg1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"decltype(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">)(-</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">)"</span>
+</pre></div>
+</div>
+<p>In order to demonstrate the debugging, we will modify the function to a wrong one later.</p>
+<section id="get-more-logging-information">
+<h3>Get more logging information<a class="headerlink" href="#get-more-logging-information" title="Link to this heading">#</a></h3>
+<p>No debugging information would be provided if you run this simple example by default. In order to get more useful debugging and logging information, we usually add a <code class="docutils literal notranslate"><span class="pre">TORCH_COMPILE_DEBUG</span></code> environment variable like below:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">TORCH_COMPILE_DEBUG</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>python<span class="w"> </span>xx.py
+</pre></div>
+</div>
+<p>This would print more debug information in the output logs and also dump the intermediate IRs generated during the codegen process. You can find the dumped file paths in the log like below:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>torch._inductor.debug:<span class="w"> </span><span class="o">[</span>WARNING<span class="o">]</span><span class="w"> </span>model___20<span class="w"> </span>debug<span class="w"> </span>trace:<span class="w"> </span>/tmp/torchinductor_root/rx/crxfi2ybd7yp5sbj2pnhw33wfhtdw7wumvrobyp5sjvdui5ktjc2.debug
+</pre></div>
+</div>
+<p>In this directory, the following files are saved for debugging purposes:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fx_graph_runnable.py</span></code></p></td>
+<td><p>Executable FX graph, after decomposition, before pattern match</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fx_graph_transformed.py</span></code></p></td>
+<td><p>Transformed FX graph, after pattern match</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ir_pre_fusion.txt</span></code></p></td>
+<td><p>Inductor IR before fusion</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ir_post_fusion.txt</span></code></p></td>
+<td><p>Inductor IR after fusion</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">output_code.py</span></code></p></td>
+<td><p>Generated Python code for graph, with C++/Triton kernels</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">fx_graph_runnable.py</span></code> and <code class="docutils literal notranslate"><span class="pre">output_code.py</span></code> are both runnable and editable in order to make debugging easier.
+Here are the main parts of code extracted from the files and we correlate the C++ generated line with the FX code line.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fx_graph_runnable</span></code>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg0_1</span><span class="p">,</span> <span class="n">arg1_1</span><span class="p">):</span>
+    <span class="n">neg</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">aten</span><span class="o">.</span><span class="n">neg</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">arg0_1</span><span class="p">);</span>  <span class="n">arg0_1</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">maximum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">aten</span><span class="o">.</span><span class="n">maximum</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">arg1_1</span><span class="p">,</span> <span class="n">neg</span><span class="p">);</span>  <span class="n">arg1_1</span> <span class="o">=</span> <span class="n">neg</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">clone</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">aten</span><span class="o">.</span><span class="n">clone</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">maximum</span><span class="p">);</span>  <span class="n">maximum</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">clone</span><span class="p">,)</span>
+</pre></div>
+</div>
+<p>C++ kernel in <code class="docutils literal notranslate"><span class="pre">output_code</span></code>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch._inductor.async_compile</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncCompile</span>
+<span class="n">async_compile</span> <span class="o">=</span> <span class="n">AsyncCompile</span><span class="p">()</span>
+
+<span class="n">cpp_fused_cat_maximum_neg_0</span> <span class="o">=</span> <span class="n">async_compile</span><span class="o">.</span><span class="n">cpp</span><span class="p">(</span><span class="s1">'''</span>
+<span class="s1">#include "/tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h"</span>
+<span class="s1">extern "C" void kernel(const unsigned char* in_ptr0,</span>
+<span class="s1">                       const unsigned char* in_ptr1,</span>
+<span class="s1">                       unsigned char* out_ptr0)</span>
+<span class="s1">{</span>
+<span class="s1">    {</span>
+<span class="s1">        #pragma GCC ivdep</span>
+<span class="s1">        for(long i0=static_cast&lt;long&gt;(0L); i0&lt;static_cast&lt;long&gt;(8390L); i0+=static_cast&lt;long&gt;(1L))</span>
+<span class="s1">        {</span>
+<span class="s1">            #pragma GCC ivdep</span>
+<span class="s1">            for(long i1=static_cast&lt;long&gt;(0L); i1&lt;static_cast&lt;long&gt;(8L); i1+=static_cast&lt;long&gt;(1L))</span>
+<span class="s1">            {</span>
+<span class="s1">                auto tmp0 = in_ptr0[static_cast&lt;long&gt;(i1 + (8L*i0))];</span>
+<span class="s1">                auto tmp1 = in_ptr1[static_cast&lt;long&gt;(i1)];</span>
+<span class="s1">                // Corresponding FX code line: neg = torch.ops.aten.neg.default(arg0_1);  arg0_1 = None</span>
+<span class="s1">                auto tmp2 = decltype(tmp1)(-tmp1);</span>
+<span class="s1">                // Corresponding FX code line: maximum = torch.ops.aten.maximum.default(arg1_1, neg);  arg1_1 = neg = None</span>
+<span class="s1">                auto tmp3 = max_propagate_nan(tmp0, tmp2);</span>
+<span class="s1">                // Corresponding FX code line: clone = torch.ops.aten.clone.default(maximum);  maximum = None</span>
+<span class="s1">                out_ptr0[static_cast&lt;long&gt;(i1 + (8L*i0))] = tmp3;</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">    }</span>
+<span class="s1">}'''</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="determine-component-of-error">
+<h3>Determine component of error<a class="headerlink" href="#determine-component-of-error" title="Link to this heading">#</a></h3>
+<p>When encountering errors or accuracy problems, a straightforward solution to find the bug is to narrow down the problem. The first thing to do is to determine the component where the error occurs. Luckily, it can be simply achieved by changing the backend of <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code>.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.compile(fn,</span> <span class="pre">backend="eager")</span></code></p></td>
+<td><p>Enable Dynamo</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.compile(fn,</span> <span class="pre">backend="aot_eager")</span></code></p></td>
+<td><p>Enable Dynamo + AOT Autograd</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.compile(fn,</span> <span class="pre">backend="inductor")</span></code></p></td>
+<td><p>Enable Dynamo + AOT Autograd + Inductor</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>If the model can successfully run when the backend is set to <code class="docutils literal notranslate"><span class="pre">eager</span></code> or <code class="docutils literal notranslate"><span class="pre">aot_eager</span></code> while it fails with <code class="docutils literal notranslate"><span class="pre">inductor</span></code>, we can narrow down the failure to Inductor.</p>
+</section>
+<section id="compilation-error">
+<h3>Compilation error<a class="headerlink" href="#compilation-error" title="Link to this heading">#</a></h3>
+<p>As we know, the evolved chain of graph-level optimization is like:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>torch.neg<span class="w"> </span><span class="o">(</span>Python<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>torch.ops.aten.neg.default<span class="w"> </span><span class="o">(</span>within<span class="w"> </span>FX<span class="w"> </span>graph<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>ops.neg<span class="w"> </span><span class="o">(</span>within<span class="w"> </span>IR<span class="w"> </span>node<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span><span class="nv">tmp2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-tmp1<span class="w"> </span><span class="o">(</span>within<span class="w"> </span>C++<span class="w"> </span>kernel<span class="o">)</span>
+</pre></div>
+</div>
+<p>If you encounter a compilation error, there is something wrong when compiling C++ kernels in the output code.
+This type of error indicates that bugs are introduced when lowering IR nodes to output code.
+The root cause of compilation error is usually shown in the traceback log.</p>
+<p>For example, the <code class="docutils literal notranslate"><span class="pre">neg</span></code> function is modified like this:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">neg2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"-</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">"</span>
+</pre></div>
+</div>
+<p>The logging gives the following compile error with a rather clear reason.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> torch._dynamo.exc.BackendCompilerFailed: backend='inductor' raised:
+ CppCompileError: C++ compile error
+ /tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp: In function ‘void kernel(const unsigned char*, const unsigned char*, unsigned char*)’:
+ /tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp:17:57: error: no matching function for call to ‘max_propagate_nan(unsigned char&amp;, int&amp;)’
+   17 |                 auto tmp3 = max_propagate_nan(tmp0, tmp2);
+        |                                                         ^
+ In file included from /tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp:2:
+ /tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h:27:17: note: candidate: ‘template&lt;class scalar_t&gt; scalar_t max_propagate_nan(scalar_t, scalar_t)’
+ 27 | inline scalar_t max_propagate_nan(scalar_t a, scalar_t b) {
+      |                 ^~~~~~~~~~~~~~~~~
+ /tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h:27:17: note:   template argument deduction/substitution failed:
+/tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp:17:57: note:   deduced conflicting types for parameter ‘scalar_t’ (‘unsigned char’ and ‘int’)
+ 17 |                 auto tmp3 = max_propagate_nan(tmp0, tmp2);
+      |                                                         ^
+</pre></div>
+</div>
+<p>Let us also see the corresponding C++ kernel in output code and IR node.</p>
+<p>C++ kernel:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">include</span><span class="w"> </span><span class="s">"/tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h"</span>
+<span class="k">extern</span><span class="w"> </span><span class="s">"C"</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">in_ptr0</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">in_ptr1</span><span class="p">,</span>
+<span class="w">                    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">out_ptr0</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="cp">#pragma GCC ivdep</span>
+<span class="w">        </span><span class="k">for</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">i0</span><span class="o">=</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">0L</span><span class="p">);</span><span class="w"> </span><span class="n">i0</span><span class="o">&lt;</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">8390L</span><span class="p">);</span><span class="w"> </span><span class="n">i0</span><span class="o">+=</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1L</span><span class="p">))</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="cp">#pragma GCC ivdep</span>
+<span class="w">            </span><span class="k">for</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">i1</span><span class="o">=</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">0L</span><span class="p">);</span><span class="w"> </span><span class="n">i1</span><span class="o">&lt;</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">8L</span><span class="p">);</span><span class="w"> </span><span class="n">i1</span><span class="o">+=</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1L</span><span class="p">))</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">auto</span><span class="w"> </span><span class="n">tmp0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_ptr0</span><span class="p">[</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">8L</span><span class="o">*</span><span class="n">i0</span><span class="p">))];</span>
+<span class="w">                </span><span class="k">auto</span><span class="w"> </span><span class="n">tmp1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_ptr1</span><span class="p">[</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i1</span><span class="p">)];</span>
+<span class="w">                </span><span class="k">auto</span><span class="w"> </span><span class="n">tmp2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">tmp1</span><span class="p">;</span>
+<span class="w">                </span><span class="k">auto</span><span class="w"> </span><span class="n">tmp3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_propagate_nan</span><span class="p">(</span><span class="n">tmp0</span><span class="p">,</span><span class="w"> </span><span class="n">tmp2</span><span class="p">);</span>
+<span class="w">                </span><span class="n">out_ptr0</span><span class="p">[</span><span class="n">static_cast</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">8L</span><span class="o">*</span><span class="n">i0</span><span class="p">))]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp3</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>IR node:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>buf0:<span class="w"> </span>SchedulerNode<span class="o">(</span>ComputedBuffer<span class="o">)</span>
+buf0.writes<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>MemoryDep<span class="o">(</span><span class="s1">'buf0'</span>,<span class="w"> </span>c0,<span class="w"> </span><span class="o">{</span>c0:<span class="w"> </span><span class="m">67120</span><span class="o">})]</span>
+buf0.unmet_dependencies<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[]</span>
+buf0.met_dependencies<span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">[</span><span class="w">   </span>MemoryDep<span class="o">(</span><span class="s1">'arg0_1'</span>,<span class="w"> </span>c1,<span class="w"> </span><span class="o">{</span>c0:<span class="w"> </span><span class="m">8390</span>,<span class="w"> </span>c1:<span class="w"> </span><span class="m">8</span><span class="o">})</span>,
+<span class="w">        </span>MemoryDep<span class="o">(</span><span class="s1">'arg1_1'</span>,<span class="w"> </span>c0,<span class="w"> </span><span class="o">{</span>c0:<span class="w"> </span><span class="m">67120</span><span class="o">})]</span>
+buf0.users<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>NodeUser<span class="o">(</span><span class="nv">node</span><span class="o">=</span>OUTPUT,<span class="w"> </span><span class="nv">can_inplace</span><span class="o">=</span>False<span class="o">)]</span>
+buf0.group.device<span class="w"> </span><span class="o">=</span><span class="w"> </span>cpu
+buf0.group.iteration<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">((</span><span class="m">8390</span>,<span class="w"> </span><span class="m">8</span><span class="o">)</span>,<span class="w"> </span><span class="o">())</span>
+buf0.sizes<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">([</span><span class="m">8390</span>,<span class="w"> </span><span class="m">8</span><span class="o">]</span>,<span class="w"> </span><span class="o">[])</span>
+class<span class="w"> </span>buf0_loop_body:
+<span class="w">    </span><span class="nv">var_ranges</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span>z0:<span class="w"> </span><span class="m">8390</span>,<span class="w"> </span>z1:<span class="w"> </span><span class="m">8</span><span class="o">}</span>
+<span class="w">    </span><span class="nv">index0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>*z0<span class="w"> </span>+<span class="w"> </span>z1
+<span class="w">    </span><span class="nv">index1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>z1
+<span class="w">    </span>def<span class="w"> </span>body<span class="o">(</span>self,<span class="w"> </span>ops<span class="o">)</span>:
+<span class="w">        </span><span class="nv">get_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>self.get_index<span class="o">(</span><span class="s1">'index0'</span><span class="o">)</span>
+<span class="w">        </span><span class="nv">load</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ops.load<span class="o">(</span><span class="s1">'arg1_1'</span>,<span class="w"> </span>get_index<span class="o">)</span>
+<span class="w">        </span><span class="nv">get_index_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>self.get_index<span class="o">(</span><span class="s1">'index1'</span><span class="o">)</span>
+<span class="w">        </span><span class="nv">load_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ops.load<span class="o">(</span><span class="s1">'arg0_1'</span>,<span class="w"> </span>get_index_1<span class="o">)</span>
+<span class="w">        </span><span class="nv">neg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ops.neg<span class="o">(</span>load_1<span class="o">)</span>
+<span class="w">        </span><span class="nv">maximum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ops.maximum<span class="o">(</span>load,<span class="w"> </span>neg<span class="o">)</span>
+<span class="w">        </span><span class="nv">get_index_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>self.get_index<span class="o">(</span><span class="s1">'index0'</span><span class="o">)</span>
+<span class="w">        </span><span class="nv">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ops.store<span class="o">(</span><span class="s1">'buf0'</span>,<span class="w"> </span>get_index_2,<span class="w"> </span>maximum,<span class="w"> </span>None<span class="o">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span>store
+</pre></div>
+</div>
+<p>According to the traceback logging, the compilation error is caused by the data type inconsistency of <code class="docutils literal notranslate"><span class="pre">max_propagate_nan</span></code>’s inputs.
+By checking the C++ kernel, we know that <code class="docutils literal notranslate"><span class="pre">tmp2</span></code> is no longer <code class="docutils literal notranslate"><span class="pre">long</span></code> after doing <code class="docutils literal notranslate"><span class="pre">-</span></code> as <code class="docutils literal notranslate"><span class="pre">tmp0</span></code> is <code class="docutils literal notranslate"><span class="pre">long</span></code>.
+We can easily match <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">max_propagate_nan</span></code> in C++ kernel with <code class="docutils literal notranslate"><span class="pre">ops.neg</span></code> and <code class="docutils literal notranslate"><span class="pre">ops.maximum</span></code> in IR node respectively.</p>
+<p>Now we successfully find that the root cause is the implementation of <code class="docutils literal notranslate"><span class="pre">ops.neg</span></code> in <code class="docutils literal notranslate"><span class="pre">cpp</span></code> codegen, which silently changes the data type when doing <code class="docutils literal notranslate"><span class="pre">neg</span></code>.</p>
+</section>
+<section id="accuracy-debugging">
+<h3>Accuracy debugging<a class="headerlink" href="#accuracy-debugging" title="Link to this heading">#</a></h3>
+<p>Otherwise, if the model runs with other errors or accuracy problem, you can use the PyTorch debugging tool called <a class="reference external" href="https://pytorch.org/functorch/stable/notebooks/minifier.html">Minifier</a>.</p>
+<p>The core idea of <code class="docutils literal notranslate"><span class="pre">Minifier</span></code> is to keep removing the nodes and inputs of graph until finding the minimal graph with problem.
+It helps to automatically generate a minified problematic graph through 4 strategies: truncating suffix, delta debugging, eliminating dead code and removing unused inputs.</p>
+<p>We will now show the debugging process for the accuracy problem with the help of <code class="docutils literal notranslate"><span class="pre">Minifer</span></code>.
+The accuracy problem refers to the case where the outputs of backends eager and inductor are different.</p>
+<p>For instance, we modify the example like this:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch._dynamo.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">same</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">foo2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.neg.html#torch.neg" title="torch.neg"><span class="n">torch</span><span class="o">.</span><span class="n">neg</span></a><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.maximum.html#torch.maximum" title="torch.maximum"><span class="n">torch</span><span class="o">.</span><span class="n">maximum</span></a><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html#torch.cat" title="torch.cat"><span class="n">torch</span><span class="o">.</span><span class="n">cat</span></a><span class="p">([</span><span class="n">b</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">y</span>
+
+<span class="n">x1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">x2</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">((</span><span class="mi">8390</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">expected_result</span> <span class="o">=</span> <span class="n">foo2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+<span class="n">compiled_foo2</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="torch.compile"><span class="n">torch</span><span class="o">.</span><span class="n">compile</span></a><span class="p">(</span><span class="n">foo2</span><span class="p">)</span>
+<span class="n">actual_result</span> <span class="o">=</span> <span class="n">compiled_foo2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">same</span><span class="p">(</span><span class="n">expected_result</span><span class="p">,</span> <span class="n">actual_result</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>And also modify the <code class="docutils literal notranslate"><span class="pre">neg</span></code> function:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">neg3</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"decltype(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">)(2 * </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">)"</span>
+</pre></div>
+</div>
+<p>An accuracy problem would be raised as follows:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>torch._dynamo.utils:<span class="w"> </span><span class="o">[</span>ERROR<span class="o">]</span><span class="w"> </span>Accuracy<span class="w"> </span>failed:<span class="w"> </span>allclose<span class="w"> </span>not<span class="w"> </span>within<span class="w"> </span><span class="nv">tol</span><span class="o">=</span><span class="m">0</span>.0001
+Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"test_script.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">18</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+<span class="w">    </span>assert<span class="w"> </span>same<span class="o">(</span>expected_result,<span class="w"> </span>actual_result<span class="o">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>True
+AssertionError
+</pre></div>
+</div>
+<p>To debug an accuracy problem with Minifier, two environment variables are needed:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">TORCHDYNAMO_REPRO_AFTER</span><span class="o">=</span><span class="s2">"aot"</span><span class="w"> </span><span class="nv">TORCHDYNAMO_REPRO_LEVEL</span><span class="o">=</span><span class="m">4</span><span class="w"> </span>python<span class="w"> </span>xx.py
+</pre></div>
+</div>
+<p>Which gives us logging information that demonstrates the steps of minifying:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>Started<span class="w"> </span>off<span class="w"> </span>with<span class="w"> </span><span class="m">6</span><span class="w"> </span>nodes
+
+Trying<span class="w"> </span>granularity<span class="w"> </span><span class="m">2</span>
+Strategy:<span class="w"> </span>Truncate<span class="w"> </span>suffix<span class="w"> </span><span class="o">(</span>G:<span class="w"> </span><span class="m">2</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">6</span><span class="w"> </span>nodes,<span class="w"> </span><span class="m">2</span><span class="w"> </span>inputs<span class="o">)</span>
+SUCCESS:<span class="w"> </span>Went<span class="w"> </span>from<span class="w"> </span><span class="m">6</span><span class="w"> </span>to<span class="w"> </span><span class="m">4</span><span class="w"> </span>nodes
+
+Trying<span class="w"> </span>granularity<span class="w"> </span><span class="m">4</span>
+Strategy:<span class="w"> </span>Remove<span class="w"> </span>unused<span class="w"> </span>inputs<span class="w"> </span><span class="o">(</span>G:<span class="w"> </span><span class="m">4</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">4</span><span class="w"> </span>nodes,<span class="w"> </span><span class="m">2</span><span class="w"> </span>inputs<span class="o">)</span>
+SUCCESS:<span class="w"> </span>Went<span class="w"> </span>from<span class="w"> </span><span class="m">4</span><span class="w"> </span>to<span class="w"> </span><span class="m">3</span><span class="w"> </span>nodes
+</pre></div>
+</div>
+<p>After running, we get the final minified graph with the target node <code class="docutils literal notranslate"><span class="pre">neg</span></code>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg0_1</span><span class="p">):</span>
+    <span class="n">neg</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">aten</span><span class="o">.</span><span class="n">neg</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="n">arg0_1</span><span class="p">);</span>  <span class="n">arg0_1</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">neg</span><span class="p">,)</span>
+</pre></div>
+</div>
+<p>For more usage details about Minifier, please refer to <a class="reference external" href="https://pytorch.org/docs/stable/torch.compiler_troubleshooting.html">Troubleshooting</a>.</p>
+</section>
+</section>
+<section id="performance-profiling">
+<h2>Performance profiling<a class="headerlink" href="#performance-profiling" title="Link to this heading">#</a></h2>
+<p>Within this section, we will demonstrate the process of conducting performance analysis for a model that has been compiled using the Inductor CPU backend.
+In the example below, we benchmark a Hugging Face Transformer model <code class="docutils literal notranslate"><span class="pre">MobileBertForQuestionAnswering</span></code> with both the eager mode and the Inductor graph mode.
+The execution time and the speedup ratio of Inductor are printed after the benchmark.
+We use Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz and run benchmark on the first socket to demonstrate the optimization within this section.
+We set following environment variable as a best practice to benchmark on Intel(R) CPU.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">KMP_BLOCKTIME</span><span class="o">=</span><span class="m">1</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">KMP_SETTINGS</span><span class="o">=</span><span class="m">1</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">KMP_AFFINITY</span><span class="o">=</span><span class="nv">granularity</span><span class="o">=</span>fine,compact,1,0
+<span class="nb">export</span><span class="w"> </span><span class="nv">LD_PRELOAD</span><span class="o">=</span><span class="si">${</span><span class="nv">CONDA_PREFIX</span><span class="k">:-</span><span class="s2">"</span><span class="k">$(</span>dirname<span class="w"> </span><span class="k">$(</span>which<span class="w"> </span>conda<span class="k">))</span><span class="s2">/../"</span><span class="si">}</span>/lib/libiomp5.so:<span class="si">${</span><span class="nv">CONDA_PREFIX</span><span class="k">:-</span><span class="s2">"</span><span class="k">$(</span>dirname<span class="w"> </span><span class="k">$(</span>which<span class="w"> </span>conda<span class="k">))</span><span class="s2">/../"</span><span class="si">}</span>/lib/libjemalloc.so
+<span class="nb">export</span><span class="w"> </span><span class="nv">MALLOC_CONF</span><span class="o">=</span><span class="s2">"oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1"</span>
+numactl<span class="w"> </span>-C<span class="w"> </span><span class="m">0</span>-31<span class="w"> </span>-m<span class="w"> </span><span class="m">0</span><span class="w"> </span>python<span class="w"> </span>bench.py
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># bench.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transformers</span><span class="w"> </span><span class="kn">import</span> <span class="n">MobileBertForQuestionAnswering</span>
+<span class="c1"># Initialize an eager model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MobileBertForQuestionAnswering</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">"csarron/mobilebert-uncased-squad-v2"</span><span class="p">)</span>
+<span class="n">seq_length</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">bs</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">vocab_size</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">vocab_size</span>
+<span class="nb">input</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.randint.html#torch.randint" title="torch.randint"><span class="n">torch</span><span class="o">.</span><span class="n">randint</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">,</span> <span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"input_ids"</span><span class="p">:</span> <span class="nb">input</span><span class="p">}</span>
+
+<span class="c1"># Initialize the inductor model</span>
+<span class="n">compiled_model</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="torch.compile"><span class="n">torch</span><span class="o">.</span><span class="n">compile</span></a><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="k">with</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
+    <span class="n">compiled_model</span><span class="p">(</span><span class="o">**</span><span class="n">input_dict</span><span class="p">)</span>
+
+<span class="n">NUM_ITERS</span><span class="o">=</span><span class="mi">50</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">timeit</span>
+<span class="k">with</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
+    <span class="c1"># warmup</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">input_dict</span><span class="p">)</span>
+    <span class="n">eager_t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">"model(**input_dict)"</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">NUM_ITERS</span><span class="p">,</span> <span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+
+<span class="k">with</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
+    <span class="c1"># warmup</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">compiled_model</span><span class="p">(</span><span class="o">**</span><span class="n">input_dict</span><span class="p">)</span>
+    <span class="n">inductor_t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">"compiled_model(**input_dict)"</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">NUM_ITERS</span><span class="p">,</span> <span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+<span class="c1"># print(f"eager use: {eager_t * 1000 / NUM_ITERS} ms/iter")</span>
+<span class="c1"># print(f"inductor use: {inductor_t * 1000 / NUM_ITERS} ms/iter")</span>
+<span class="c1"># print(f"speed up ratio: {eager_t / inductor_t}")</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>eager<span class="w"> </span>use:<span class="w"> </span><span class="m">802</span>.1023553796113<span class="w"> </span>ms/iter
+inductor<span class="w"> </span>use:<span class="w"> </span><span class="m">339</span>.95180135127157<span class="w"> </span>ms/iter
+speed<span class="w"> </span>up<span class="w"> </span>ratio:<span class="w"> </span><span class="m">2</span>.359459053287382
+</pre></div>
+</div>
+<p>In our own testing, we find the Inductor CPU backend speed up the model by around 2.355x.</p>
+<p>Next, let’s dive deep into the performance at the operation level to understand where the speed-up comes from.
+<a class="reference external" href="https://pytorch.org/tutorials/recipes/recipes/profiler_recipe.html">Pytorch Profiler</a> is a good tool to help us.
+Inductor CPU backend has the support to report the time of the fusion kernels to the profiler with the <code class="docutils literal notranslate"><span class="pre">enable_kernel_profile</span></code> configuration option:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch._inductor</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+<span class="n">config</span><span class="o">.</span><span class="n">cpp</span><span class="o">.</span><span class="n">enable_kernel_profile</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Following the steps in <a class="reference external" href="https://pytorch.org/tutorials/recipes/recipes/profiler_recipe.html">Pytorch Profiler</a>
+We are able to get the profiling table and trace files.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># bench.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.profiler</span><span class="w"> </span><span class="kn">import</span> <a class="sphx-glr-backref-module-torch-profiler sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/profiler.html#torch.profiler.profile" title="torch.profiler.profile"><span class="n">profile</span></a><span class="p">,</span> <a class="sphx-glr-backref-module-torch-profiler sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/profiler.html#torch.profiler.schedule" title="torch.profiler.schedule"><span class="n">schedule</span></a><span class="p">,</span> <span class="n">ProfilerActivity</span>
+<span class="n">RESULT_DIR</span> <span class="o">=</span> <span class="s2">"./prof_trace"</span>
+<span class="n">my_schedule</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-profiler sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/profiler.html#torch.profiler.schedule" title="torch.profiler.schedule"><span class="n">schedule</span></a><span class="p">(</span>
+    <span class="n">skip_first</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">wait</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">warmup</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">active</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">repeat</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">trace_handler</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">key_averages</span><span class="p">()</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">sort_by</span><span class="o">=</span><span class="s2">"self_cpu_time_total"</span><span class="p">,</span> <span class="n">row_limit</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="c1"># print(output)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">export_chrome_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">RESULT_DIR</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">step_num</span><span class="si">}</span><span class="s2">.json"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">input_dict</span><span class="p">)</span>  <span class="c1"># compiled_model(**input_dict) to get inductor model profiling</span>
+
+<span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">with</span> <a class="sphx-glr-backref-module-torch-profiler sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/profiler.html#torch.profiler.profile" title="torch.profiler.profile"><span class="n">profile</span></a><span class="p">(</span>
+    <span class="n">activities</span><span class="o">=</span><span class="p">[</span><span class="n">ProfilerActivity</span><span class="o">.</span><span class="n">CPU</span><span class="p">],</span>
+    <a class="sphx-glr-backref-module-torch-profiler sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/profiler.html#torch.profiler.schedule" title="torch.profiler.schedule"><span class="n">schedule</span></a><span class="o">=</span><span class="n">my_schedule</span><span class="p">,</span>
+    <span class="n">on_trace_ready</span><span class="o">=</span><span class="n">trace_handler</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+        <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">input_dict</span><span class="p">)</span>  <span class="c1"># compiled_model(**input_dict) to get inductor model profiling</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We get the following performance profiling table for the eager-mode model (omitting some columns):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>-------------------------<span class="w">  </span>------------<span class="w">  </span>------------<span class="w">  </span>------------
+<span class="w">                     </span>Name<span class="w">   </span>CPU<span class="w"> </span>total<span class="w"> </span>%<span class="w">     </span>CPU<span class="w"> </span>total<span class="w">    </span><span class="c1"># of Calls</span>
+-------------------------<span class="w">  </span>------------<span class="w">  </span>------------<span class="w">  </span>------------
+<span class="w">              </span>aten::addmm<span class="w">        </span><span class="m">45</span>.73%<span class="w">     </span><span class="m">370</span>.814ms<span class="w">           </span><span class="m">362</span>
+<span class="w">                </span>aten::add<span class="w">        </span><span class="m">19</span>.89%<span class="w">     </span><span class="m">161</span>.276ms<span class="w">           </span><span class="m">363</span>
+<span class="w">              </span>aten::copy_<span class="w">        </span><span class="m">14</span>.97%<span class="w">     </span><span class="m">121</span>.416ms<span class="w">           </span><span class="m">488</span>
+<span class="w">                </span>aten::mul<span class="w">         </span><span class="m">9</span>.02%<span class="w">      </span><span class="m">73</span>.154ms<span class="w">           </span><span class="m">194</span>
+<span class="w">          </span>aten::clamp_min<span class="w">         </span><span class="m">8</span>.81%<span class="w">      </span><span class="m">71</span>.444ms<span class="w">            </span><span class="m">96</span>
+<span class="w">                </span>aten::bmm<span class="w">         </span><span class="m">5</span>.46%<span class="w">      </span><span class="m">44</span>.258ms<span class="w">            </span><span class="m">48</span>
+<span class="w">            </span>ProfilerStep*<span class="w">       </span><span class="m">100</span>.00%<span class="w">     </span><span class="m">810</span>.920ms<span class="w">             </span><span class="m">1</span>
+<span class="w">                </span>aten::div<span class="w">         </span><span class="m">2</span>.89%<span class="w">      </span><span class="m">23</span>.447ms<span class="w">            </span><span class="m">24</span>
+<span class="w">           </span>aten::_softmax<span class="w">         </span><span class="m">1</span>.00%<span class="w">       </span><span class="m">8</span>.087ms<span class="w">            </span><span class="m">24</span>
+<span class="w">             </span>aten::linear<span class="w">        </span><span class="m">46</span>.48%<span class="w">     </span><span class="m">376</span>.888ms<span class="w">           </span><span class="m">362</span>
+<span class="w">              </span>aten::clone<span class="w">         </span><span class="m">2</span>.77%<span class="w">      </span><span class="m">22</span>.430ms<span class="w">            </span><span class="m">98</span>
+<span class="w">                  </span>aten::t<span class="w">         </span><span class="m">0</span>.31%<span class="w">       </span><span class="m">2</span>.502ms<span class="w">           </span><span class="m">362</span>
+<span class="w">               </span>aten::view<span class="w">         </span><span class="m">0</span>.14%<span class="w">       </span><span class="m">1</span>.161ms<span class="w">           </span><span class="m">850</span>
+<span class="w">          </span>aten::transpose<span class="w">         </span><span class="m">0</span>.17%<span class="w">       </span><span class="m">1</span>.377ms<span class="w">           </span><span class="m">386</span>
+<span class="w">       </span>aten::index_select<span class="w">         </span><span class="m">0</span>.12%<span class="w">     </span><span class="m">952</span>.000us<span class="w">             </span><span class="m">3</span>
+<span class="w">             </span>aten::expand<span class="w">         </span><span class="m">0</span>.12%<span class="w">     </span><span class="m">986</span>.000us<span class="w">           </span><span class="m">458</span>
+<span class="w">             </span>aten::matmul<span class="w">         </span><span class="m">8</span>.31%<span class="w">      </span><span class="m">67</span>.420ms<span class="w">            </span><span class="m">48</span>
+<span class="w">                </span>aten::cat<span class="w">         </span><span class="m">0</span>.09%<span class="w">     </span><span class="m">703</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w">         </span>aten::as_strided<span class="w">         </span><span class="m">0</span>.08%<span class="w">     </span><span class="m">656</span>.000us<span class="w">           </span><span class="m">963</span>
+<span class="w">               </span>aten::relu<span class="w">         </span><span class="m">8</span>.86%<span class="w">      </span><span class="m">71</span>.864ms<span class="w">            </span><span class="m">96</span>
+-------------------------<span class="w">  </span>------------<span class="w">  </span>------------<span class="w">  </span>------------
+Self<span class="w"> </span>CPU<span class="w"> </span><span class="nb">time</span><span class="w"> </span>total:<span class="w"> </span><span class="m">810</span>.920ms
+</pre></div>
+</div>
+<p>Similarly, we also get the table for the compiled model with Inductor (omitting some columns):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>-----------------------------------------------<span class="w">  </span>------------<span class="w">  </span>------------<span class="w">  </span>------------
+<span class="w">                                           </span>Name<span class="w">   </span>CPU<span class="w"> </span>total<span class="w"> </span>%<span class="w">     </span>CPU<span class="w"> </span>total<span class="w">    </span><span class="c1"># of Calls</span>
+-----------------------------------------------<span class="w">  </span>------------<span class="w">  </span>------------<span class="w">  </span>------------
+<span class="w">                               </span>mkl::_mkl_linear<span class="w">        </span><span class="m">68</span>.79%<span class="w">     </span><span class="m">231</span>.573ms<span class="w">           </span><span class="m">362</span>
+<span class="w">                                      </span>aten::bmm<span class="w">         </span><span class="m">8</span>.02%<span class="w">      </span><span class="m">26</span>.992ms<span class="w">            </span><span class="m">48</span>
+<span class="w">                                  </span>ProfilerStep*<span class="w">       </span><span class="m">100</span>.00%<span class="w">     </span><span class="m">336</span>.642ms<span class="w">             </span><span class="m">1</span>
+<span class="w">  </span>graph_0_cpp_fused_constant_pad_nd_embedding_0<span class="w">         </span><span class="m">0</span>.27%<span class="w">     </span><span class="m">915</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w">                                    </span>aten::empty<span class="w">         </span><span class="m">0</span>.27%<span class="w">     </span><span class="m">911</span>.000us<span class="w">           </span><span class="m">362</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_151<span class="w">         </span><span class="m">0</span>.27%<span class="w">     </span><span class="m">901</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_226<span class="w">         </span><span class="m">0</span>.27%<span class="w">     </span><span class="m">899</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_361<span class="w">         </span><span class="m">0</span>.27%<span class="w">     </span><span class="m">898</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_121<span class="w">         </span><span class="m">0</span>.27%<span class="w">     </span><span class="m">895</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w">  </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_31<span class="w">         </span><span class="m">0</span>.27%<span class="w">     </span><span class="m">893</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w">  </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_76<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">892</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_256<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">892</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_346<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">892</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_241<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">891</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_316<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">891</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w">  </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_91<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">890</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_106<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">890</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_211<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">890</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w">  </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_61<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">889</span>.000us<span class="w">             </span><span class="m">1</span>
+<span class="w"> </span>graph_0_cpp_fused__mkl_linear_add_mul_relu_286<span class="w">         </span><span class="m">0</span>.26%<span class="w">     </span><span class="m">889</span>.000us<span class="w">             </span><span class="m">1</span>
+-----------------------------------------------<span class="w">  </span>------------<span class="w">  </span>------------<span class="w">  </span>------------
+Self<span class="w"> </span>CPU<span class="w"> </span><span class="nb">time</span><span class="w"> </span>total:<span class="w"> </span><span class="m">336</span>.642ms
+</pre></div>
+</div>
+<p>From the profiling table of the eager model, we can see the most time consumption ops are [<code class="docutils literal notranslate"><span class="pre">aten::addmm</span></code>, <code class="docutils literal notranslate"><span class="pre">aten::add</span></code>, <code class="docutils literal notranslate"><span class="pre">aten::copy_</span></code>, <code class="docutils literal notranslate"><span class="pre">aten::mul</span></code>, <code class="docutils literal notranslate"><span class="pre">aten::clamp_min</span></code>, <code class="docutils literal notranslate"><span class="pre">aten::bmm</span></code>].
+Comparing with the inductor model profiling table, we notice an <code class="docutils literal notranslate"><span class="pre">mkl::_mkl_linear</span></code> entry and multiple fused kernels in the form <code class="docutils literal notranslate"><span class="pre">graph_0_cpp_fused_*</span></code>. They are the major
+optimizations that the inductor model is doing. Let us discuss them separately.</p>
+<p>(1) Regarding <code class="docutils literal notranslate"><span class="pre">mkl::_mkl_linear</span></code>: You may notice the number of calls to this kernel is 362, which is exactly the same as <code class="docutils literal notranslate"><span class="pre">aten::linear</span></code> in the eager model profiling table.
+The CPU total of <code class="docutils literal notranslate"><span class="pre">aten::linear</span></code> is 376.888ms, while it is 231.573ms for <code class="docutils literal notranslate"><span class="pre">mkl::_mkl_linear</span></code>. This suggests a ~1.63x for the “linear” part.
+The speedup mainly comes from <a class="reference external" href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-1/cblas-gemm-pack-002.html">packing the weight tensor to block memory format</a>
+and invoking <a class="reference external" href="https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-1/cblas-gemm-compute-002.html">cblas_sgemm_compute</a> within the Inductor CPU backend
+to have a better cache behavior during GEMM computation.</p>
+<p>(2) Regarding other memory-intensive ops: The end-to-end latency for the eager/inductor model is 802/339ms in our testing. So we can roughly infer that the speed up for the other memory-intensive ops is around 3.94x.
+Let’s read the generated code to understand how the inductor achieves this impressive optimization. You can find the generated code by
+searching <code class="docutils literal notranslate"><span class="pre">cpp_fused__mkl_linear_add_mul_relu_151</span></code> in <code class="docutils literal notranslate"><span class="pre">output_code.py</span></code></p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cpp_fused__mkl_linear_add_mul_relu_151</span> <span class="o">=</span> <span class="n">async_compile</span><span class="o">.</span><span class="n">cpp</span><span class="p">(</span><span class="s1">'''</span>
+<span class="s1">#include &lt;ATen/record_function.h&gt;</span>
+<span class="s1">#include "/tmp/torchinductor_root/lr/clrlgu27q4ggd472umdzwsu6qcpqxcuusjxqvx2hwitjbujiiz7z.h"</span>
+<span class="s1">extern "C" void kernel(float* in_out_ptr0,</span>
+<span class="s1">                       const float* in_ptr0,</span>
+<span class="s1">                       const float* in_ptr1,</span>
+<span class="s1">                       const float* in_ptr2,</span>
+<span class="s1">                       const float* in_ptr3)</span>
+<span class="s1">{</span>
+<span class="s1">    RECORD_FUNCTION("graph_0_cpp_fused__mkl_linear_add_mul_relu_151", c10::ArrayRef&lt;c10::IValue&gt;(</span><span class="si">{}</span><span class="s1">));</span>
+<span class="s1">    #pragma omp parallel num_threads(32)</span>
+<span class="s1">    {</span>
+<span class="s1">        {</span>
+<span class="s1">            #pragma omp for</span>
+<span class="s1">            for(long i0=static_cast&lt;long&gt;(0L); i0&lt;static_cast&lt;long&gt;(16384L); i0+=static_cast&lt;long&gt;(1L))</span>
+<span class="s1">            {</span>
+<span class="s1">                for(long i1=static_cast&lt;long&gt;(0L); i1&lt;static_cast&lt;long&gt;(512L); i1+=static_cast&lt;long&gt;(8L))</span>
+<span class="s1">                {</span>
+<span class="s1">                    auto tmp0 = at::vec::Vectorized&lt;float&gt;::loadu(in_ptr0 + static_cast&lt;long&gt;(i1 + (512L*i0)));</span>
+<span class="s1">                    auto tmp1 = at::vec::Vectorized&lt;float&gt;::loadu(in_ptr1 + static_cast&lt;long&gt;(i1));</span>
+<span class="s1">                    auto tmp3 = at::vec::Vectorized&lt;float&gt;::loadu(in_out_ptr0 + static_cast&lt;long&gt;(i1 + (512L*i0)));</span>
+<span class="s1">                    auto tmp5 = at::vec::Vectorized&lt;float&gt;::loadu(in_ptr2 + static_cast&lt;long&gt;(i1));</span>
+<span class="s1">                    auto tmp7 = at::vec::Vectorized&lt;float&gt;::loadu(in_ptr3 + static_cast&lt;long&gt;(i1));</span>
+<span class="s1">                    auto tmp2 = tmp0 + tmp1;</span>
+<span class="s1">                    auto tmp4 = tmp2 + tmp3;</span>
+<span class="s1">                    auto tmp6 = tmp4 * tmp5;</span>
+<span class="s1">                    auto tmp8 = tmp6 + tmp7;</span>
+<span class="s1">                    tmp8.store(in_out_ptr0 + static_cast&lt;long&gt;(i1 + (512L*i0)));</span>
+<span class="s1">                }</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">    }</span>
+<span class="s1">}'''</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>From the generated code above, we can see this kernel has done a typical <a class="reference external" href="https://en.wikipedia.org/wiki/Loop_fission_and_fusion">Loop Fusion</a> on <code class="docutils literal notranslate"><span class="pre">[add,</span> <span class="pre">add,</span> <span class="pre">mul,</span> <span class="pre">add]</span></code>.
+This is a memory-bound bottle neck preventing good performance. To get a more intuitive feeling about this optimization,
+we can infer the sizes and stride of the inputs and further benchmark this <code class="docutils literal notranslate"><span class="pre">[add,</span> <span class="pre">add,</span> <span class="pre">mul,</span> <span class="pre">add]</span></code> pattern.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># bench.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">arg_0</span><span class="p">,</span> <span class="n">arg_1</span><span class="p">,</span> <span class="n">arg_2</span><span class="p">,</span> <span class="n">arg_3</span><span class="p">,</span> <span class="n">arg_4</span><span class="p">):</span>
+    <span class="n">add_0</span> <span class="o">=</span> <span class="n">arg_0</span> <span class="o">+</span> <span class="n">arg_1</span>
+    <span class="n">add_1</span> <span class="o">=</span> <span class="n">add_0</span> <span class="o">+</span> <span class="n">arg_2</span>
+    <span class="n">mul_1</span> <span class="o">=</span> <span class="n">add_1</span> <span class="o">*</span> <span class="n">arg_3</span>
+    <span class="n">add_2</span> <span class="o">=</span> <span class="n">mul_1</span> <span class="o">+</span> <span class="n">arg_4</span>
+    <span class="n">arg_2</span> <span class="o">=</span> <span class="n">add_2</span>
+    <span class="k">return</span> <span class="n">arg_2</span>
+
+<span class="n">arg_0</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.rand.html#torch.rand" title="torch.rand"><span class="n">torch</span><span class="o">.</span><span class="n">rand</span></a><span class="p">(</span><span class="mi">16384</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="n">arg_1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.rand.html#torch.rand" title="torch.rand"><span class="n">torch</span><span class="o">.</span><span class="n">rand</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="n">arg_2</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.zeros.html#torch.zeros" title="torch.zeros"><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="mi">16384</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="n">arg_3</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.rand.html#torch.rand" title="torch.rand"><span class="n">torch</span><span class="o">.</span><span class="n">rand</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="n">arg_4</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.rand.html#torch.rand" title="torch.rand"><span class="n">torch</span><span class="o">.</span><span class="n">rand</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+
+<span class="nb">input</span> <span class="o">=</span> <span class="p">(</span><span class="n">arg_0</span><span class="p">,</span> <span class="n">arg_1</span><span class="p">,</span> <span class="n">arg_2</span><span class="p">,</span> <span class="n">arg_3</span><span class="p">,</span> <span class="n">arg_4</span><span class="p">)</span>
+<span class="n">inductor_func</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.compile.html#torch.compile" title="torch.compile"><span class="n">torch</span><span class="o">.</span><span class="n">compile</span></a><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+<span class="k">with</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
+    <span class="n">inductor_func</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">timeit</span>
+<span class="n">NUM_ITERS</span><span class="o">=</span><span class="mi">100</span>
+<span class="k">with</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
+    <span class="c1"># warmup</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+    <span class="n">eager_t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">"func(*input)"</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">NUM_ITERS</span><span class="p">,</span> <span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+
+<span class="k">with</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html#torch.no_grad" title="torch.no_grad"><span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span></a><span class="p">():</span>
+    <span class="c1"># warmup</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">inductor_func</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+    <span class="n">inductor_t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s2">"inductor_func(*input)"</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">NUM_ITERS</span><span class="p">,</span> <span class="nb">globals</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
+<span class="c1"># print(f"eager use: {eager_t * 1000 / NUM_ITERS} ms/iter")</span>
+<span class="c1"># print(f"inductor use: {inductor_t * 1000 / NUM_ITERS} ms/iter")</span>
+<span class="c1"># print(f"speed up ratio: {eager_t / inductor_t}")</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>eager<span class="w"> </span>use:<span class="w"> </span><span class="m">5</span>.780875144992024<span class="w"> </span>ms/iter
+inductor<span class="w"> </span>use:<span class="w"> </span><span class="m">0</span>.9588955780491233<span class="w"> </span>ms/iter
+speed<span class="w"> </span>up<span class="w"> </span>ratio:<span class="w"> </span><span class="m">6</span>.0286805751604735
+</pre></div>
+</div>
+<p>This is just an example. The profiling table shows all element-wise op are fused within the inductor automatically in this model. You can read more kernels in
+<cite>output_code.py</cite></p>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>The document gives an in-depth tutorial for the Inductor CPU backend.</p>
+<p>With motivating examples, we walk through the process of debugging and profiling.
+The main idea is to narrow down the problem.</p>
+<p>We demonstrate step by step the way to delve deeper the issue and find the root cause of failures, with the help of debugging logging and the tool Minifier.
+Firstly determine which component the failure occurs in and then try to generate the smallest snippet of code that can reproduce the failure.</p>
+<p>When the performance with Inductor is better than that of eager mode, we provide a solid analytical method for performance profiling.
+We show how to find the time-consuming hotspot with PyTorch Profiler and figure out the operator-level or kernel-level reason to explain the phenomenon.</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-intermediate-inductor-debug-cpu-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/57fbbe6265e9c97da47580b6e60037ac/inductor_debug_cpu.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">inductor_debug_cpu.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/864b90f09a798ba06b420b737cd463b1/inductor_debug_cpu.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">inductor_debug_cpu.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/060c4e307cd150879aabace05fa1e16d/inductor_debug_cpu.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">inductor_debug_cpu.zip</span></code></a></p>
+</div>
+</div>
+</section>
+</section>
+</article>
+</article>
+<footer class="bd-footer-article">
+<div class="footer-article-items footer-article__inner">
+<div class="footer-article-item">
+<div class="feedback">
+<div class="rating">
+    Rate this Page
+    <div class="stars">
+<span class="star" data-behavior="tutorial-rating" data-count="1" data-value="1">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="2" data-value="2">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="3" data-value="3">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="4" data-value="4">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="5" data-value="5">★</span>
+</div>
+</div>
+<div class="feedback-send">
+<button class="feedback-btn" data-bs-placement="bottom" data-bs-title="Create a GitHub Issue" data-bs-toggle="tooltip" data-gtm="feedback-btn-click" onclick="openGitHubIssue()">Send Feedback
+    </button>
+</div>
+</div>
+<div class="prev-next-area">
+<a class="left-prev" href="compiled_autograd_tutorial.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Compiled Autograd: Capturing a larger backward graph for <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code></p>
+</div>
+</a>
+<a class="right-next" href="../recipes/torch_compiler_set_stance_tutorial.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Dynamic Compilation Control with <code class="docutils literal notranslate"><span class="pre">torch.compiler.set_stance</span></code></p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+<div class="footer-info">
+<p class="copyright">
+    
+      
+        © Copyright 2024, PyTorch.
+      
+      <br/>
+</p>
+<p class="theme-version">
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+  </p>
+</div>
+</div>
+</div>
+</footer>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="compiled_autograd_tutorial.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Compiled Autograd: Capturing a larger backward graph for <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code></p>
+</div>
+</a>
+<a class="right-next" href="../recipes/torch_compiler_set_stance_tutorial.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Dynamic Compilation Control with <code class="docutils literal notranslate"><span class="pre">torch.compiler.set_stance</span></code></p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging">Debugging</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-more-logging-information">Get more logging information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#determine-component-of-error">Determine component of error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compilation-error">Compilation error</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#accuracy-debugging">Accuracy debugging</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-profiling">Performance profiling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="sidebar-heading">PyTorch Libraries</div>
+<ul style="list-style-type: none; padding: 0; padding-bottom: 80px;">
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/ao" style="color: var(--pst-color-text-muted)">torchao</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchrec" style="color: var(--pst-color-text-muted)">torchrec</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchft" style="color: var(--pst-color-text-muted)">torchft</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchcodec" style="color: var(--pst-color-text-muted)">TorchCodec</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/vision" style="color: var(--pst-color-text-muted)">torchvision</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/executorch" style="color: var(--pst-color-text-muted)">ExecuTorch</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/xla" style="color: var(--pst-color-text-muted)">PyTorch on XLA Devices</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+<div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+<div class="container">
+<div class="row">
+<div class="col-md-4">
+<h2>Docs</h2>
+<p>Access comprehensive developer documentation for PyTorch</p>
+<a class="with-right-arrow" href="https://docs.pytorch.org/docs/stable/index.html">View Docs</a>
+</div>
+<div class="col-md-4">
+<h2>Tutorials</h2>
+<p>Get in-depth tutorials for beginners and advanced developers</p>
+<a class="with-right-arrow" href="https://docs.pytorch.org/tutorials">View Tutorials</a>
+</div>
+<div class="col-md-4">
+<h2>Resources</h2>
+<p>Find development resources and get your questions answered</p>
+<a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+</div>
+</div>
+</div>
+</div>
+<footer class="site-footer">
+<div class="container footer-container">
+<div class="newsletter" id="newsletter">
+<p class="newsletter__title is-style-max-width-800"><strong>Stay in touch</strong> for updates, event info, and
+        the latest news</p>
+<script charset="utf-8" src="//js.hsforms.net/forms/embed/v2.js" type="text/javascript"></script>
+<script>
+        hbspt.forms.create({
+          region: "na1",
+          portalId: "8112310",
+          formId: "2fb2231c-000b-4ec5-88a0-1ab242549c9e"
+        });
+      </script>
+<p class="newsletter__privacy">By submitting this form, I consent to receive marketing emails from the LF and its
+        projects regarding their events, training, research, developments, and related announcements. I understand that
+        I can unsubscribe at any time using the links in the footers of the emails I receive. <a href="https://www.linuxfoundation.org/privacy/">Privacy Policy</a>.</p>
+</div>
+<div class="lf-grid">
+<ul class="social-links">
+<li><a href="https://www.facebook.com/pytorch" target="_blank" title="PyTorch on Facebook">
+<svg aria-label="Facebook" viewbox="-0.51 -0.26 26.45 26.45" xmlns="http://www.w3.org/2000/svg">
+<path d="M25.497 13.075c0-2.45-.698-4.848-2.011-6.911a12.765 12.765 0 0 0-5.398-4.73A12.671 12.671 0 0 0 11.008.38a12.705 12.705 0 0 0-6.529 2.95A12.827 12.827 0 0 0 .563 9.358a12.896 12.896 0 0 0-.07 7.201 12.831 12.831 0 0 0 3.801 6.103 12.709 12.709 0 0 0 6.471 3.078v-8.957H7.53v-3.708h3.235v-2.824c0-3.213 1.903-4.988 4.813-4.988.956.014 1.909.097 2.852.25V8.67h-1.607a1.83 1.83 0 0 0-1.518.497 1.854 1.854 0 0 0-.561 1.505v2.404h3.535l-.563 3.708h-2.97v8.957a12.725 12.725 0 0 0 7.697-4.337 12.87 12.87 0 0 0 3.054-8.328z" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://twitter.com/pytorch" target="_blank" title="PyTorch on X">
+<svg aria-label="X" viewbox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+<path d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34M36.01 19.54H76.66l187.13 262.13h-40.66" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://www.youtube.com/pytorch" target="_blank" title="PyTorch on YouTube">
+<svg aria-label="YouTube" viewbox="0.21 0.27 34.45 25.07" xmlns="http://www.w3.org/2000/svg">
+<path d="M33.729 6.084s-.327-2.33-1.317-3.356a4.691 4.691 0 0 0-3.32-1.432c-4.634-.34-11.589-.34-11.589-.34h-.014s-6.954 0-11.59.342a4.692 4.692 0 0 0-3.32 1.432c-.993 1.025-1.315 3.354-1.315 3.354a52.189 52.189 0 0 0-.331 5.473v2.566c.014 1.829.125 3.656.331 5.472 0 0 .322 2.33 1.316 3.36 1.26 1.345 2.916 1.3 3.653 1.445 2.65.26 11.263.34 11.263.34s6.96-.01 11.597-.353a4.691 4.691 0 0 0 3.32-1.432c.993-1.026 1.316-3.356 1.316-3.356.206-1.817.316-3.644.33-5.473v-2.57a52.26 52.26 0 0 0-.33-5.472zM14.076 17.232V7.729l8.951 4.768-8.95 4.735z" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://www.linkedin.com/company/pytorch" target="_blank" title="PyTorch on LinkedIn">
+<svg aria-label="LinkedIn" viewbox="-10.23 -10.23 531.96 531.96" xmlns="http://www.w3.org/2000/svg">
+<rect fill="currentColor" height="512" rx="0" width="512"></rect>
+<circle cx="142" cy="138" fill="#000" r="37"></circle>
+<path d="M244 194v198M142 194v198" stroke="#000" stroke-width="66"></path>
+<path d="M276 282c0-20 13-40 36-40 24 0 33 18 33 45v105h66V279c0-61-32-89-76-89-34 0-51 19-59 32" fill="#000"></path>
+</svg>
+</a></li>
+<li><a href="https://pytorch.slack.com" target="_blank" title="PyTorch Slack">
+<svg aria-label="Slack" viewbox="0.16 -0.03 21.19 21.19" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.896 13.27a2.147 2.147 0 0 1-2.141 2.142A2.147 2.147 0 0 1 .613 13.27c0-1.178.963-2.141 2.142-2.141h2.141v2.141zm1.08 0c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.363a2.147 2.147 0 0 1-2.142 2.141 2.147 2.147 0 0 1-2.141-2.142V13.27zm2.141-8.6a2.147 2.147 0 0 1-2.141-2.14c0-1.18.962-2.142 2.141-2.142s2.142.963 2.142 2.141v2.142H8.117zm0 1.08c1.179 0 2.141.962 2.141 2.141a2.147 2.147 0 0 1-2.141 2.142H2.755A2.147 2.147 0 0 1 .613 7.89c0-1.179.963-2.141 2.142-2.141h5.362zm8.599 2.141c0-1.179.963-2.141 2.141-2.141 1.179 0 2.143.962 2.143 2.14a2.147 2.147 0 0 1-2.142 2.142h-2.141V7.89zm-1.08 0a2.147 2.147 0 0 1-2.141 2.142 2.147 2.147 0 0 1-2.141-2.142V2.53c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.362zm-2.141 8.6c1.179 0 2.142.962 2.142 2.14a2.147 2.147 0 0 1-2.142 2.142 2.147 2.147 0 0 1-2.141-2.141V16.49h2.141zm0-1.08a2.147 2.147 0 0 1-2.141-2.141c0-1.179.962-2.142 2.141-2.142h5.362c1.179 0 2.142.963 2.142 2.142a2.147 2.147 0 0 1-2.142 2.142h-5.362z" fill="currentColor">
+</path>
+</svg>
+</a></li>
+<li><a href="https://pytorch.org/wechat" title="PyTorch on WeChat">
+<svg aria-label="WeChat" viewbox="0.14 -0.17 38.02 33.02" xmlns="http://www.w3.org/2000/svg">
+<path d="M26.289 10.976a12.972 12.972 0 0 0-8.742 3.53 10.386 10.386 0 0 0-3.224 8.795c-1.326-.164-2.535-.345-3.75-.448a2.332 2.332 0 0 0-1.273.216c-1.18.666-2.311 1.418-3.652 2.255.246-1.112.405-2.087.687-3.024a1.15 1.15 0 0 0-.523-1.52C1.737 17.902.02 13.601 1.307 9.165c1.189-4.1 4.11-6.587 8.077-7.884A13.54 13.54 0 0 1 24.18 5.617a10.135 10.135 0 0 1 2.109 5.359zM10.668 9.594a1.564 1.564 0 0 0-2.095-1.472 1.52 1.52 0 0 0-.895 1.964 1.502 1.502 0 0 0 1.391.966 1.545 1.545 0 0 0 1.598-1.46v.002zm8.15-1.566a1.567 1.567 0 0 0-1.528 1.543 1.528 1.528 0 0 0 1.571 1.492 1.52 1.52 0 0 0 1.375-2.117 1.518 1.518 0 0 0-1.415-.919l-.003.001z" fill="currentColor">
+</path>
+<path d="M33.914 32.137c-1.075-.478-2.062-1.196-3.11-1.306-1.049-.11-2.145.494-3.24.605a10.821 10.821 0 0 1-8.781-2.864c-4.682-4.33-4.013-10.97 1.403-14.518 4.811-3.154 11.874-2.102 15.268 2.273a8.671 8.671 0 0 1-1.002 12.095c-1.046.929-1.422 1.693-.751 2.917.102.257.174.525.213.798zM21.68 20.292a1.264 1.264 0 1 0 .01-2.528 1.264 1.264 0 0 0-.01 2.528zm7.887-2.526a1.266 1.266 0 0 0-1.256 1.21 1.247 1.247 0 1 0 1.256-1.21z" fill="currentColor">
+</path>
+</svg>
+</a></li>
+</ul>
+</div>
+<div class="privacy-policy">
+<div class="copyright">
+<p>
+          © PyTorch. Copyright © The Linux Foundation®. All rights reserved. The Linux Foundation has registered
+          trademarks and uses trademarks. For more information, including terms of use, privacy policy, and trademark
+          usage, please see our <a href="https://www.linuxfoundation.org/legal/policies">Policies</a> page. <a href="https://www.linuxfoundation.org/trademark-usage">Trademark Usage</a>. <a href="http://www.linuxfoundation.org/privacy">Privacy Policy</a>.
+        </p>
+</div>
+</div>
+</div>
+</footer>
+<div class="cookie-banner-wrapper">
+<div class="container">
+<p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+<img class="close-button" src="../_static/img/pytorch-x.svg"/>
+</div>
+</div>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item">
+<p class="copyright">
+    
+      © Copyright 2024, PyTorch.
+      <br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+</p>
+</div>
+</div>
+<div class="footer-items__end">
+<div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+</div>
+</div>
+</footer>
+<script type="application/ld+json">
+    {
+       "@context": "https://schema.org",
+       "@type": "Article",
+       "name": "Inductor CPU backend debugging and profiling",
+       "headline": "Inductor CPU backend debugging and profiling",
+       "description": "PyTorch Documentation. Explore PyTorch, an open-source machine learning library that accelerates the path from research prototyping to production deployment. Discover tutorials, API references, and guides to help you build and deploy deep learning models efficiently.",
+       "url": "/intermediate/inductor_debug_cpu.html",
+       "articleBody": "Note Go to the end to download the full example code. Inductor CPU backend debugging and profiling# Authors: Xuan Liao, Haozhe Zhu, Jiong Gong, Weihan Wang Overview# PyTorch 2.0 introduced the compilation API called torch.compile. This new feature offers a significant speedup over eager mode execution through graph-level optimization powered by the default Inductor backend. This tutorial is intended to provide an in-depth introduction on the debugging and performance profiling on Inductor CPU backend by delving into the intricacies of torch.compile. Meanwhile, you may also find related tutorials about torch.compile around basic usage, comprehensive troubleshooting and GPU-specific knowledge like GPU performance profiling. We will start debugging with a motivating example that triggers compilation issues and accuracy problems by demonstrating the process of debugging to pinpoint the problems. By enabling logging and exploring the underlying generated code, you can learn how to narrow down the failure step by step and finally figure out the route cause. Following that, we will proceed to discuss how to profile the compiled code and, through a performance comparison with eager mode, elaborate on the reasons why torch.compile can provide an additional performance boost compared to its eager counterpart. Debugging# Here is a simple example to run the torch.compile using Inductor and compare its result with eager mode: import torch def foo1(x1, x2): a = torch.neg(x1) b = torch.maximum(x2, a) y = torch.cat([b], dim=0) return y x1 = torch.randint(256, (1, 8), dtype=torch.uint8) x2 = torch.randint(256, (8390, 8), dtype=torch.uint8) compiled_foo1 = torch.compile(foo1) result = compiled_foo1(x1, x2) The correct implementation of neg in the cpp codegen is as follows: def neg1(x): return f\"decltype({x})(-{x})\" In order to demonstrate the debugging, we will modify the function to a wrong one later. Get more logging information# No debugging information would be provided if you run this simple example by default. In order to get more useful debugging and logging information, we usually add a TORCH_COMPILE_DEBUG environment variable like below: TORCH_COMPILE_DEBUG=1 python xx.py This would print more debug information in the output logs and also dump the intermediate IRs generated during the codegen process. You can find the dumped file paths in the log like below: torch._inductor.debug: [WARNING] model___20 debug trace: /tmp/torchinductor_root/rx/crxfi2ybd7yp5sbj2pnhw33wfhtdw7wumvrobyp5sjvdui5ktjc2.debug In this directory, the following files are saved for debugging purposes: File Description fx_graph_runnable.py Executable FX graph, after decomposition, before pattern match fx_graph_transformed.py Transformed FX graph, after pattern match ir_pre_fusion.txt Inductor IR before fusion ir_post_fusion.txt Inductor IR after fusion output_code.py Generated Python code for graph, with C++/Triton kernels Note that fx_graph_runnable.py and output_code.py are both runnable and editable in order to make debugging easier. Here are the main parts of code extracted from the files and we correlate the C++ generated line with the FX code line. fx_graph_runnable: def forward1(self, arg0_1, arg1_1): neg = torch.ops.aten.neg.default(arg0_1); arg0_1 = None maximum = torch.ops.aten.maximum.default(arg1_1, neg); arg1_1 = neg = None clone = torch.ops.aten.clone.default(maximum); maximum = None return (clone,) C++ kernel in output_code: import torch from torch._inductor.async_compile import AsyncCompile async_compile = AsyncCompile() cpp_fused_cat_maximum_neg_0 = async_compile.cpp(\u0027\u0027\u0027 #include \"/tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h\" extern \"C\" void kernel(const unsigned char* in_ptr0, const unsigned char* in_ptr1, unsigned char* out_ptr0) { { #pragma GCC ivdep for(long i0=static_cast\u003clong\u003e(0L); i0\u003cstatic_cast\u003clong\u003e(8390L); i0+=static_cast\u003clong\u003e(1L)) { #pragma GCC ivdep for(long i1=static_cast\u003clong\u003e(0L); i1\u003cstatic_cast\u003clong\u003e(8L); i1+=static_cast\u003clong\u003e(1L)) { auto tmp0 = in_ptr0[static_cast\u003clong\u003e(i1 + (8L*i0))]; auto tmp1 = in_ptr1[static_cast\u003clong\u003e(i1)]; // Corresponding FX code line: neg = torch.ops.aten.neg.default(arg0_1); arg0_1 = None auto tmp2 = decltype(tmp1)(-tmp1); // Corresponding FX code line: maximum = torch.ops.aten.maximum.default(arg1_1, neg); arg1_1 = neg = None auto tmp3 = max_propagate_nan(tmp0, tmp2); // Corresponding FX code line: clone = torch.ops.aten.clone.default(maximum); maximum = None out_ptr0[static_cast\u003clong\u003e(i1 + (8L*i0))] = tmp3; } } } }\u0027\u0027\u0027) Determine component of error# When encountering errors or accuracy problems, a straightforward solution to find the bug is to narrow down the problem. The first thing to do is to determine the component where the error occurs. Luckily, it can be simply achieved by changing the backend of torch.compile. Code Description torch.compile(fn, backend=\"eager\") Enable Dynamo torch.compile(fn, backend=\"aot_eager\") Enable Dynamo + AOT Autograd torch.compile(fn, backend=\"inductor\") Enable Dynamo + AOT Autograd + Inductor If the model can successfully run when the backend is set to eager or aot_eager while it fails with inductor, we can narrow down the failure to Inductor. Compilation error# As we know, the evolved chain of graph-level optimization is like: torch.neg (Python) -\u003e torch.ops.aten.neg.default (within FX graph) -\u003e ops.neg (within IR node) -\u003e tmp2 = -tmp1 (within C++ kernel) If you encounter a compilation error, there is something wrong when compiling C++ kernels in the output code. This type of error indicates that bugs are introduced when lowering IR nodes to output code. The root cause of compilation error is usually shown in the traceback log. For example, the neg function is modified like this: def neg2(x): return f\"-{x}\" The logging gives the following compile error with a rather clear reason. torch._dynamo.exc.BackendCompilerFailed: backend=\u0027inductor\u0027 raised: CppCompileError: C++ compile error /tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp: In function \u2018void kernel(const unsigned char*, const unsigned char*, unsigned char*)\u2019: /tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp:17:57: error: no matching function for call to \u2018max_propagate_nan(unsigned char\u0026, int\u0026)\u2019 17 | auto tmp3 = max_propagate_nan(tmp0, tmp2); | ^ In file included from /tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp:2: /tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h:27:17: note: candidate: \u2018template\u003cclass scalar_t\u003e scalar_t max_propagate_nan(scalar_t, scalar_t)\u2019 27 | inline scalar_t max_propagate_nan(scalar_t a, scalar_t b) { | ^~~~~~~~~~~~~~~~~ /tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h:27:17: note: template argument deduction/substitution failed: /tmp/torchinductor_root/xg/cxga5tk3b4lkwoxyigrtocjp5s7vc5cg2ikuscf6bk6pjqip2bhx.cpp:17:57: note: deduced conflicting types for parameter \u2018scalar_t\u2019 (\u2018unsigned char\u2019 and \u2018int\u2019) 17 | auto tmp3 = max_propagate_nan(tmp0, tmp2); | ^ Let us also see the corresponding C++ kernel in output code and IR node. C++ kernel: include \"/tmp/torchinductor_root/gv/cgv6n5aotqjo5w4vknjibhengeycuattfto532hkxpozszcgxr3x.h\" extern \"C\" void kernel(const unsigned char* in_ptr0, const unsigned char* in_ptr1, unsigned char* out_ptr0) { { #pragma GCC ivdep for(long i0=static_cast\u003clong\u003e(0L); i0\u003cstatic_cast\u003clong\u003e(8390L); i0+=static_cast\u003clong\u003e(1L)) { #pragma GCC ivdep for(long i1=static_cast\u003clong\u003e(0L); i1\u003cstatic_cast\u003clong\u003e(8L); i1+=static_cast\u003clong\u003e(1L)) { auto tmp0 = in_ptr0[static_cast\u003clong\u003e(i1 + (8L*i0))]; auto tmp1 = in_ptr1[static_cast\u003clong\u003e(i1)]; auto tmp2 = -tmp1; auto tmp3 = max_propagate_nan(tmp0, tmp2); out_ptr0[static_cast\u003clong\u003e(i1 + (8L*i0))] = tmp3; } } } } IR node: buf0: SchedulerNode(ComputedBuffer) buf0.writes = [MemoryDep(\u0027buf0\u0027, c0, {c0: 67120})] buf0.unmet_dependencies = [] buf0.met_dependencies = [ MemoryDep(\u0027arg0_1\u0027, c1, {c0: 8390, c1: 8}), MemoryDep(\u0027arg1_1\u0027, c0, {c0: 67120})] buf0.users = [NodeUser(node=OUTPUT, can_inplace=False)] buf0.group.device = cpu buf0.group.iteration = ((8390, 8), ()) buf0.sizes = ([8390, 8], []) class buf0_loop_body: var_ranges = {z0: 8390, z1: 8} index0 = 8*z0 + z1 index1 = z1 def body(self, ops): get_index = self.get_index(\u0027index0\u0027) load = ops.load(\u0027arg1_1\u0027, get_index) get_index_1 = self.get_index(\u0027index1\u0027) load_1 = ops.load(\u0027arg0_1\u0027, get_index_1) neg = ops.neg(load_1) maximum = ops.maximum(load, neg) get_index_2 = self.get_index(\u0027index0\u0027) store = ops.store(\u0027buf0\u0027, get_index_2, maximum, None) return store According to the traceback logging, the compilation error is caused by the data type inconsistency of max_propagate_nan\u2019s inputs. By checking the C++ kernel, we know that tmp2 is no longer long after doing - as tmp0 is long. We can easily match - and max_propagate_nan in C++ kernel with ops.neg and ops.maximum in IR node respectively. Now we successfully find that the root cause is the implementation of ops.neg in cpp codegen, which silently changes the data type when doing neg. Accuracy debugging# Otherwise, if the model runs with other errors or accuracy problem, you can use the PyTorch debugging tool called Minifier. The core idea of Minifier is to keep removing the nodes and inputs of graph until finding the minimal graph with problem. It helps to automatically generate a minified problematic graph through 4 strategies: truncating suffix, delta debugging, eliminating dead code and removing unused inputs. We will now show the debugging process for the accuracy problem with the help of Minifer. The accuracy problem refers to the case where the outputs of backends eager and inductor are different. For instance, we modify the example like this: from torch._dynamo.utils import same def foo2(x1, x2): a = torch.neg(x1) b = torch.maximum(x2, a) y = torch.cat([b], dim=0) return y x1 = torch.randn((1, 8), dtype=torch.float32) x2 = torch.randn((8390, 8), dtype=torch.float32) expected_result = foo2(x1, x2) compiled_foo2 = torch.compile(foo2) actual_result = compiled_foo2(x1, x2) assert same(expected_result, actual_result) == True And also modify the neg function: def neg3(x): return f\"decltype({x})(2 * {x})\" An accuracy problem would be raised as follows: torch._dynamo.utils: [ERROR] Accuracy failed: allclose not within tol=0.0001 Traceback (most recent call last): File \"test_script.py\", line 18, in \u003cmodule\u003e assert same(expected_result, actual_result) == True AssertionError To debug an accuracy problem with Minifier, two environment variables are needed: TORCHDYNAMO_REPRO_AFTER=\"aot\" TORCHDYNAMO_REPRO_LEVEL=4 python xx.py Which gives us logging information that demonstrates the steps of minifying: Started off with 6 nodes Trying granularity 2 Strategy: Truncate suffix (G: 2) (6 nodes, 2 inputs) SUCCESS: Went from 6 to 4 nodes Trying granularity 4 Strategy: Remove unused inputs (G: 4) (4 nodes, 2 inputs) SUCCESS: Went from 4 to 3 nodes After running, we get the final minified graph with the target node neg: def forward2(self, arg0_1): neg = torch.ops.aten.neg.default(arg0_1); arg0_1 = None return (neg,) For more usage details about Minifier, please refer to Troubleshooting. Performance profiling# Within this section, we will demonstrate the process of conducting performance analysis for a model that has been compiled using the Inductor CPU backend. In the example below, we benchmark a Hugging Face Transformer model MobileBertForQuestionAnswering with both the eager mode and the Inductor graph mode. The execution time and the speedup ratio of Inductor are printed after the benchmark. We use Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz and run benchmark on the first socket to demonstrate the optimization within this section. We set following environment variable as a best practice to benchmark on Intel(R) CPU. export KMP_BLOCKTIME=1 export KMP_SETTINGS=1 export KMP_AFFINITY=granularity=fine,compact,1,0 export LD_PRELOAD=${CONDA_PREFIX:-\"$(dirname $(which conda))/../\"}/lib/libiomp5.so:${CONDA_PREFIX:-\"$(dirname $(which conda))/../\"}/lib/libjemalloc.so export MALLOC_CONF=\"oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:-1,muzzy_decay_ms:-1\" numactl -C 0-31 -m 0 python bench.py # bench.py from transformers import MobileBertForQuestionAnswering # Initialize an eager model model = MobileBertForQuestionAnswering.from_pretrained(\"csarron/mobilebert-uncased-squad-v2\") seq_length = 128 bs = 128 vocab_size = model.config.vocab_size input = torch.randint(0, vocab_size, (bs, seq_length), dtype=torch.int64) input_dict = {\"input_ids\": input} # Initialize the inductor model compiled_model = torch.compile(model) with torch.no_grad(): compiled_model(**input_dict) NUM_ITERS=50 import timeit with torch.no_grad(): # warmup for _ in range(10): model(**input_dict) eager_t = timeit.timeit(\"model(**input_dict)\", number=NUM_ITERS, globals=globals()) with torch.no_grad(): # warmup for _ in range(10): compiled_model(**input_dict) inductor_t = timeit.timeit(\"compiled_model(**input_dict)\", number=NUM_ITERS, globals=globals()) # print(f\"eager use: {eager_t * 1000 / NUM_ITERS} ms/iter\") # print(f\"inductor use: {inductor_t * 1000 / NUM_ITERS} ms/iter\") # print(f\"speed up ratio: {eager_t / inductor_t}\") Output: eager use: 802.1023553796113 ms/iter inductor use: 339.95180135127157 ms/iter speed up ratio: 2.359459053287382 In our own testing, we find the Inductor CPU backend speed up the model by around 2.355x. Next, let\u2019s dive deep into the performance at the operation level to understand where the speed-up comes from. Pytorch Profiler is a good tool to help us. Inductor CPU backend has the support to report the time of the fusion kernels to the profiler with the enable_kernel_profile configuration option: from torch._inductor import config config.cpp.enable_kernel_profile = True Following the steps in Pytorch Profiler We are able to get the profiling table and trace files. # bench.py from torch.profiler import profile, schedule, ProfilerActivity RESULT_DIR = \"./prof_trace\" my_schedule = schedule( skip_first=10, wait=5, warmup=5, active=1, repeat=5) def trace_handler(p): output = p.key_averages().table(sort_by=\"self_cpu_time_total\", row_limit=20) # print(output) p.export_chrome_trace(f\"{RESULT_DIR}/{p.step_num}.json\") for _ in range(10): model(**input_dict) # compiled_model(**input_dict) to get inductor model profiling total = 0 with profile( activities=[ProfilerActivity.CPU], schedule=my_schedule, on_trace_ready=trace_handler ) as p: for _ in range(50): model(**input_dict) # compiled_model(**input_dict) to get inductor model profiling p.step() We get the following performance profiling table for the eager-mode model (omitting some columns): ------------------------- ------------ ------------ ------------ Name CPU total % CPU total # of Calls ------------------------- ------------ ------------ ------------ aten::addmm 45.73% 370.814ms 362 aten::add 19.89% 161.276ms 363 aten::copy_ 14.97% 121.416ms 488 aten::mul 9.02% 73.154ms 194 aten::clamp_min 8.81% 71.444ms 96 aten::bmm 5.46% 44.258ms 48 ProfilerStep* 100.00% 810.920ms 1 aten::div 2.89% 23.447ms 24 aten::_softmax 1.00% 8.087ms 24 aten::linear 46.48% 376.888ms 362 aten::clone 2.77% 22.430ms 98 aten::t 0.31% 2.502ms 362 aten::view 0.14% 1.161ms 850 aten::transpose 0.17% 1.377ms 386 aten::index_select 0.12% 952.000us 3 aten::expand 0.12% 986.000us 458 aten::matmul 8.31% 67.420ms 48 aten::cat 0.09% 703.000us 1 aten::as_strided 0.08% 656.000us 963 aten::relu 8.86% 71.864ms 96 ------------------------- ------------ ------------ ------------ Self CPU time total: 810.920ms Similarly, we also get the table for the compiled model with Inductor (omitting some columns): ----------------------------------------------- ------------ ------------ ------------ Name CPU total % CPU total # of Calls ----------------------------------------------- ------------ ------------ ------------ mkl::_mkl_linear 68.79% 231.573ms 362 aten::bmm 8.02% 26.992ms 48 ProfilerStep* 100.00% 336.642ms 1 graph_0_cpp_fused_constant_pad_nd_embedding_0 0.27% 915.000us 1 aten::empty 0.27% 911.000us 362 graph_0_cpp_fused__mkl_linear_add_mul_relu_151 0.27% 901.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_226 0.27% 899.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_361 0.27% 898.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_121 0.27% 895.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_31 0.27% 893.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_76 0.26% 892.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_256 0.26% 892.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_346 0.26% 892.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_241 0.26% 891.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_316 0.26% 891.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_91 0.26% 890.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_106 0.26% 890.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_211 0.26% 890.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_61 0.26% 889.000us 1 graph_0_cpp_fused__mkl_linear_add_mul_relu_286 0.26% 889.000us 1 ----------------------------------------------- ------------ ------------ ------------ Self CPU time total: 336.642ms From the profiling table of the eager model, we can see the most time consumption ops are [aten::addmm, aten::add, aten::copy_, aten::mul, aten::clamp_min, aten::bmm]. Comparing with the inductor model profiling table, we notice an mkl::_mkl_linear entry and multiple fused kernels in the form graph_0_cpp_fused_*. They are the major optimizations that the inductor model is doing. Let us discuss them separately. (1) Regarding mkl::_mkl_linear: You may notice the number of calls to this kernel is 362, which is exactly the same as aten::linear in the eager model profiling table. The CPU total of aten::linear is 376.888ms, while it is 231.573ms for mkl::_mkl_linear. This suggests a ~1.63x for the \u201clinear\u201d part. The speedup mainly comes from packing the weight tensor to block memory format and invoking cblas_sgemm_compute within the Inductor CPU backend to have a better cache behavior during GEMM computation. (2) Regarding other memory-intensive ops: The end-to-end latency for the eager/inductor model is 802/339ms in our testing. So we can roughly infer that the speed up for the other memory-intensive ops is around 3.94x. Let\u2019s read the generated code to understand how the inductor achieves this impressive optimization. You can find the generated code by searching cpp_fused__mkl_linear_add_mul_relu_151 in output_code.py cpp_fused__mkl_linear_add_mul_relu_151 = async_compile.cpp(\u0027\u0027\u0027 #include \u003cATen/record_function.h\u003e #include \"/tmp/torchinductor_root/lr/clrlgu27q4ggd472umdzwsu6qcpqxcuusjxqvx2hwitjbujiiz7z.h\" extern \"C\" void kernel(float* in_out_ptr0, const float* in_ptr0, const float* in_ptr1, const float* in_ptr2, const float* in_ptr3) { RECORD_FUNCTION(\"graph_0_cpp_fused__mkl_linear_add_mul_relu_151\", c10::ArrayRef\u003cc10::IValue\u003e({})); #pragma omp parallel num_threads(32) { { #pragma omp for for(long i0=static_cast\u003clong\u003e(0L); i0\u003cstatic_cast\u003clong\u003e(16384L); i0+=static_cast\u003clong\u003e(1L)) { for(long i1=static_cast\u003clong\u003e(0L); i1\u003cstatic_cast\u003clong\u003e(512L); i1+=static_cast\u003clong\u003e(8L)) { auto tmp0 = at::vec::Vectorized\u003cfloat\u003e::loadu(in_ptr0 + static_cast\u003clong\u003e(i1 + (512L*i0))); auto tmp1 = at::vec::Vectorized\u003cfloat\u003e::loadu(in_ptr1 + static_cast\u003clong\u003e(i1)); auto tmp3 = at::vec::Vectorized\u003cfloat\u003e::loadu(in_out_ptr0 + static_cast\u003clong\u003e(i1 + (512L*i0))); auto tmp5 = at::vec::Vectorized\u003cfloat\u003e::loadu(in_ptr2 + static_cast\u003clong\u003e(i1)); auto tmp7 = at::vec::Vectorized\u003cfloat\u003e::loadu(in_ptr3 + static_cast\u003clong\u003e(i1)); auto tmp2 = tmp0 + tmp1; auto tmp4 = tmp2 + tmp3; auto tmp6 = tmp4 * tmp5; auto tmp8 = tmp6 + tmp7; tmp8.store(in_out_ptr0 + static_cast\u003clong\u003e(i1 + (512L*i0))); } } } } }\u0027\u0027\u0027) From the generated code above, we can see this kernel has done a typical Loop Fusion on [add, add, mul, add]. This is a memory-bound bottle neck preventing good performance. To get a more intuitive feeling about this optimization, we can infer the sizes and stride of the inputs and further benchmark this [add, add, mul, add] pattern. # bench.py def func(arg_0, arg_1, arg_2, arg_3, arg_4): add_0 = arg_0 + arg_1 add_1 = add_0 + arg_2 mul_1 = add_1 * arg_3 add_2 = mul_1 + arg_4 arg_2 = add_2 return arg_2 arg_0 = torch.rand(16384, 512) arg_1 = torch.rand(1, 512) arg_2 = torch.zeros(16384, 512) arg_3 = torch.rand(1, 512) arg_4 = torch.rand(1, 512) input = (arg_0, arg_1, arg_2, arg_3, arg_4) inductor_func = torch.compile(func) with torch.no_grad(): inductor_func(*input) import timeit NUM_ITERS=100 with torch.no_grad(): # warmup for _ in range(10): func(*input) eager_t = timeit.timeit(\"func(*input)\", number=NUM_ITERS, globals=globals()) with torch.no_grad(): # warmup for _ in range(10): inductor_func(*input) inductor_t = timeit.timeit(\"inductor_func(*input)\", number=NUM_ITERS, globals=globals()) # print(f\"eager use: {eager_t * 1000 / NUM_ITERS} ms/iter\") # print(f\"inductor use: {inductor_t * 1000 / NUM_ITERS} ms/iter\") # print(f\"speed up ratio: {eager_t / inductor_t}\") Output: eager use: 5.780875144992024 ms/iter inductor use: 0.9588955780491233 ms/iter speed up ratio: 6.0286805751604735 This is just an example. The profiling table shows all element-wise op are fused within the inductor automatically in this model. You can read more kernels in output_code.py Conclusion# The document gives an in-depth tutorial for the Inductor CPU backend. With motivating examples, we walk through the process of debugging and profiling. The main idea is to narrow down the problem. We demonstrate step by step the way to delve deeper the issue and find the root cause of failures, with the help of debugging logging and the tool Minifier. Firstly determine which component the failure occurs in and then try to generate the smallest snippet of code that can reproduce the failure. When the performance with Inductor is better than that of eager mode, we provide a solid analytical method for performance profiling. We show how to find the time-consuming hotspot with PyTorch Profiler and figure out the operator-level or kernel-level reason to explain the phenomenon. Download Jupyter notebook: inductor_debug_cpu.ipynb Download Python source code: inductor_debug_cpu.py Download zipped: inductor_debug_cpu.zip",
+       "author": {
+         "@type": "Organization",
+         "name": "PyTorch Contributors",
+         "url": "https://pytorch.org"
+       },
+       "image": "../_static/img/pytorch_seo.png",
+       "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "/intermediate/inductor_debug_cpu.html"
+       },
+       "datePublished": "2023-01-01T00:00:00Z",
+       "dateModified": "2023-01-01T00:00:00Z"
+     }
+ </script>
+<script>
+    // Tutorials Call to action event tracking
+    $("[data-behavior='call-to-action-event']").on('click', function () {
+      fbq('trackCustom', "Download", {
+        tutorialTitle: $('h1:first').text(),
+        downloadLink: this.href,
+        tutorialLink: window.location.href,
+        downloadTitle: $(this).attr("data-response")
+      });
+      if (typeof gtag === 'function') {
+        gtag('event', 'click', {
+          'event_category': $(this).attr("data-response"),
+          'event_label': $("h1").first().text(),
+          'tutorial_link': window.location.href
+        });
+      }
+    });
+  </script>
+</body>
+</body></html>

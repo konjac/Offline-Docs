@@ -1,0 +1,1960 @@
+
+<!DOCTYPE html>
+
+<html data-content_root="../../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>PyTorch Benchmark — PyTorch Tutorials 2.8.0+cu128 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../../_static/pygments.css?v=536c50fe" rel="stylesheet" type="text/css"/>
+<link href="../../_static/css/theme.css?v=047068a3" rel="stylesheet" type="text/css"/>
+<link href="../../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sg_gallery.css?v=d2d258e8" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex-math.css?v=91adb8b6" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<link as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/documentation_options.js?v=bffbcef7"></script>
+<script src="../../_static/doctools.js?v=888ff710"></script>
+<script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../../_static/copybutton.js?v=f281be69"></script>
+<script src="../../_static/katex.min.js?v=be8ff15f"></script>
+<script src="../../_static/auto-render.min.js?v=ad136472"></script>
+<script src="../../_static/katex_autorenderer.js?v=bebc588a"></script>
+<script src="../../_static/design-tabs.js?v=f930bc37"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'recipes/recipes/benchmark';</script>
+<link href="https://docs.pytorch.org/tutorials/recipes/recipes/benchmark.html" rel="canonical"/>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="module_load_state_dict_tips.html" rel="next" title="Tips for Loading an nn.Module from a Checkpoint"/>
+<link href="../distributed_comm_debug_mode.html" rel="prev" title="Getting Started with CommDebugMode"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+<script>
+  if (window.location.hostname === 'docs.pytorch.org' || window.location.hostname === 'docs-preview.pytorch.org') {
+    const script = document.createElement('script');
+    script.src = 'https://cmp.osano.com/16A0DbT9yDNIaQkvZ/31b1b91a-e0b6-47ea-bde2-7f2bd13dbe5c/osano.js?variant=one';
+    document.head.appendChild(script);
+  }
+</script>
+<script>
+  // Cookie banner for non-LF projects
+  document.addEventListener('DOMContentLoaded', function () {
+    // Hide cookie banner on local environments and LF owned docs
+    if (window.location.hostname === 'localhost' ||
+      window.location.hostname === '0.0.0.0' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === 'docs.pytorch.org' ||
+      window.location.hostname === 'docs-preview.pytorch.org' ||
+      window.location.hostname.startsWith('192.168.')) {
+      const banner = document.querySelector('.cookie-banner-wrapper');
+      if (banner) {
+        banner.style.display = 'none';
+      }
+    }
+  });
+</script>
+<!-- Conditional CSS for header and footer height adjustment -->
+<link crossorigin="anonymous" href="../../_static/css/theme.css" rel="stylesheet" type="text/css"/>
+<script src="../../_static/js/theme.js" type="text/javascript"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&amp;display=swap" rel="stylesheet"/>
+<meta content="../../_static/img/pytorch_seo.png" property="og:image"/>
+<link crossorigin="anonymous" href="../../_static/webfonts/all.min.css" rel="stylesheet"/>
+<meta content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval' blob:;" http-equiv="Content-Security-Policy"/>
+<meta content="tutorials" name="pytorch_project"/>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-T8XT4PS" style="display:none;visibility:hidden" width="0"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<!-- Google Tag Manager -->
+<script>(function (w, d, s, l, i) {
+    w[l] = w[l] || []; w[l].push({
+      'gtm.start':
+        new Date().getTime(), event: 'gtm.js'
+    }); var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    j.onload = function () {
+      window.dispatchEvent(new Event('gtm_loaded'));
+      console.log('GTM loaded successfully');
+    };
+  })(window, document, 'script', 'dataLayer', 'GTM-T8XT4PS');
+</script>
+<!-- End Google Tag Manager -->
+<!-- Facebook Pixel Code -->
+<script>
+  !function (f, b, e, v, n, t, s) {
+    if (f.fbq) return; n = f.fbq = function () {
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+    n.queue = []; t = b.createElement(e); t.async = !0;
+    t.src = v; s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s)
+  }(window, document, 'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '243028289693773');
+  fbq('track', 'PageView');
+</script>
+<script>
+  document.documentElement.setAttribute('data-version', 'v2.8.0+cu128');
+</script>
+<noscript>
+<img height="1" src="https://www.facebook.com/tr?id=243028289693773&amp;ev=PageView&amp;noscript=1" width="1"/>
+</noscript>
+<script>
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+</script>
+<!-- End Facebook Pixel Code -->
+<!-- Repository configuration for tutorials -->
+<script>
+  // Define repository configuration for tutorial buttons using existing html_context variables
+  // Only injected when tutorial buttons are shown AND github variables are defined
+  // If either condition is false, JavaScript will fallback to default PyTorch tutorial links
+  window.repoConfig = {
+    github_repo: "pytorch/tutorials",
+    github_branch: "main",
+    colab_repo: "pytorch/tutorials",
+    colab_branch: ""
+  };
+</script>
+<!-- Script to Fix scrolling -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Fix anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+          const headerHeight =
+            (document.querySelector('.header-holder') ? document.querySelector('.header-holder').offsetHeight : 0) +
+            (document.querySelector('.bd-header') ? document.querySelector('.bd-header').offsetHeight : 0) + 20;
+
+          const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+
+          // Update URL hash without scrolling
+          history.pushState(null, null, '#' + targetId);
+        }
+      });
+    });
+  });
+</script>
+<script async="" src="https://cse.google.com/cse.js?cx=e65585f8c3ea1440e"></script>
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="en" name="docsearch:language">
+</meta></meta></head>
+<body class="pytorch-body" data-feedback-url="https://github.com/pytorch/tutorials">
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+<div class="header-container-wrapper">
+<div class="header-container">
+<a aria-label="PyTorch" class="header-logo" href="https://pytorch.org/"></a>
+<div class="main-menu">
+<ul>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Learn</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/get-started/locally">
+<span class="dropdown-title">Get Started</span>
+</a>
+<a class="nav-dropdown-item" href="https://docs.pytorch.org/tutorials">
+<span class="dropdown-title">Tutorials</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/basics/intro.html">
+<span class="dropdown-title">Learn the Basics</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/recipes/recipes_index.html">
+<span class="dropdown-title">PyTorch Recipes</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/introyt.html">
+<span class="dropdown-title">Intro to PyTorch - YouTube Series</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/webinars/">
+<span class="dropdown-title">Webinars</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Community</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://landscape.pytorch.org/" target="_blank">
+<span class="dropdown-title">Landscape</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/join-ecosystem">
+<span class="dropdown-title">Join the Ecosystem</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/community-hub/">
+<span class="dropdown-title">Community Hub</span>
+</a>
+<a class="nav-dropdown-item" href="https://discuss.pytorch.org/">
+<span class="dropdown-title">Forums</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/resources">
+<span class="dropdown-title">Developer Resources</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/contributor-awards/">
+<span class="dropdown-title">Contributor Awards</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/community-events/">
+<span class="dropdown-title">Community Events</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/programs/ambassadors/">
+<span class="dropdown-title">PyTorch Ambassadors</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Projects</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/pytorch/">
+<span class="dropdown-title">PyTorch</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/vllm/">
+<span class="dropdown-title">vLLM</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/deepspeed/">
+<span class="dropdown-title">DeepSpeed</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/host-your-project/">
+<span class="dropdown-title">Host Your Project</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span> Docs</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://docs.pytorch.org/docs/stable/index.html">
+<span class="dropdown-title">PyTorch</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/domains">
+<span class="dropdown-title">Domains</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Blogs &amp; News</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/blog/">
+<span class="dropdown-title">Blog</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/announcements">
+<span class="dropdown-title">Announcements</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/case-studies/">
+<span class="dropdown-title">Case Studies</span>
+<a class="nav-dropdown-item" href="https://pytorch.org/events">
+<span class="dropdown-title">Events</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/newsletter">
+<span class="dropdown-title">Newsletter</span>
+</a>
+</a></div>
+</div></li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>About</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/foundation">
+<span class="dropdown-title">PyTorch Foundation</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/members">
+<span class="dropdown-title">Members</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/governing-board">
+<span class="dropdown-title">Governing Board</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tac">
+<span class="dropdown-title">Technical Advisory Council</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/credits">
+<span class="dropdown-title">Cloud Credit Program</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/staff">
+<span class="dropdown-title">Staff</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/contact">
+<span class="dropdown-title">Contact</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="no-dropdown main-menu-button">
+<a data-cta="join" href="https://pytorch.org/join">
+                JOIN
+              </a>
+</div>
+</li>
+</ul>
+</div>
+<a class="main-menu-open-button" data-behavior="open-mobile-menu" href="#">
+<i class="fa-solid fa-ellipsis"></i>
+</a>
+</div>
+</div>
+</div>
+<!-- Begin Mobile Menu -->
+<div class="mobile-main-menu">
+<div class="container-fluid">
+<div class="header-container-wrapper">
+<div class="mobile-main-menu-header-container">
+<a class="main-menu-close-button" data-behavior="close-mobile-menu" href="#">
+</a>
+</div>
+</div>
+</div>
+<div class="mobile-main-menu-links-container">
+<div class="main-menu">
+<ul>
+<li class="resources-mobile-menu-title">
+<a>Learn</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/get-started/locally">Get Started</a>
+</li>
+<li>
+<a href="https://docs.pytorch.org/tutorials">Tutorials</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/basics/intro.html">Learn the Basics</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/recipes/recipes_index.html">PyTorch Recipes</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/introyt.html">Introduction to PyTorch - YouTube Series</a>
+</li>
+<li>
+<a href="https://pytorch.org/webinars/">Webinars</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Community</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://landscape.pytorch.org/">Landscape</a>
+</li>
+<li>
+<a href="https://pytorch.org/join-ecosystem">Join the Ecosystem</a>
+</li>
+<li>
+<a href="https://pytorch.org/community-hub/">Community Hub</a>
+</li>
+<li>
+<a href="https://discuss.pytorch.org/">Forums</a>
+</li>
+<li>
+<a href="https://pytorch.org/resources">Developer Resources</a>
+</li>
+<li>
+<a href="https://pytorch.org/contributor-awards/">Contributor Awards</a>
+</li>
+<li>
+<a href="https://pytorch.org/community-events/">Community Events</a>
+</li>
+<li>
+<a href="https://pytorch.org/programs/ambassadors/">PyTorch Ambassadors</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Projects</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/projects/pytorch/">PyTorch</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/vllm/">vLLM</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/deepspeed/">DeepSpeed</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/host-your-project/">Host Your Project</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Docs</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://docs.pytorch.org/docs/stable/index.html">PyTorch</a>
+</li>
+<li>
+<a href="https://pytorch.org/domains">Domains</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Blog &amp; News</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/blog/">Blog</a>
+</li>
+<li>
+<a href="https://pytorch.org/announcements">Announcements</a>
+</li>
+<li>
+<a href="https://pytorch.org/case-studies/">Case Studies</a>
+</li>
+<li>
+<a href="https://pytorch.org/events">Events</a>
+</li>
+<li>
+<a href="https://pytorch.org/newsletter">Newsletter</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>About</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/foundation">PyTorch Foundation</a>
+</li>
+<li>
+<a href="https://pytorch.org/members">Members</a>
+</li>
+<li>
+<a href="https://pytorch.org/governing-board">Governing Board</a>
+</li>
+<li>
+<a href="https://pytorch.org/tac">Technical Advisory Council</a>
+</li>
+<li>
+<a href="https://pytorch.org/credits">Cloud Credit Program</a>
+</li>
+<li>
+<a href="https://pytorch.org/staff">Staff</a>
+</li>
+<li>
+<a href="https://pytorch.org/contact">Contact</a>
+</li>
+</ul>
+</ul>
+</div>
+</div>
+</div>
+<!-- End Mobile Menu -->
+<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<input class="sidebar-toggle" id="pst-primary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+<input class="sidebar-toggle" id="pst-secondary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+</div>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="version" href="../../index.html">v2.8.0+cu128</a>
+</div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../intro.html">
+    Intro
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../compilers_index.html">
+    Compilers
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../domains.html">
+    Domains
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../distributed.html">
+    Distributed
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../extension.html">
+    Extension
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../../recipes_index.html">
+    Recipes
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item">
+<form action="../../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://x.com/PyTorch" rel="noopener" target="_blank" title="X"><i aria-hidden="true" class="fa-brands fa-x-twitter fa-lg"></i>
+<span class="sr-only">X</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/pytorch/tutorials" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://dev-discuss.pytorch.org/" rel="noopener" target="_blank" title="Discourse"><i aria-hidden="true" class="fa-brands fa-discourse fa-lg"></i>
+<span class="sr-only">Discourse</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/torch/" rel="noopener" target="_blank" title="PyPi"><i aria-hidden="true" class="fa-brands fa-python fa-lg"></i>
+<span class="sr-only">PyPi</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../intro.html">
+    Intro
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../compilers_index.html">
+    Compilers
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../domains.html">
+    Domains
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../distributed.html">
+    Distributed
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../extension.html">
+    Extension
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../../ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../../recipes_index.html">
+    Recipes
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<form action="../../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://x.com/PyTorch" rel="noopener" target="_blank" title="X"><i aria-hidden="true" class="fa-brands fa-x-twitter fa-lg"></i>
+<span class="sr-only">X</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/pytorch/tutorials" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://dev-discuss.pytorch.org/" rel="noopener" target="_blank" title="Discourse"><i aria-hidden="true" class="fa-brands fa-discourse fa-lg"></i>
+<span class="sr-only">Discourse</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/torch/" rel="noopener" target="_blank" title="PyPi"><i aria-hidden="true" class="fa-brands fa-python fa-lg"></i>
+<span class="sr-only">PyPi</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="defining_a_neural_network.html">Defining a Neural Network in PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torch_logs.html">(beta) Using TORCH_LOGS python API with torch.compile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="what_is_state_dict.html">What is a state_dict in PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="warmstarting_model_using_parameters_from_a_different_model.html">Warmstarting model using parameters from a different model in PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zeroing_out_gradients.html">Zeroing out gradients in PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="profiler_recipe.html">PyTorch Profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Captum_Recipe.html">Model Interpretability using Captum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensorboard_with_pytorch.html">How to use TensorBoard with PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="amp_recipe.html">Automatic Mixed Precision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuning_guide.html">Performance Tuning Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling_optimizer.html">(beta) Compiling the optimizer with torch.compile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timer_quick_start.html">Timer quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zero_redundancy_optimizer.html">Shard Optimizer States with ZeroRedundancyOptimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../distributed_comm_debug_mode.html">Getting Started with <code class="docutils literal notranslate"><span class="pre">CommDebugMode</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torch_export_challenges_solutions.html">Demonstration of torch.export flow, common challenges and the solutions to address them</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">PyTorch Benchmark</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_load_state_dict_tips.html">Tips for Loading an <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> from a Checkpoint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoning_about_shapes.html">Reasoning about Shapes in PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="swap_tensors.html">Extension points in <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> for <code class="docutils literal notranslate"><span class="pre">load_state_dict</span></code> and tensor subclasses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torch_export_aoti_python.html"><code class="docutils literal notranslate"><span class="pre">torch.export</span></code> AOTInductor Tutorial for Python runtime (Beta)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensorboard_with_pytorch.html">How to use TensorBoard with PyTorch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torch_compile_torch_function_modes.html">(beta) Utilizing Torch Function modes with torch.compile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling_optimizer_lr_scheduler.html">(beta) Running the compiled optimizer with an LR Scheduler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../foreach_map.html">Explicit horizontal fusion with foreach_map and torch.compile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torch_compile_user_defined_triton_kernel_tutorial.html">Using User-Defined Triton Kernels with <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torch_compile_caching_tutorial.html">Compile Time Caching in <code class="docutils literal notranslate"><span class="pre">torch.compile</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../torch_compile_caching_configuration_tutorial.html">Compile Time Caching Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../regional_compilation.html">Reducing torch.compile cold start compilation time with regional compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../regional_aot.html">Reducing AoT cold start compilation time with regional compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intel_neural_compressor_for_pytorch.html">Ease-of-use quantization for PyTorch with Intel® Neural Compressor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../distributed_device_mesh.html">Getting Started with DeviceMesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../distributed_checkpoint_recipe.html">Getting Started with Distributed Checkpoint (DCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../distributed_async_checkpoint_recipe.html">Asynchronous Saving with Distributed Checkpoint (DCP)</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="../../recipes_index.html">Recipes</a></li>
+<li aria-current="page" class="breadcrumb-item active">PyTorch Benchmark</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="header-article-items__end">
+<div class="header-article-item">
+<div class="rating">
+    Rate this Page
+    <div class="stars">
+<span class="star" data-behavior="tutorial-rating" data-count="1" data-value="1">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="2" data-value="2">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="3" data-value="3">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="4" data-value="4">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="5" data-value="5">★</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article" id="pytorch-article">
+<!-- Hidden breadcrumb schema for SEO only -->
+<div itemscope="" itemtype="https://schema.org/BreadcrumbList" style="display:none;">
+<div itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<link href="../../recipes_index.html" itemprop="item"/>
+<meta content="Recipes" itemprop="name"/>
+<meta content="1" itemprop="position"/>
+</div>
+<div itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<meta content="PyTorch Benchmark" itemprop="name"/>
+<meta content="2" itemprop="position"/>
+</div>
+</div>
+<script>
+      if ((window.location.href.indexOf("/unstable/") != -1) && (window.location.href.indexOf("/unstable/unstable_index") < 1)) {
+        var div = '<div class="prototype-banner"><i class="fa fa-flask" aria-hidden="true"></i> <strong>Unstable feature:</strong> Not typically available in binary distributions like PyPI. Early stage for feedback and testing.</div>'
+        document.addEventListener('DOMContentLoaded', function () {
+          document.getElementById("pytorch-article").insertAdjacentHTML('afterBegin', div);
+        });
+      }
+    </script>
+<div class="pytorch-call-to-action-links">
+<div id="tutorial-type">recipes/recipes/benchmark</div>
+<a data-behavior="call-to-action-event" data-response="Run in Google Colab" id="colab-link" target="_blank">
+<div id="google-colab-link">
+<img class="call-to-action-img" src="../../_static/img/pytorch-colab.svg"/>
+<div class="call-to-action-desktop-view">Run in Google Colab</div>
+<div class="call-to-action-mobile-view">Colab</div>
+</div>
+</a>
+<a data-behavior="call-to-action-event" data-response="Download Notebook" id="notebook-link">
+<div id="download-notebook-link">
+<img class="call-to-action-notebook-img" src="../../_static/img/pytorch-download.svg"/>
+<div class="call-to-action-desktop-view">Download Notebook</div>
+<div class="call-to-action-mobile-view">Notebook</div>
+</div>
+</a>
+<a data-behavior="call-to-action-event" data-response="View on Github" id="github-link" target="_blank">
+<div id="github-view-link">
+<img class="call-to-action-img" src="../../_static/img/pytorch-github.svg"/>
+<div class="call-to-action-desktop-view">View on GitHub</div>
+<div class="call-to-action-mobile-view">GitHub</div>
+</div>
+</a>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-recipes-recipes-benchmark-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="pytorch-benchmark">
+<span id="sphx-glr-recipes-recipes-benchmark-py"></span><h1>PyTorch Benchmark<a class="headerlink" href="#pytorch-benchmark" title="Link to this heading">#</a></h1><p class="date-info-last-verified" style="color: #6c6c6d; font-size: small;">Created On: Oct 02, 2025 | Last Updated: Oct 02, 2025 | Last Verified: Nov 05, 2024</p>
+<p>This recipe provides a quick-start guide to using PyTorch
+<code class="docutils literal notranslate"><span class="pre">benchmark</span></code> module to measure and compare code performance.</p>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<p>Benchmarking is an important step in writing code. It helps
+us validate that our code meets performance expectations,
+compare different approaches to solving the same problem and
+prevent performance regressions.</p>
+<p>There are many options when it comes to benchmarking PyTorch code
+including the Python builtin <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module. However, benchmarking
+PyTorch code has many caveats that can be easily overlooked such as
+managing the number of threads and synchronizing CUDA devices. Moreover,
+generating Tensor inputs for benchmarking can be quite tedious.</p>
+<p>This recipe demonstrates how to use PyTorch <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> module to avoid
+common mistakes while making it easier to compare performance of
+different code, generate input for benchmarking and more.</p>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
+<p>Before we begin, install <code class="docutils literal notranslate"><span class="pre">torch</span></code> if it isn’t already available.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">torch</span>
+</pre></div>
+</div>
+</section>
+<section id="steps">
+<h2>Steps<a class="headerlink" href="#steps" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Defining functions to benchmark</p></li>
+<li><p>Benchmarking with <code class="docutils literal notranslate"><span class="pre">timeit.Timer</span></code></p></li>
+<li><p>Benchmarking with <code class="docutils literal notranslate"><span class="pre">torch.utils.benchmark.Timer</span></code></p></li>
+<li><p>Benchmarking with <code class="docutils literal notranslate"><span class="pre">Blocked</span> <span class="pre">Autorange</span></code></p></li>
+<li><p>Comparing benchmark results</p></li>
+<li><p>Saving/Loading benchmark results</p></li>
+<li><p>Generating inputs with <code class="docutils literal notranslate"><span class="pre">Fuzzed</span> <span class="pre">Parameters</span></code></p></li>
+<li><p>Collecting instruction counts with <code class="docutils literal notranslate"><span class="pre">Callgrind</span></code></p></li>
+</ol>
+<section id="defining-functions-to-benchmark">
+<h3>1. Defining functions to benchmark<a class="headerlink" href="#defining-functions-to-benchmark" title="Link to this heading">#</a></h3>
+<p>As of the time of this writing, <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.dot.html?highlight=dot#torch.dot">torch.dot</a>
+does not support batched mode, so we will compare two approaches to
+implementing it using existing <code class="docutils literal notranslate"><span class="pre">torch</span></code> operators: one approach uses a
+combination of <code class="docutils literal notranslate"><span class="pre">mul</span></code> and <code class="docutils literal notranslate"><span class="pre">sum</span></code> while the other reduces the problem to <code class="docutils literal notranslate"><span class="pre">bmm</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">batched_dot_mul_sum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''Computes batched dot by multiplying and summing'''</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">batched_dot_bmm</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''Computes batched dot by reducing to ``bmm``'''</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.bmm.html#torch.bmm" title="torch.bmm"><span class="n">torch</span><span class="o">.</span><span class="n">bmm</span></a><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
+
+
+<span class="c1"># Input for benchmarking</span>
+<span class="n">x</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+
+<span class="c1"># Ensure that both functions compute the same output</span>
+<span class="k">assert</span> <span class="n">batched_dot_mul_sum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">batched_dot_bmm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="benchmarking-with-timeit-timer">
+<h3>2. Benchmarking with <code class="docutils literal notranslate"><span class="pre">timeit.Timer</span></code><a class="headerlink" href="#benchmarking-with-timeit-timer" title="Link to this heading">#</a></h3>
+<p>First, let’s benchmark the code using Python’s builtin <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module.
+We keep the benchmark code simple here so we can compare the defaults
+of <code class="docutils literal notranslate"><span class="pre">timeit</span></code> and <code class="docutils literal notranslate"><span class="pre">torch.utils.benchmark</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">timeit</span>
+
+<span class="n">t0</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="n">t1</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'mul_sum(x, x):  </span><span class="si">{</span><span class="n">t0</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s1">&gt;5.1f</span><span class="si">}</span><span class="s1"> us'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'bmm(x, x):      </span><span class="si">{</span><span class="n">t1</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s1">&gt;5.1f</span><span class="si">}</span><span class="s1"> us'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> mul_sum(x, x):  111.6 us
+ bmm(x, x):       70.0 us
+</pre></div>
+</div>
+</div>
+</section>
+<section id="benchmarking-with-torch-utils-benchmark-timer">
+<h3>3. Benchmarking with <code class="docutils literal notranslate"><span class="pre">torch.utils.benchmark.Timer</span></code><a class="headerlink" href="#benchmarking-with-torch-utils-benchmark-timer" title="Link to this heading">#</a></h3>
+<p>PyTorch <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> module was designed to be familiar to those who
+have used the <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module before. However, its defaults make it
+easier and safer to use for benchmarking PyTorch code. Let’s first
+compare the same basic API as above.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.utils.benchmark</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">benchmark</span>
+
+<span class="n">t0</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="n">t1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">t0</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d0f0&gt;
+ batched_dot_mul_sum(x, x)
+ setup: from __main__ import batched_dot_mul_sum
+   379.29 us
+   1 measurement, 100 runs , 1 thread
+ &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb103d67048&gt;
+ batched_dot_bmm(x, x)
+ setup: from __main__ import batched_dot_bmm
+   716.42 us
+   1 measurement, 100 runs , 1 thread
+</pre></div>
+</div>
+</div>
+<p>Even though the APIs are the same for the basic functionality, there
+are some important differences. <code class="docutils literal notranslate"><span class="pre">benchmark.Timer.timeit()</span></code> returns the
+time per run as opposed to the total runtime like <code class="docutils literal notranslate"><span class="pre">timeit.Timer.timeit()</span></code>
+does. PyTorch <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> module also provides formatted string
+representations for printing the results.</p>
+<p>Another important difference, and the reason why the results diverge
+is that PyTorch benchmark module runs in a single thread by default.
+We can change the number of threads with the <code class="docutils literal notranslate"><span class="pre">num_threads</span></code> argument.</p>
+<p><code class="docutils literal notranslate"><span class="pre">torch.utils.benchmark.Timer</span></code> takes several additional arguments
+including: <code class="docutils literal notranslate"><span class="pre">label</span></code>, <code class="docutils literal notranslate"><span class="pre">sub_label</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code> and <code class="docutils literal notranslate"><span class="pre">env</span></code> which change
+the __repr__ of the measurement object returned and are used for
+grouping the results (more on this later).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">num_threads</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.get_num_threads.html#torch.get_num_threads" title="torch.get_num_threads"><span class="n">torch</span><span class="o">.</span><span class="n">get_num_threads</span></a><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Benchmarking on </span><span class="si">{</span><span class="n">num_threads</span><span class="si">}</span><span class="s1"> threads'</span><span class="p">)</span>
+
+<span class="n">t0</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">},</span>
+    <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s1">'Multithreaded batch dot'</span><span class="p">,</span>
+    <span class="n">sub_label</span><span class="o">=</span><span class="s1">'Implemented using mul and sum'</span><span class="p">)</span>
+
+<span class="n">t1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">},</span>
+    <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s1">'Multithreaded batch dot'</span><span class="p">,</span>
+    <span class="n">sub_label</span><span class="o">=</span><span class="s1">'Implemented using bmm'</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">t0</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> Benchmarking on 40 threads
+ &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb103d54080&gt;
+ Multithreaded batch dot: Implemented using mul and sum
+ setup: from __main__ import batched_dot_mul_sum
+   118.47 us
+   1 measurement, 100 runs , 40 threads
+ &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8&gt;
+ Multithreaded batch dot: Implemented using bmm
+ setup: from __main__ import batched_dot_bmm
+   68.21 us
+   1 measurement, 100 runs , 40 threads
+</pre></div>
+</div>
+</div>
+<p>Running <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> with all threads available gives similar results
+as the <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module. More importantly, which version is faster
+depends on how many threads we run the code with. This is why it’s
+important to benchmark the code with thread settings that are
+representative of real use cases. Another important thing to remember
+is to synchronize CPU and CUDA when benchmarking on the GPU. Let’s run
+the above benchmarks again on a CUDA tensor and see what happens.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.randn.html#torch.randn" title="torch.randn"><span class="n">torch</span><span class="o">.</span><span class="n">randn</span></a><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">'cuda'</span><span class="p">)</span>
+
+<span class="n">t0</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="n">t1</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="c1"># Ran each twice to show difference before/after warm-up</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'mul_sum(x, x):  </span><span class="si">{</span><span class="n">t0</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s1">&gt;5.1f</span><span class="si">}</span><span class="s1"> us'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'mul_sum(x, x):  </span><span class="si">{</span><span class="n">t0</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s1">&gt;5.1f</span><span class="si">}</span><span class="s1"> us'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'bmm(x, x):      </span><span class="si">{</span><span class="n">t1</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s1">&gt;5.1f</span><span class="si">}</span><span class="s1"> us'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'bmm(x, x):      </span><span class="si">{</span><span class="n">t1</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s1">&gt;5.1f</span><span class="si">}</span><span class="s1"> us'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> mul_sum(x, x):   27.6 us
+ mul_sum(x, x):   25.3 us
+ bmm(x, x):      2775.5 us
+ bmm(x, x):       22.4 us
+</pre></div>
+</div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">t0</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="n">t1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+    <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+
+<span class="c1"># Run only once since benchmark module does warm-up for us</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t0</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d080&gt;
+ batched_dot_mul_sum(x, x)
+ setup: from __main__ import batched_dot_mul_sum
+   232.93 us
+   1 measurement, 100 runs , 1 thread
+ &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d0f0&gt;
+ batched_dot_bmm(x, x)
+ setup: from __main__ import batched_dot_bmm
+   181.04 us
+   1 measurement, 100 runs , 1 thread
+</pre></div>
+</div>
+</div>
+<p>The results reveal something interesting. The first run of the <code class="docutils literal notranslate"><span class="pre">bmm</span></code>
+version using the <code class="docutils literal notranslate"><span class="pre">timeit</span></code> module takes much longer than the second
+run. This is because <code class="docutils literal notranslate"><span class="pre">bmm</span></code> calls into <cite>cuBLAS</cite> which needs to be
+loaded the first time it’s called which takes some time. This is why
+it’s important to do a warm-up run before benchmarking, luckily for
+us, PyTorch’s <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> module takes care of that.</p>
+<p>The difference in the results between <code class="docutils literal notranslate"><span class="pre">timeit</span></code> and <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> modules
+is because the <cite>timeit</cite> module is not synchronizing CUDA and is thus only
+timing the time to launch the kernel. PyTorch’s <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> module does
+the synchronization for us.</p>
+</section>
+<section id="benchmarking-with-blocked-autorange">
+<h3>4. Benchmarking with <cite>Blocked Autorange</cite><a class="headerlink" href="#benchmarking-with-blocked-autorange" title="Link to this heading">#</a></h3>
+<p>While <code class="docutils literal notranslate"><span class="pre">timeit.Timer.autorange</span></code> takes a single continuous measurement
+of at least 0.2 seconds, <cite>torch.utils.benchmark.Timer.blocked_autorange</cite>
+takes many measurements whose times total at least 0.2 seconds (which
+can be changed by the <cite>min_run_time</cite> parameter) subject to the constraint
+that timing overhead is a small fraction of the overall measurement.
+This is accomplished by first running with an increasing number of runs
+per loop until the runtime is much larger than measurement overhead
+(which also serves as a warm up), and then taking measurements until
+the target time is reached. This has the useful properties that it wastes
+less data and allows us to compute statistics to estimate the reliability
+of the measurements.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">m0</span> <span class="o">=</span> <span class="n">t0</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">()</span>
+<span class="n">m1</span> <span class="o">=</span> <span class="n">t1</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">m0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d0f0&gt;
+ batched_dot_mul_sum(x, x)
+ setup: from __main__ import batched_dot_mul_sum
+   231.79 us
+   1 measurement, 1000 runs , 1 thread
+ &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d080&gt;
+ batched_dot_bmm(x, x)
+ setup: from __main__ import batched_dot_bmm
+   Median: 162.08 us
+   2 measurements, 1000 runs per measurement, 1 thread
+</pre></div>
+</div>
+</div>
+<p>We can also inspect the individual statistics from the returned
+measurements object.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Mean:   </span><span class="si">{</span><span class="n">m0</span><span class="o">.</span><span class="n">mean</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> us"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Median: </span><span class="si">{</span><span class="n">m0</span><span class="o">.</span><span class="n">median</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> us"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> Mean:   231.79 us
+ Median: 231.79 us
+</pre></div>
+</div>
+</div>
+</section>
+<section id="comparing-benchmark-results">
+<h3>5. Comparing benchmark results<a class="headerlink" href="#comparing-benchmark-results" title="Link to this heading">#</a></h3>
+<p>So far we’ve been comparing our two versions of batched dot against a
+single input. In practice, we want to try a combination of inputs as
+well as different number of threads. The <code class="docutils literal notranslate"><span class="pre">Compare</span></code> class helps display
+the results of many measurements in a formatted table. It uses the
+annotations described above (<cite>label</cite>, <cite>sub_label</cite>, <cite>num_threads</cite>, etc.) as
+well as <cite>description</cite> to group and organize the table. Let’s use
+<code class="docutils literal notranslate"><span class="pre">Compare</span></code> to see how our functions perform for different input sizes
+and number of threads.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">product</span>
+
+<span class="c1"># Compare takes a list of measurements which we'll save in results.</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">sizes</span><span class="p">):</span>
+    <span class="c1"># label and sub_label are the rows</span>
+    <span class="c1"># description is the column</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s1">'Batched dot'</span>
+    <span class="n">sub_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'[</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">]'</span>
+    <span class="n">x</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.ones.html#torch.ones" title="torch.ones"><span class="n">torch</span><span class="o">.</span><span class="n">ones</span></a><span class="p">((</span><span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">num_threads</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">]:</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+            <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+            <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+            <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">},</span>
+            <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">sub_label</span><span class="o">=</span><span class="n">sub_label</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'mul/sum'</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">(</span><span class="n">min_run_time</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+            <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+            <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+            <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">},</span>
+            <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">sub_label</span><span class="o">=</span><span class="n">sub_label</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'bmm'</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">(</span><span class="n">min_run_time</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">compare</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Compare" title="torch.utils.benchmark.Compare"><span class="n">benchmark</span><span class="o">.</span><span class="n">Compare</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> [--------------- Batched dot ----------------]
+                       |  mul/sum   |    bmm
+ 1 threads: -----------------------------------
+       [1, 1]          |       5.9  |      11.2
+       [1, 64]         |       6.4  |      11.4
+       [1, 1024]       |       6.7  |      14.2
+       [1, 10000]      |      10.2  |      23.7
+       [64, 1]         |       6.3  |      11.5
+       [64, 64]        |       8.6  |      15.4
+       [64, 1024]      |      39.4  |     204.4
+       [64, 10000]     |     274.9  |     748.5
+       [1024, 1]       |       7.7  |      17.8
+       [1024, 64]      |      40.3  |      76.4
+       [1024, 1024]    |     432.4  |    2795.9
+       [1024, 10000]   |   22657.3  |   11899.5
+       [10000, 1]      |      16.9  |      74.8
+       [10000, 64]     |     300.3  |     609.4
+       [10000, 1024]   |   23098.6  |   27246.1
+       [10000, 10000]  |  267073.7  |  118823.7
+ 4 threads: -----------------------------------
+       [1, 1]          |       6.0  |      11.5
+       [1, 64]         |       6.2  |      11.2
+       [1, 1024]       |       6.8  |      14.3
+       [1, 10000]      |      10.2  |      23.7
+       [64, 1]         |       6.3  |      16.2
+       [64, 64]        |       8.8  |      18.2
+       [64, 1024]      |      41.5  |     189.1
+       [64, 10000]     |      91.7  |     849.1
+       [1024, 1]       |       7.6  |      17.4
+       [1024, 64]      |      43.5  |      33.5
+       [1024, 1024]    |     135.4  |    2782.3
+       [1024, 10000]   |    7471.1  |   11874.0
+       [10000, 1]      |      16.8  |      33.9
+       [10000, 64]     |     118.7  |     173.2
+       [10000, 1024]   |    7264.6  |   27824.7
+       [10000, 10000]  |  100060.9  |  121499.0
+ 16 threads: ----------------------------------
+       [1, 1]          |       6.0  |      11.3
+       [1, 64]         |       6.2  |      11.2
+       [1, 1024]       |       6.9  |      14.2
+       [1, 10000]      |      10.3  |      23.8
+       [64, 1]         |       6.4  |      24.1
+       [64, 64]        |       9.0  |      23.8
+       [64, 1024]      |      54.1  |     188.5
+       [64, 10000]     |      49.9  |     748.0
+       [1024, 1]       |       7.6  |      23.4
+       [1024, 64]      |      55.5  |      28.2
+       [1024, 1024]    |      66.9  |    2773.9
+       [1024, 10000]   |    6111.5  |   12833.7
+       [10000, 1]      |      16.9  |      27.5
+       [10000, 64]     |      59.5  |      73.7
+       [10000, 1024]   |    6295.9  |   27062.0
+       [10000, 10000]  |   71804.5  |  120365.8
+ 32 threads: ----------------------------------
+       [1, 1]          |       5.9  |      11.3
+       [1, 64]         |       6.2  |      11.3
+       [1, 1024]       |       6.7  |      14.2
+       [1, 10000]      |      10.5  |      23.8
+       [64, 1]         |       6.3  |      31.7
+       [64, 64]        |       9.1  |      30.4
+       [64, 1024]      |      72.0  |     190.4
+       [64, 10000]     |     103.1  |     746.9
+       [1024, 1]       |       7.6  |      28.4
+       [1024, 64]      |      70.5  |      31.9
+       [1024, 1024]    |      65.6  |    2804.6
+       [1024, 10000]   |    6764.0  |   11871.4
+       [10000, 1]      |      17.8  |      31.8
+       [10000, 64]     |     110.3  |      56.0
+       [10000, 1024]   |    6640.2  |   27592.2
+       [10000, 10000]  |   73003.4  |  120083.2
+
+ Times are in microseconds (us).
+</pre></div>
+</div>
+</div>
+<p>The results above indicate that the version which reduces to <code class="docutils literal notranslate"><span class="pre">bmm</span></code>
+is better for larger tensors running on multiple threads, while for
+smaller and/or single thread code, the other version is better.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Compare</span></code> also provides functions for changing the table format</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">compare</span><span class="o">.</span><span class="n">trim_significant_figures</span><span class="p">()</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">colorize</span><span class="p">()</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="saving-loading-benchmark-results">
+<h3>6. Saving/Loading benchmark results<a class="headerlink" href="#saving-loading-benchmark-results" title="Link to this heading">#</a></h3>
+<p><cite>Measurements</cite> (and <code class="docutils literal notranslate"><span class="pre">CallgrindStats</span></code> which are described in section 8)
+can be serialized by the <code class="docutils literal notranslate"><span class="pre">pickle</span></code> module. This makes A/B testing easy, as you can collect
+measurements from two separate environments, pickle them, and then
+load both in a single environment. Timer even takes an <cite>env</cite>
+constructor argument so that such A/B testing works seamlessly.</p>
+<p>Let’s imagine that rather than two Python functions, the add/sum
+and <code class="docutils literal notranslate"><span class="pre">bmm</span></code> approaches were in two different builds of PyTorch.
+The example below demonstrates how one might A/B test them. For
+simplicity, we only use a subset of shapes, and simply round trip
+results through pickle rather than actually using multiple environments
+and writing results to disk.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+
+<span class="n">ab_test_results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'environment A: mul/sum'</span><span class="p">,</span> <span class="s1">'environment B: bmm'</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span> <span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
+        <span class="n">x</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.ones.html#torch.ones" title="torch.ones"><span class="n">torch</span><span class="o">.</span><span class="n">ones</span></a><span class="p">((</span><span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">dot_fn</span> <span class="o">=</span> <span class="p">(</span><span class="n">batched_dot_mul_sum</span> <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s1">'environment A: mul/sum'</span> <span class="k">else</span> <span class="n">batched_dot_bmm</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+            <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot(x, x)'</span><span class="p">,</span>
+            <span class="nb">globals</span><span class="o">=</span><span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">'batched_dot'</span><span class="p">:</span> <span class="n">dot_fn</span><span class="p">},</span>
+            <span class="n">num_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">'Batched dot'</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s1">'[</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">]'</span><span class="p">,</span>
+            <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">(</span><span class="n">min_run_time</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ab_test_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+
+<span class="n">ab_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ab_test_results</span><span class="p">]</span>
+<span class="n">compare</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Compare" title="torch.utils.benchmark.Compare"><span class="n">benchmark</span><span class="o">.</span><span class="n">Compare</span></a><span class="p">(</span><span class="n">ab_results</span><span class="p">)</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">trim_significant_figures</span><span class="p">()</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">colorize</span><span class="p">()</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> [------------------------------------- Batched dot -------------------------------------]
+                                                |  [1, 1]  |  [1024, 10000]  |  [10000, 1]
+ 1 threads: ------------------------------------------------------------------------------
+   (environment A: mul/sum)  batched_dot(x, x)  |     7    |      36000      |      21
+   (environment B: bmm)      batched_dot(x, x)  |    14    |      40000      |      85
+
+ Times are in microseconds (us).
+</pre></div>
+</div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># And just to show that we can round trip all of the results from earlier:</span>
+<span class="n">round_tripped_results</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+<span class="k">assert</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Compare" title="torch.utils.benchmark.Compare"><span class="n">benchmark</span><span class="o">.</span><span class="n">Compare</span></a><span class="p">(</span><span class="n">results</span><span class="p">))</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Compare" title="torch.utils.benchmark.Compare"><span class="n">benchmark</span><span class="o">.</span><span class="n">Compare</span></a><span class="p">(</span><span class="n">round_tripped_results</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+<section id="generating-inputs-with-fuzzed-parameters">
+<h3>7. Generating inputs with <cite>Fuzzed Parameters</cite><a class="headerlink" href="#generating-inputs-with-fuzzed-parameters" title="Link to this heading">#</a></h3>
+<p>As we’ve seen in the previous section, there can be some stark
+performance differences depending on the input tensors. Hence, it
+is a good idea to run benchmarks on a number of different inputs.
+However, creating all these input tensors can be tedious which is
+where <code class="docutils literal notranslate"><span class="pre">torch.utils.benchmark.Fuzzer</span></code> and related classes come in.
+Let’s take a look at how we can use the <code class="docutils literal notranslate"><span class="pre">Fuzzer</span></code> to create some test
+cases for the benchmark.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fuzzer</span><span class="p">,</span> <span class="n">FuzzedParameter</span><span class="p">,</span> <span class="n">FuzzedTensor</span><span class="p">,</span> <span class="n">ParameterAlias</span>
+
+<span class="c1"># Generates random tensors with 128 to 10000000 elements and sizes k0 and k1 chosen from a</span>
+<span class="c1"># ``loguniform`` distribution in [1, 10000], 40% of which will be discontiguous on average.</span>
+<span class="n">example_fuzzer</span> <span class="o">=</span> <span class="n">Fuzzer</span><span class="p">(</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">FuzzedParameter</span><span class="p">(</span><span class="s1">'k0'</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">'loguniform'</span><span class="p">),</span>
+        <span class="n">FuzzedParameter</span><span class="p">(</span><span class="s1">'k1'</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">'loguniform'</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">tensors</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">FuzzedTensor</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="s1">'k0'</span><span class="p">,</span> <span class="s1">'k1'</span><span class="p">),</span> <span class="n">min_elements</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">max_elements</span><span class="o">=</span><span class="mi">10000000</span><span class="p">,</span> <span class="n">probability_contiguous</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">tensors</span><span class="p">,</span> <span class="n">tensor_params</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">example_fuzzer</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="c1"># description is the column label</span>
+    <span class="n">sub_label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s1">'k0'</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;6</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s1">'k1'</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">''</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tensor_params</span><span class="p">[</span><span class="s1">'x'</span><span class="p">][</span><span class="s1">'is_contiguous'</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'(discontiguous)'</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+        <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+        <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+        <span class="nb">globals</span><span class="o">=</span><span class="n">tensors</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">'Batched dot'</span><span class="p">,</span>
+        <span class="n">sub_label</span><span class="o">=</span><span class="n">sub_label</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'mul/sum'</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">(</span><span class="n">min_run_time</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+        <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+        <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+        <span class="nb">globals</span><span class="o">=</span><span class="n">tensors</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">'Batched dot'</span><span class="p">,</span>
+        <span class="n">sub_label</span><span class="o">=</span><span class="n">sub_label</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'bmm'</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">(</span><span class="n">min_run_time</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">compare</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Compare" title="torch.utils.benchmark.Compare"><span class="n">benchmark</span><span class="o">.</span><span class="n">Compare</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">trim_significant_figures</span><span class="p">()</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> [--------------------- Batched dot ---------------------]
+                                      |  mul/sum  |   bmm
+ 1 threads: ----------------------------------------------
+       725    x 257                   |      87   |    180
+       49     x 383                   |      15   |     30
+       34     x 1468                  |      30   |    118
+       187    x 5039                  |     400   |   1200
+       2140   x 1296 (discontiguous)  |    2000   |  41000
+       78     x 1598                  |      74   |    310
+       519    x 763                   |     190   |   1500
+       141    x 1082                  |      87   |    500
+       78     x 5    (discontiguous)  |       9   |     20
+       187    x 1                     |      12   |     10
+
+ Times are in microseconds (us).
+</pre></div>
+</div>
+</div>
+<p>There is a lot of flexibility for defining your own <code class="docutils literal notranslate"><span class="pre">fuzzers</span></code> which
+is great for creating a powerful set of inputs to benchmark. But to
+make things even simpler, PyTorch benchmark module comes with some
+built-in <code class="docutils literal notranslate"><span class="pre">fuzzers</span></code> for common benchmarking needs. Let’s take a look at
+how we can use one of these built-in <code class="docutils literal notranslate"><span class="pre">fuzzers</span></code>.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.benchmark.op_fuzzers</span><span class="w"> </span><span class="kn">import</span> <span class="n">binary</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">tensors</span><span class="p">,</span> <span class="n">tensor_params</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">binary</span><span class="o">.</span><span class="n">BinaryOpFuzzer</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">sub_label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s1">'k0'</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;6</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s1">'k1'</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">''</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">tensor_params</span><span class="p">[</span><span class="s1">'x'</span><span class="p">][</span><span class="s1">'is_contiguous'</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'(discontiguous)'</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+        <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+        <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_mul_sum'</span><span class="p">,</span>
+        <span class="nb">globals</span><span class="o">=</span><span class="n">tensors</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">'Batched dot'</span><span class="p">,</span>
+        <span class="n">sub_label</span><span class="o">=</span><span class="n">sub_label</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'mul/sum'</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">(</span><span class="n">min_run_time</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+        <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_bmm(x, x)'</span><span class="p">,</span>
+        <span class="n">setup</span><span class="o">=</span><span class="s1">'from __main__ import batched_dot_bmm'</span><span class="p">,</span>
+        <span class="nb">globals</span><span class="o">=</span><span class="n">tensors</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">'Batched dot'</span><span class="p">,</span>
+        <span class="n">sub_label</span><span class="o">=</span><span class="n">sub_label</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'bmm'</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">(</span><span class="n">min_run_time</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">compare</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Compare" title="torch.utils.benchmark.Compare"><span class="n">benchmark</span><span class="o">.</span><span class="n">Compare</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">trim_significant_figures</span><span class="p">()</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span><span class="n">rowwise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">compare</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> [----------------------- Batched dot ------------------------]
+                                          |  mul/sum  |   bmm
+ 1 threads: ---------------------------------------------------
+       64     x 473  (discontiguous)      |    10000  |   40000
+       16384  x 12642115 (discontiguous)  |       31  |      78
+       8192   x 892                       |     4800  |   20400
+       512    x 64   (discontiguous)      |   110000  |  400000
+       493    x 27   (discontiguous)      |     1100  |    2440
+       118    x 32   (discontiguous)      |      870  |    2030
+       16     x 495  (discontiguous)      |    23600  |   24000
+       488    x 62374                     |    90000  |  100000
+       240372 x 69                        |    40000  |   16000
+       40156  x 32   (discontiguous)      |     2670  |    5000
+
+ Times are in microseconds (us).
+</pre></div>
+</div>
+</div>
+</section>
+<section id="collecting-instruction-counts-with-callgrind">
+<h3>8. Collecting instruction counts with <code class="docutils literal notranslate"><span class="pre">Callgrind</span></code><a class="headerlink" href="#collecting-instruction-counts-with-callgrind" title="Link to this heading">#</a></h3>
+<p>One of the challenges of optimizing code is the variation and opacity of
+wall time. There are many sources of non-determinism, from adaptive clock
+speeds to resource contention with other processes. Furthermore, end-to-end
+time gives no insight into where time is being spent, which is really what
+we’re interested in when optimizing code.</p>
+<p>A complementary approach is to also collect instruction counts. These counts
+are a proxy metric and do not capture all aspects of performance
+(e.g. memory or I/O bound tasks), however they do have several useful
+properties. Instruction counts are reproducible, insensitive to environmental
+variation, and offer fine grained insight into where a program is spending
+cycles.</p>
+<p>To see the utility of instruction counts, let us look at how we might
+reduce the overhead of <cite>batched_dot_mul_sum</cite>. The obvious solution is to
+move it to C++, so we avoid going between Python and C++ multiple times.</p>
+<p>Fortunately, the source is nearly identical. One question that we have to ask
+in C++ is whether we should take arguments by value or reference.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">batched_dot_src</span> <span class="o">=</span> <span class="s2">"""</span><span class="se">\</span>
+<span class="s2">/* ---- Python ---- */</span>
+<span class="s2">// def batched_dot_mul_sum(a, b):</span>
+<span class="s2">//     return a.mul(b).sum(-1)</span>
+
+<span class="s2">torch::Tensor batched_dot_mul_sum_v0(</span>
+<span class="s2">    const torch::Tensor a,</span>
+<span class="s2">    const torch::Tensor b) {</span>
+<span class="s2">  return a.mul(b).sum(-1);</span>
+<span class="s2">}</span>
+
+<span class="s2">torch::Tensor batched_dot_mul_sum_v1(</span>
+<span class="s2">    const torch::Tensor&amp; a,</span>
+<span class="s2">    const torch::Tensor&amp; b) {</span>
+<span class="s2">  return a.mul(b).sum(-1);</span>
+<span class="s2">}</span>
+<span class="s2">"""</span>
+
+
+<span class="c1"># PyTorch makes it easy to test our C++ implementations by providing a utility</span>
+<span class="c1"># to JIT compile C++ source into Python extensions:</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">cpp_extension</span>
+<span class="n">cpp_lib</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-cpp_extension sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/cpp_extension.html#torch.utils.cpp_extension.load_inline" title="torch.utils.cpp_extension.load_inline"><span class="n">cpp_extension</span><span class="o">.</span><span class="n">load_inline</span></a><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">'cpp_lib'</span><span class="p">,</span>
+    <span class="n">cpp_sources</span><span class="o">=</span><span class="n">batched_dot_src</span><span class="p">,</span>
+    <span class="n">extra_cflags</span><span class="o">=</span><span class="p">[</span><span class="s1">'-O3'</span><span class="p">],</span>
+    <span class="n">extra_include_paths</span><span class="o">=</span><span class="p">[</span>
+        <span class="c1"># `load_inline` needs to know where to find ``pybind11`` headers.</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'CONDA_PREFIX'</span><span class="p">),</span> <span class="s1">'include'</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">functions</span><span class="o">=</span><span class="p">[</span><span class="s1">'batched_dot_mul_sum_v0'</span><span class="p">,</span> <span class="s1">'batched_dot_mul_sum_v1'</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># `load_inline` will create a shared object that is loaded into Python. When we collect</span>
+<span class="c1"># instruction counts Timer will create a subprocess, so we need to re-import it. The</span>
+<span class="c1"># import process is slightly more complicated for C extensions, but that's all we're</span>
+<span class="c1"># doing here.</span>
+<span class="n">module_import_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span><span class="se">\</span>
+<span class="s2"># https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path</span>
+<span class="s2">import importlib.util</span>
+<span class="s2">spec = importlib.util.spec_from_file_location("cpp_lib", </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">cpp_lib</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span>
+<span class="s2">cpp_lib = importlib.util.module_from_spec(spec)</span>
+<span class="s2">spec.loader.exec_module(cpp_lib)"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pretty_print</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Import machinery for ``cpp_lib.so`` can get repetitive to look at."""</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">module_import_str</span><span class="p">,</span> <span class="s2">"  "</span><span class="p">),</span> <span class="s2">"  import cpp_lib"</span><span class="p">))</span>
+
+
+<span class="n">t_baseline</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'batched_dot_mul_sum(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="s1">'''</span><span class="se">\</span>
+<span class="s1">from __main__ import batched_dot_mul_sum</span>
+<span class="s1">x = torch.randn(2, 2)'''</span><span class="p">)</span>
+
+<span class="n">t0</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'cpp_lib.batched_dot_mul_sum_v0(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="sa">f</span><span class="s1">'''</span><span class="se">\</span>
+<span class="si">{</span><span class="n">module_import_str</span><span class="si">}</span>
+<span class="s1">x = torch.randn(2, 2)'''</span><span class="p">)</span>
+
+<span class="n">t1</span> <span class="o">=</span> <a class="sphx-glr-backref-module-torch-utils-benchmark sphx-glr-backref-type-py-class sphx-glr-backref-instance" href="https://docs.pytorch.org/docs/stable/benchmark_utils.html#torch.utils.benchmark.Timer" title="torch.utils.benchmark.Timer"><span class="n">benchmark</span><span class="o">.</span><span class="n">Timer</span></a><span class="p">(</span>
+    <span class="n">stmt</span><span class="o">=</span><span class="s1">'cpp_lib.batched_dot_mul_sum_v1(x, x)'</span><span class="p">,</span>
+    <span class="n">setup</span><span class="o">=</span><span class="sa">f</span><span class="s1">'''</span><span class="se">\</span>
+<span class="si">{</span><span class="n">module_import_str</span><span class="si">}</span>
+<span class="s1">x = torch.randn(2, 2)'''</span><span class="p">)</span>
+
+<span class="c1"># Moving to C++ did indeed reduce overhead, but it's hard to tell which</span>
+<span class="c1"># calling convention is more efficient. v1 (call with references) seems to</span>
+<span class="c1"># be a bit faster, but it's within measurement error.</span>
+<span class="n">pretty_print</span><span class="p">(</span><span class="n">t_baseline</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">())</span>
+<span class="n">pretty_print</span><span class="p">(</span><span class="n">t0</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">())</span>
+<span class="n">pretty_print</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="n">blocked_autorange</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8&gt;
+ batched_dot_mul_sum(x, x)
+ setup:
+   from __main__ import batched_dot_mul_sum
+   x = torch.randn(2, 2)
+
+   6.92 us
+   1 measurement, 100000 runs , 1 thread
+ &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8&gt;
+ cpp_lib.batched_dot_mul_sum_v0(x, x)
+ setup:
+   import cpp_lib
+   x = torch.randn(2, 2)
+
+   5.29 us
+   1 measurement, 100000 runs , 1 thread
+ &lt;torch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8&gt;
+ cpp_lib.batched_dot_mul_sum_v1(x, x)
+ setup:
+   import cpp_lib
+   x = torch.randn(2, 2)
+
+   5.22 us
+   1 measurement, 100000 runs , 1 thread
+</pre></div>
+</div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let's use ``Callgrind`` to determine which is better.</span>
+<span class="n">stats_v0</span> <span class="o">=</span> <span class="n">t0</span><span class="o">.</span><span class="n">collect_callgrind</span><span class="p">()</span>
+<span class="n">stats_v1</span> <span class="o">=</span> <span class="n">t1</span><span class="o">.</span><span class="n">collect_callgrind</span><span class="p">()</span>
+
+<span class="n">pretty_print</span><span class="p">(</span><span class="n">stats_v0</span><span class="p">)</span>
+<span class="n">pretty_print</span><span class="p">(</span><span class="n">stats_v1</span><span class="p">)</span>
+
+<span class="c1"># `.as_standardized` removes file names and some path prefixes, and makes</span>
+<span class="c1"># it easier to read the function symbols.</span>
+<span class="n">stats_v0</span> <span class="o">=</span> <span class="n">stats_v0</span><span class="o">.</span><span class="n">as_standardized</span><span class="p">()</span>
+<span class="n">stats_v1</span> <span class="o">=</span> <span class="n">stats_v1</span><span class="o">.</span><span class="n">as_standardized</span><span class="p">()</span>
+
+<span class="c1"># `.delta` diffs the instruction counts, and `.denoise` removes several</span>
+<span class="c1"># functions in the Python interpreter that are known to have significant</span>
+<span class="c1"># jitter.</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">stats_v1</span><span class="o">.</span><span class="n">delta</span><span class="p">(</span><span class="n">stats_v0</span><span class="p">)</span><span class="o">.</span><span class="n">denoise</span><span class="p">()</span>
+
+<span class="c1"># `.transform` is a convenience API for transforming function names. It is</span>
+<span class="c1"># useful for increasing cancelation when ``diff-ing`` instructions, as well as</span>
+<span class="c1"># just generally improving readability.</span>
+<span class="n">replacements</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s2">"???:void pybind11"</span><span class="p">,</span> <span class="s2">"pybind11"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"batched_dot_mul_sum_v0"</span><span class="p">,</span> <span class="s2">"batched_dot_mul_sum_v1"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"at::Tensor, at::Tensor"</span><span class="p">,</span> <span class="s2">"..."</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"at::Tensor const&amp;, at::Tensor const&amp;"</span><span class="p">,</span> <span class="s2">"..."</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"auto torch::detail::wrap_pybind_function_impl_"</span><span class="p">,</span> <span class="s2">"wrap_pybind_function_impl_"</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">before</span><span class="p">,</span> <span class="n">after</span> <span class="ow">in</span> <span class="n">replacements</span><span class="p">:</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">before</span><span class="p">,</span> <span class="n">after</span><span class="p">))</span>
+
+<span class="c1"># We can use print options to control how much of the function to display.</span>
+<a class="sphx-glr-backref-module-torch sphx-glr-backref-type-py-function" href="https://docs.pytorch.org/docs/stable/generated/torch.set_printoptions.html#torch.set_printoptions" title="torch.set_printoptions"><span class="n">torch</span><span class="o">.</span><span class="n">set_printoptions</span></a><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">160</span><span class="p">)</span>
+
+<span class="c1"># Once parsed, the instruction counts make clear that passing `a` and `b`</span>
+<span class="c1"># by reference is more efficient as it skips some ``c10::TensorImpl`` bookkeeping</span>
+<span class="c1"># for the intermediate Tensors, and is also works better with ``pybind11``. This</span>
+<span class="c1"># is consistent with our noisy wall time observations.</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;torch.utils.benchmark.utils.valgrind_wrapper.timer_interface.CallgrindStats object at 0x7fb0f06e7630&gt;
+cpp_lib.batched_dot_mul_sum_v0(x, x)
+setup:
+  import cpp_lib
+  x = torch.randn(2, 2)
+                           All          Noisy symbols removed
+    Instructions:      2392671                    2392671
+    Baseline:             4367                       4367
+100 runs per measurement, 1 thread
+Warning: PyTorch was not built with debug symbols.
+         Source information may be limited. Rebuild with
+         REL_WITH_DEB_INFO=1 for more detailed results.
+&lt;torch.utils.benchmark.utils.valgrind_wrapper.timer_interface.CallgrindStats object at 0x7fb10400d208&gt;
+cpp_lib.batched_dot_mul_sum_v1(x, x)
+setup:
+  import cpp_lib
+  x = torch.randn(2, 2)
+                           All          Noisy symbols removed
+    Instructions:      2378978                    2378978
+    Baseline:             4367                       4367
+    100 runs per measurement, 1 thread
+    Warning: PyTorch was not built with debug symbols.
+             Source information may be limited. Rebuild with
+             REL_WITH_DEB_INFO=1 for more detailed results.
+    &lt;torch.utils.benchmark.utils.valgrind_wrapper.timer_interface.FunctionCounts object at 0x7fb1000ab358&gt;
+          86  ???:0x000000000020d9e0
+      56  ???:0x000000000020db10
+   -1100  pybind11::cpp_function::initialize&lt;wrap_pybind_function_impl_&lt;at::Tensor ... r (&amp;)(...), std::integer_sequence&lt;unsigned long, 0ul, 1ul&gt;)::{lambda(...)
+   -1600  ???:wrap_pybind_function_impl_&lt;at::Tensor (&amp;)(...), 0ul, 1ul&gt;(at::Tensor (&amp;)(...), std::integer_sequence&lt;unsigned long, 0ul, 1ul&gt;)::{lambda(...)
+   -5200  ???:c10::intrusive_ptr&lt;c10::TensorImpl, c10::UndefinedTensorImpl&gt;::reset_()
+   -5935  ???:0x000000000022c0e0
+Total: -13693
+</pre></div>
+</div>
+</section>
+</section>
+<section id="learn-more">
+<h2>Learn More<a class="headerlink" href="#learn-more" title="Link to this heading">#</a></h2>
+<p>Take a look at these other recipes to continue your learning:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html">PyTorch Profiler</a></p></li>
+</ul>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-recipes-recipes-benchmark-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/54db51700fabe094cbf7f11f5195d2bd/benchmark.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">benchmark.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/72c2f17ac50228049705f9a4d76c7815/benchmark.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">benchmark.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/f4dfac73cd6ebb51378b6a0307ed73b6/benchmark.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">benchmark.zip</span></code></a></p>
+</div>
+</div>
+</section>
+</section>
+</article>
+</article>
+<footer class="bd-footer-article">
+<div class="footer-article-items footer-article__inner">
+<div class="footer-article-item">
+<div class="feedback">
+<div class="rating">
+    Rate this Page
+    <div class="stars">
+<span class="star" data-behavior="tutorial-rating" data-count="1" data-value="1">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="2" data-value="2">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="3" data-value="3">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="4" data-value="4">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="5" data-value="5">★</span>
+</div>
+</div>
+<div class="feedback-send">
+<button class="feedback-btn" data-bs-placement="bottom" data-bs-title="Create a GitHub Issue" data-bs-toggle="tooltip" data-gtm="feedback-btn-click" onclick="openGitHubIssue()">Send Feedback
+    </button>
+</div>
+</div>
+<div class="prev-next-area">
+<a class="left-prev" href="../distributed_comm_debug_mode.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Getting Started with <code class="docutils literal notranslate"><span class="pre">CommDebugMode</span></code></p>
+</div>
+</a>
+<a class="right-next" href="module_load_state_dict_tips.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Tips for Loading an <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> from a Checkpoint</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+<div class="footer-info">
+<p class="copyright">
+    
+      
+        © Copyright 2024, PyTorch.
+      
+      <br/>
+</p>
+<p class="theme-version">
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+  </p>
+</div>
+</div>
+</div>
+</footer>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="../distributed_comm_debug_mode.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Getting Started with <code class="docutils literal notranslate"><span class="pre">CommDebugMode</span></code></p>
+</div>
+</a>
+<a class="right-next" href="module_load_state_dict_tips.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Tips for Loading an <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> from a Checkpoint</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#steps">Steps</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-functions-to-benchmark">1. Defining functions to benchmark</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking-with-timeit-timer">2. Benchmarking with <code class="docutils literal notranslate"><span class="pre">timeit.Timer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking-with-torch-utils-benchmark-timer">3. Benchmarking with <code class="docutils literal notranslate"><span class="pre">torch.utils.benchmark.Timer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking-with-blocked-autorange">4. Benchmarking with <cite>Blocked Autorange</cite></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-benchmark-results">5. Comparing benchmark results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-loading-benchmark-results">6. Saving/Loading benchmark results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-inputs-with-fuzzed-parameters">7. Generating inputs with <cite>Fuzzed Parameters</cite></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#collecting-instruction-counts-with-callgrind">8. Collecting instruction counts with <code class="docutils literal notranslate"><span class="pre">Callgrind</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learn-more">Learn More</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="sidebar-heading">PyTorch Libraries</div>
+<ul style="list-style-type: none; padding: 0; padding-bottom: 80px;">
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/ao" style="color: var(--pst-color-text-muted)">torchao</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchrec" style="color: var(--pst-color-text-muted)">torchrec</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchft" style="color: var(--pst-color-text-muted)">torchft</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchcodec" style="color: var(--pst-color-text-muted)">TorchCodec</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/vision" style="color: var(--pst-color-text-muted)">torchvision</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/executorch" style="color: var(--pst-color-text-muted)">ExecuTorch</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/xla" style="color: var(--pst-color-text-muted)">PyTorch on XLA Devices</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+<div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+<div class="container">
+<div class="row">
+<div class="col-md-4">
+<h2>Docs</h2>
+<p>Access comprehensive developer documentation for PyTorch</p>
+<a class="with-right-arrow" href="https://docs.pytorch.org/docs/stable/index.html">View Docs</a>
+</div>
+<div class="col-md-4">
+<h2>Tutorials</h2>
+<p>Get in-depth tutorials for beginners and advanced developers</p>
+<a class="with-right-arrow" href="https://docs.pytorch.org/tutorials">View Tutorials</a>
+</div>
+<div class="col-md-4">
+<h2>Resources</h2>
+<p>Find development resources and get your questions answered</p>
+<a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+</div>
+</div>
+</div>
+</div>
+<footer class="site-footer">
+<div class="container footer-container">
+<div class="newsletter" id="newsletter">
+<p class="newsletter__title is-style-max-width-800"><strong>Stay in touch</strong> for updates, event info, and
+        the latest news</p>
+<script charset="utf-8" src="//js.hsforms.net/forms/embed/v2.js" type="text/javascript"></script>
+<script>
+        hbspt.forms.create({
+          region: "na1",
+          portalId: "8112310",
+          formId: "2fb2231c-000b-4ec5-88a0-1ab242549c9e"
+        });
+      </script>
+<p class="newsletter__privacy">By submitting this form, I consent to receive marketing emails from the LF and its
+        projects regarding their events, training, research, developments, and related announcements. I understand that
+        I can unsubscribe at any time using the links in the footers of the emails I receive. <a href="https://www.linuxfoundation.org/privacy/">Privacy Policy</a>.</p>
+</div>
+<div class="lf-grid">
+<ul class="social-links">
+<li><a href="https://www.facebook.com/pytorch" target="_blank" title="PyTorch on Facebook">
+<svg aria-label="Facebook" viewbox="-0.51 -0.26 26.45 26.45" xmlns="http://www.w3.org/2000/svg">
+<path d="M25.497 13.075c0-2.45-.698-4.848-2.011-6.911a12.765 12.765 0 0 0-5.398-4.73A12.671 12.671 0 0 0 11.008.38a12.705 12.705 0 0 0-6.529 2.95A12.827 12.827 0 0 0 .563 9.358a12.896 12.896 0 0 0-.07 7.201 12.831 12.831 0 0 0 3.801 6.103 12.709 12.709 0 0 0 6.471 3.078v-8.957H7.53v-3.708h3.235v-2.824c0-3.213 1.903-4.988 4.813-4.988.956.014 1.909.097 2.852.25V8.67h-1.607a1.83 1.83 0 0 0-1.518.497 1.854 1.854 0 0 0-.561 1.505v2.404h3.535l-.563 3.708h-2.97v8.957a12.725 12.725 0 0 0 7.697-4.337 12.87 12.87 0 0 0 3.054-8.328z" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://twitter.com/pytorch" target="_blank" title="PyTorch on X">
+<svg aria-label="X" viewbox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+<path d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34M36.01 19.54H76.66l187.13 262.13h-40.66" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://www.youtube.com/pytorch" target="_blank" title="PyTorch on YouTube">
+<svg aria-label="YouTube" viewbox="0.21 0.27 34.45 25.07" xmlns="http://www.w3.org/2000/svg">
+<path d="M33.729 6.084s-.327-2.33-1.317-3.356a4.691 4.691 0 0 0-3.32-1.432c-4.634-.34-11.589-.34-11.589-.34h-.014s-6.954 0-11.59.342a4.692 4.692 0 0 0-3.32 1.432c-.993 1.025-1.315 3.354-1.315 3.354a52.189 52.189 0 0 0-.331 5.473v2.566c.014 1.829.125 3.656.331 5.472 0 0 .322 2.33 1.316 3.36 1.26 1.345 2.916 1.3 3.653 1.445 2.65.26 11.263.34 11.263.34s6.96-.01 11.597-.353a4.691 4.691 0 0 0 3.32-1.432c.993-1.026 1.316-3.356 1.316-3.356.206-1.817.316-3.644.33-5.473v-2.57a52.26 52.26 0 0 0-.33-5.472zM14.076 17.232V7.729l8.951 4.768-8.95 4.735z" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://www.linkedin.com/company/pytorch" target="_blank" title="PyTorch on LinkedIn">
+<svg aria-label="LinkedIn" viewbox="-10.23 -10.23 531.96 531.96" xmlns="http://www.w3.org/2000/svg">
+<rect fill="currentColor" height="512" rx="0" width="512"></rect>
+<circle cx="142" cy="138" fill="#000" r="37"></circle>
+<path d="M244 194v198M142 194v198" stroke="#000" stroke-width="66"></path>
+<path d="M276 282c0-20 13-40 36-40 24 0 33 18 33 45v105h66V279c0-61-32-89-76-89-34 0-51 19-59 32" fill="#000"></path>
+</svg>
+</a></li>
+<li><a href="https://pytorch.slack.com" target="_blank" title="PyTorch Slack">
+<svg aria-label="Slack" viewbox="0.16 -0.03 21.19 21.19" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.896 13.27a2.147 2.147 0 0 1-2.141 2.142A2.147 2.147 0 0 1 .613 13.27c0-1.178.963-2.141 2.142-2.141h2.141v2.141zm1.08 0c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.363a2.147 2.147 0 0 1-2.142 2.141 2.147 2.147 0 0 1-2.141-2.142V13.27zm2.141-8.6a2.147 2.147 0 0 1-2.141-2.14c0-1.18.962-2.142 2.141-2.142s2.142.963 2.142 2.141v2.142H8.117zm0 1.08c1.179 0 2.141.962 2.141 2.141a2.147 2.147 0 0 1-2.141 2.142H2.755A2.147 2.147 0 0 1 .613 7.89c0-1.179.963-2.141 2.142-2.141h5.362zm8.599 2.141c0-1.179.963-2.141 2.141-2.141 1.179 0 2.143.962 2.143 2.14a2.147 2.147 0 0 1-2.142 2.142h-2.141V7.89zm-1.08 0a2.147 2.147 0 0 1-2.141 2.142 2.147 2.147 0 0 1-2.141-2.142V2.53c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.362zm-2.141 8.6c1.179 0 2.142.962 2.142 2.14a2.147 2.147 0 0 1-2.142 2.142 2.147 2.147 0 0 1-2.141-2.141V16.49h2.141zm0-1.08a2.147 2.147 0 0 1-2.141-2.141c0-1.179.962-2.142 2.141-2.142h5.362c1.179 0 2.142.963 2.142 2.142a2.147 2.147 0 0 1-2.142 2.142h-5.362z" fill="currentColor">
+</path>
+</svg>
+</a></li>
+<li><a href="https://pytorch.org/wechat" title="PyTorch on WeChat">
+<svg aria-label="WeChat" viewbox="0.14 -0.17 38.02 33.02" xmlns="http://www.w3.org/2000/svg">
+<path d="M26.289 10.976a12.972 12.972 0 0 0-8.742 3.53 10.386 10.386 0 0 0-3.224 8.795c-1.326-.164-2.535-.345-3.75-.448a2.332 2.332 0 0 0-1.273.216c-1.18.666-2.311 1.418-3.652 2.255.246-1.112.405-2.087.687-3.024a1.15 1.15 0 0 0-.523-1.52C1.737 17.902.02 13.601 1.307 9.165c1.189-4.1 4.11-6.587 8.077-7.884A13.54 13.54 0 0 1 24.18 5.617a10.135 10.135 0 0 1 2.109 5.359zM10.668 9.594a1.564 1.564 0 0 0-2.095-1.472 1.52 1.52 0 0 0-.895 1.964 1.502 1.502 0 0 0 1.391.966 1.545 1.545 0 0 0 1.598-1.46v.002zm8.15-1.566a1.567 1.567 0 0 0-1.528 1.543 1.528 1.528 0 0 0 1.571 1.492 1.52 1.52 0 0 0 1.375-2.117 1.518 1.518 0 0 0-1.415-.919l-.003.001z" fill="currentColor">
+</path>
+<path d="M33.914 32.137c-1.075-.478-2.062-1.196-3.11-1.306-1.049-.11-2.145.494-3.24.605a10.821 10.821 0 0 1-8.781-2.864c-4.682-4.33-4.013-10.97 1.403-14.518 4.811-3.154 11.874-2.102 15.268 2.273a8.671 8.671 0 0 1-1.002 12.095c-1.046.929-1.422 1.693-.751 2.917.102.257.174.525.213.798zM21.68 20.292a1.264 1.264 0 1 0 .01-2.528 1.264 1.264 0 0 0-.01 2.528zm7.887-2.526a1.266 1.266 0 0 0-1.256 1.21 1.247 1.247 0 1 0 1.256-1.21z" fill="currentColor">
+</path>
+</svg>
+</a></li>
+</ul>
+</div>
+<div class="privacy-policy">
+<div class="copyright">
+<p>
+          © PyTorch. Copyright © The Linux Foundation®. All rights reserved. The Linux Foundation has registered
+          trademarks and uses trademarks. For more information, including terms of use, privacy policy, and trademark
+          usage, please see our <a href="https://www.linuxfoundation.org/legal/policies">Policies</a> page. <a href="https://www.linuxfoundation.org/trademark-usage">Trademark Usage</a>. <a href="http://www.linuxfoundation.org/privacy">Privacy Policy</a>.
+        </p>
+</div>
+</div>
+</div>
+</footer>
+<div class="cookie-banner-wrapper">
+<div class="container">
+<p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+<img class="close-button" src="../../_static/img/pytorch-x.svg"/>
+</div>
+</div>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item">
+<p class="copyright">
+    
+      © Copyright 2024, PyTorch.
+      <br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+</p>
+</div>
+</div>
+<div class="footer-items__end">
+<div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+</div>
+</div>
+</footer>
+<script type="application/ld+json">
+    {
+       "@context": "https://schema.org",
+       "@type": "Article",
+       "name": "PyTorch Benchmark",
+       "headline": "PyTorch Benchmark",
+       "description": "PyTorch Documentation. Explore PyTorch, an open-source machine learning library that accelerates the path from research prototyping to production deployment. Discover tutorials, API references, and guides to help you build and deploy deep learning models efficiently.",
+       "url": "/recipes/recipes/benchmark.html",
+       "articleBody": "Note Go to the end to download the full example code. PyTorch Benchmark# This recipe provides a quick-start guide to using PyTorch benchmark module to measure and compare code performance. Introduction# Benchmarking is an important step in writing code. It helps us validate that our code meets performance expectations, compare different approaches to solving the same problem and prevent performance regressions. There are many options when it comes to benchmarking PyTorch code including the Python builtin timeit module. However, benchmarking PyTorch code has many caveats that can be easily overlooked such as managing the number of threads and synchronizing CUDA devices. Moreover, generating Tensor inputs for benchmarking can be quite tedious. This recipe demonstrates how to use PyTorch benchmark module to avoid common mistakes while making it easier to compare performance of different code, generate input for benchmarking and more. Setup# Before we begin, install torch if it isn\u2019t already available. pip install torch Steps# Defining functions to benchmark Benchmarking with timeit.Timer Benchmarking with torch.utils.benchmark.Timer Benchmarking with Blocked Autorange Comparing benchmark results Saving/Loading benchmark results Generating inputs with Fuzzed Parameters Collecting instruction counts with Callgrind 1. Defining functions to benchmark# As of the time of this writing, torch.dot does not support batched mode, so we will compare two approaches to implementing it using existing torch operators: one approach uses a combination of mul and sum while the other reduces the problem to bmm. import torch def batched_dot_mul_sum(a, b): \u0027\u0027\u0027Computes batched dot by multiplying and summing\u0027\u0027\u0027 return a.mul(b).sum(-1) def batched_dot_bmm(a, b): \u0027\u0027\u0027Computes batched dot by reducing to ``bmm``\u0027\u0027\u0027 a = a.reshape(-1, 1, a.shape[-1]) b = b.reshape(-1, b.shape[-1], 1) return torch.bmm(a, b).flatten(-3) # Input for benchmarking x = torch.randn(10000, 64) # Ensure that both functions compute the same output assert batched_dot_mul_sum(x, x).allclose(batched_dot_bmm(x, x)) 2. Benchmarking with timeit.Timer# First, let\u2019s benchmark the code using Python\u2019s builtin timeit module. We keep the benchmark code simple here so we can compare the defaults of timeit and torch.utils.benchmark. import timeit t0 = timeit.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals={\u0027x\u0027: x}) t1 = timeit.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals={\u0027x\u0027: x}) print(f\u0027mul_sum(x, x): {t0.timeit(100) / 100 * 1e6:\u003e5.1f} us\u0027) print(f\u0027bmm(x, x): {t1.timeit(100) / 100 * 1e6:\u003e5.1f} us\u0027) Output# mul_sum(x, x): 111.6 us bmm(x, x): 70.0 us 3. Benchmarking with torch.utils.benchmark.Timer# PyTorch benchmark module was designed to be familiar to those who have used the timeit module before. However, its defaults make it easier and safer to use for benchmarking PyTorch code. Let\u2019s first compare the same basic API as above. import torch.utils.benchmark as benchmark t0 = benchmark.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals={\u0027x\u0027: x}) t1 = benchmark.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals={\u0027x\u0027: x}) print(t0.timeit(100)) print(t1.timeit(100)) Output# \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d0f0\u003e batched_dot_mul_sum(x, x) setup: from __main__ import batched_dot_mul_sum 379.29 us 1 measurement, 100 runs , 1 thread \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb103d67048\u003e batched_dot_bmm(x, x) setup: from __main__ import batched_dot_bmm 716.42 us 1 measurement, 100 runs , 1 thread Even though the APIs are the same for the basic functionality, there are some important differences. benchmark.Timer.timeit() returns the time per run as opposed to the total runtime like timeit.Timer.timeit() does. PyTorch benchmark module also provides formatted string representations for printing the results. Another important difference, and the reason why the results diverge is that PyTorch benchmark module runs in a single thread by default. We can change the number of threads with the num_threads argument. torch.utils.benchmark.Timer takes several additional arguments including: label, sub_label, description and env which change the __repr__ of the measurement object returned and are used for grouping the results (more on this later). num_threads = torch.get_num_threads() print(f\u0027Benchmarking on {num_threads} threads\u0027) t0 = benchmark.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals={\u0027x\u0027: x}, num_threads=num_threads, label=\u0027Multithreaded batch dot\u0027, sub_label=\u0027Implemented using mul and sum\u0027) t1 = benchmark.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals={\u0027x\u0027: x}, num_threads=num_threads, label=\u0027Multithreaded batch dot\u0027, sub_label=\u0027Implemented using bmm\u0027) print(t0.timeit(100)) print(t1.timeit(100)) Output# Benchmarking on 40 threads \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb103d54080\u003e Multithreaded batch dot: Implemented using mul and sum setup: from __main__ import batched_dot_mul_sum 118.47 us 1 measurement, 100 runs , 40 threads \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8\u003e Multithreaded batch dot: Implemented using bmm setup: from __main__ import batched_dot_bmm 68.21 us 1 measurement, 100 runs , 40 threads Running benchmark with all threads available gives similar results as the timeit module. More importantly, which version is faster depends on how many threads we run the code with. This is why it\u2019s important to benchmark the code with thread settings that are representative of real use cases. Another important thing to remember is to synchronize CPU and CUDA when benchmarking on the GPU. Let\u2019s run the above benchmarks again on a CUDA tensor and see what happens. x = torch.randn(10000, 1024, device=\u0027cuda\u0027) t0 = timeit.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals={\u0027x\u0027: x}) t1 = timeit.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals={\u0027x\u0027: x}) # Ran each twice to show difference before/after warm-up print(f\u0027mul_sum(x, x): {t0.timeit(100) / 100 * 1e6:\u003e5.1f} us\u0027) print(f\u0027mul_sum(x, x): {t0.timeit(100) / 100 * 1e6:\u003e5.1f} us\u0027) print(f\u0027bmm(x, x): {t1.timeit(100) / 100 * 1e6:\u003e5.1f} us\u0027) print(f\u0027bmm(x, x): {t1.timeit(100) / 100 * 1e6:\u003e5.1f} us\u0027) Output# mul_sum(x, x): 27.6 us mul_sum(x, x): 25.3 us bmm(x, x): 2775.5 us bmm(x, x): 22.4 us t0 = benchmark.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals={\u0027x\u0027: x}) t1 = benchmark.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals={\u0027x\u0027: x}) # Run only once since benchmark module does warm-up for us print(t0.timeit(100)) print(t1.timeit(100)) Output# \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d080\u003e batched_dot_mul_sum(x, x) setup: from __main__ import batched_dot_mul_sum 232.93 us 1 measurement, 100 runs , 1 thread \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d0f0\u003e batched_dot_bmm(x, x) setup: from __main__ import batched_dot_bmm 181.04 us 1 measurement, 100 runs , 1 thread The results reveal something interesting. The first run of the bmm version using the timeit module takes much longer than the second run. This is because bmm calls into cuBLAS which needs to be loaded the first time it\u2019s called which takes some time. This is why it\u2019s important to do a warm-up run before benchmarking, luckily for us, PyTorch\u2019s benchmark module takes care of that. The difference in the results between timeit and benchmark modules is because the timeit module is not synchronizing CUDA and is thus only timing the time to launch the kernel. PyTorch\u2019s benchmark module does the synchronization for us. 4. Benchmarking with Blocked Autorange# While timeit.Timer.autorange takes a single continuous measurement of at least 0.2 seconds, torch.utils.benchmark.Timer.blocked_autorange takes many measurements whose times total at least 0.2 seconds (which can be changed by the min_run_time parameter) subject to the constraint that timing overhead is a small fraction of the overall measurement. This is accomplished by first running with an increasing number of runs per loop until the runtime is much larger than measurement overhead (which also serves as a warm up), and then taking measurements until the target time is reached. This has the useful properties that it wastes less data and allows us to compute statistics to estimate the reliability of the measurements. m0 = t0.blocked_autorange() m1 = t1.blocked_autorange() print(m0) print(m1) Output# \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d0f0\u003e batched_dot_mul_sum(x, x) setup: from __main__ import batched_dot_mul_sum 231.79 us 1 measurement, 1000 runs , 1 thread \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb10400d080\u003e batched_dot_bmm(x, x) setup: from __main__ import batched_dot_bmm Median: 162.08 us 2 measurements, 1000 runs per measurement, 1 thread We can also inspect the individual statistics from the returned measurements object. print(f\"Mean: {m0.mean * 1e6:6.2f} us\") print(f\"Median: {m0.median * 1e6:6.2f} us\") Output# Mean: 231.79 us Median: 231.79 us 5. Comparing benchmark results# So far we\u2019ve been comparing our two versions of batched dot against a single input. In practice, we want to try a combination of inputs as well as different number of threads. The Compare class helps display the results of many measurements in a formatted table. It uses the annotations described above (label, sub_label, num_threads, etc.) as well as description to group and organize the table. Let\u2019s use Compare to see how our functions perform for different input sizes and number of threads. from itertools import product # Compare takes a list of measurements which we\u0027ll save in results. results = [] sizes = [1, 64, 1024, 10000] for b, n in product(sizes, sizes): # label and sub_label are the rows # description is the column label = \u0027Batched dot\u0027 sub_label = f\u0027[{b}, {n}]\u0027 x = torch.ones((b, n)) for num_threads in [1, 4, 16, 32]: results.append(benchmark.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals={\u0027x\u0027: x}, num_threads=num_threads, label=label, sub_label=sub_label, description=\u0027mul/sum\u0027, ).blocked_autorange(min_run_time=1)) results.append(benchmark.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals={\u0027x\u0027: x}, num_threads=num_threads, label=label, sub_label=sub_label, description=\u0027bmm\u0027, ).blocked_autorange(min_run_time=1)) compare = benchmark.Compare(results) compare.print() Output# [--------------- Batched dot ----------------] | mul/sum | bmm 1 threads: ----------------------------------- [1, 1] | 5.9 | 11.2 [1, 64] | 6.4 | 11.4 [1, 1024] | 6.7 | 14.2 [1, 10000] | 10.2 | 23.7 [64, 1] | 6.3 | 11.5 [64, 64] | 8.6 | 15.4 [64, 1024] | 39.4 | 204.4 [64, 10000] | 274.9 | 748.5 [1024, 1] | 7.7 | 17.8 [1024, 64] | 40.3 | 76.4 [1024, 1024] | 432.4 | 2795.9 [1024, 10000] | 22657.3 | 11899.5 [10000, 1] | 16.9 | 74.8 [10000, 64] | 300.3 | 609.4 [10000, 1024] | 23098.6 | 27246.1 [10000, 10000] | 267073.7 | 118823.7 4 threads: ----------------------------------- [1, 1] | 6.0 | 11.5 [1, 64] | 6.2 | 11.2 [1, 1024] | 6.8 | 14.3 [1, 10000] | 10.2 | 23.7 [64, 1] | 6.3 | 16.2 [64, 64] | 8.8 | 18.2 [64, 1024] | 41.5 | 189.1 [64, 10000] | 91.7 | 849.1 [1024, 1] | 7.6 | 17.4 [1024, 64] | 43.5 | 33.5 [1024, 1024] | 135.4 | 2782.3 [1024, 10000] | 7471.1 | 11874.0 [10000, 1] | 16.8 | 33.9 [10000, 64] | 118.7 | 173.2 [10000, 1024] | 7264.6 | 27824.7 [10000, 10000] | 100060.9 | 121499.0 16 threads: ---------------------------------- [1, 1] | 6.0 | 11.3 [1, 64] | 6.2 | 11.2 [1, 1024] | 6.9 | 14.2 [1, 10000] | 10.3 | 23.8 [64, 1] | 6.4 | 24.1 [64, 64] | 9.0 | 23.8 [64, 1024] | 54.1 | 188.5 [64, 10000] | 49.9 | 748.0 [1024, 1] | 7.6 | 23.4 [1024, 64] | 55.5 | 28.2 [1024, 1024] | 66.9 | 2773.9 [1024, 10000] | 6111.5 | 12833.7 [10000, 1] | 16.9 | 27.5 [10000, 64] | 59.5 | 73.7 [10000, 1024] | 6295.9 | 27062.0 [10000, 10000] | 71804.5 | 120365.8 32 threads: ---------------------------------- [1, 1] | 5.9 | 11.3 [1, 64] | 6.2 | 11.3 [1, 1024] | 6.7 | 14.2 [1, 10000] | 10.5 | 23.8 [64, 1] | 6.3 | 31.7 [64, 64] | 9.1 | 30.4 [64, 1024] | 72.0 | 190.4 [64, 10000] | 103.1 | 746.9 [1024, 1] | 7.6 | 28.4 [1024, 64] | 70.5 | 31.9 [1024, 1024] | 65.6 | 2804.6 [1024, 10000] | 6764.0 | 11871.4 [10000, 1] | 17.8 | 31.8 [10000, 64] | 110.3 | 56.0 [10000, 1024] | 6640.2 | 27592.2 [10000, 10000] | 73003.4 | 120083.2 Times are in microseconds (us). The results above indicate that the version which reduces to bmm is better for larger tensors running on multiple threads, while for smaller and/or single thread code, the other version is better. Compare also provides functions for changing the table format compare.trim_significant_figures() compare.colorize() compare.print() 6. Saving/Loading benchmark results# Measurements (and CallgrindStats which are described in section 8) can be serialized by the pickle module. This makes A/B testing easy, as you can collect measurements from two separate environments, pickle them, and then load both in a single environment. Timer even takes an env constructor argument so that such A/B testing works seamlessly. Let\u2019s imagine that rather than two Python functions, the add/sum and bmm approaches were in two different builds of PyTorch. The example below demonstrates how one might A/B test them. For simplicity, we only use a subset of shapes, and simply round trip results through pickle rather than actually using multiple environments and writing results to disk. import pickle ab_test_results = [] for env in (\u0027environment A: mul/sum\u0027, \u0027environment B: bmm\u0027): for b, n in ((1, 1), (1024, 10000), (10000, 1)): x = torch.ones((b, n)) dot_fn = (batched_dot_mul_sum if env == \u0027environment A: mul/sum\u0027 else batched_dot_bmm) m = benchmark.Timer( stmt=\u0027batched_dot(x, x)\u0027, globals={\u0027x\u0027: x, \u0027batched_dot\u0027: dot_fn}, num_threads=1, label=\u0027Batched dot\u0027, description=f\u0027[{b}, {n}]\u0027, env=env, ).blocked_autorange(min_run_time=1) ab_test_results.append(pickle.dumps(m)) ab_results = [pickle.loads(i) for i in ab_test_results] compare = benchmark.Compare(ab_results) compare.trim_significant_figures() compare.colorize() compare.print() Output# [------------------------------------- Batched dot -------------------------------------] | [1, 1] | [1024, 10000] | [10000, 1] 1 threads: ------------------------------------------------------------------------------ (environment A: mul/sum) batched_dot(x, x) | 7 | 36000 | 21 (environment B: bmm) batched_dot(x, x) | 14 | 40000 | 85 Times are in microseconds (us). # And just to show that we can round trip all of the results from earlier: round_tripped_results = pickle.loads(pickle.dumps(results)) assert(str(benchmark.Compare(results)) == str(benchmark.Compare(round_tripped_results))) 7. Generating inputs with Fuzzed Parameters# As we\u2019ve seen in the previous section, there can be some stark performance differences depending on the input tensors. Hence, it is a good idea to run benchmarks on a number of different inputs. However, creating all these input tensors can be tedious which is where torch.utils.benchmark.Fuzzer and related classes come in. Let\u2019s take a look at how we can use the Fuzzer to create some test cases for the benchmark. from torch.utils.benchmark import Fuzzer, FuzzedParameter, FuzzedTensor, ParameterAlias # Generates random tensors with 128 to 10000000 elements and sizes k0 and k1 chosen from a # ``loguniform`` distribution in [1, 10000], 40% of which will be discontiguous on average. example_fuzzer = Fuzzer( parameters = [ FuzzedParameter(\u0027k0\u0027, minval=1, maxval=10000, distribution=\u0027loguniform\u0027), FuzzedParameter(\u0027k1\u0027, minval=1, maxval=10000, distribution=\u0027loguniform\u0027), ], tensors = [ FuzzedTensor(\u0027x\u0027, size=(\u0027k0\u0027, \u0027k1\u0027), min_elements=128, max_elements=10000000, probability_contiguous=0.6) ], seed=0, ) results = [] for tensors, tensor_params, params in example_fuzzer.take(10): # description is the column label sub_label=f\"{params[\u0027k0\u0027]:\u003c6} x {params[\u0027k1\u0027]:\u003c4} {\u0027\u0027 if tensor_params[\u0027x\u0027][\u0027is_contiguous\u0027] else \u0027(discontiguous)\u0027}\" results.append(benchmark.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals=tensors, label=\u0027Batched dot\u0027, sub_label=sub_label, description=\u0027mul/sum\u0027, ).blocked_autorange(min_run_time=1)) results.append(benchmark.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals=tensors, label=\u0027Batched dot\u0027, sub_label=sub_label, description=\u0027bmm\u0027, ).blocked_autorange(min_run_time=1)) compare = benchmark.Compare(results) compare.trim_significant_figures() compare.print() Output# [--------------------- Batched dot ---------------------] | mul/sum | bmm 1 threads: ---------------------------------------------- 725 x 257 | 87 | 180 49 x 383 | 15 | 30 34 x 1468 | 30 | 118 187 x 5039 | 400 | 1200 2140 x 1296 (discontiguous) | 2000 | 41000 78 x 1598 | 74 | 310 519 x 763 | 190 | 1500 141 x 1082 | 87 | 500 78 x 5 (discontiguous) | 9 | 20 187 x 1 | 12 | 10 Times are in microseconds (us). There is a lot of flexibility for defining your own fuzzers which is great for creating a powerful set of inputs to benchmark. But to make things even simpler, PyTorch benchmark module comes with some built-in fuzzers for common benchmarking needs. Let\u2019s take a look at how we can use one of these built-in fuzzers. from torch.utils.benchmark.op_fuzzers import binary results = [] for tensors, tensor_params, params in binary.BinaryOpFuzzer(seed=0).take(10): sub_label=f\"{params[\u0027k0\u0027]:\u003c6} x {params[\u0027k1\u0027]:\u003c4} {\u0027\u0027 if tensor_params[\u0027x\u0027][\u0027is_contiguous\u0027] else \u0027(discontiguous)\u0027}\" results.append(benchmark.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027from __main__ import batched_dot_mul_sum\u0027, globals=tensors, label=\u0027Batched dot\u0027, sub_label=sub_label, description=\u0027mul/sum\u0027, ).blocked_autorange(min_run_time=1)) results.append(benchmark.Timer( stmt=\u0027batched_dot_bmm(x, x)\u0027, setup=\u0027from __main__ import batched_dot_bmm\u0027, globals=tensors, label=\u0027Batched dot\u0027, sub_label=sub_label, description=\u0027bmm\u0027, ).blocked_autorange(min_run_time=1)) compare = benchmark.Compare(results) compare.trim_significant_figures() compare.colorize(rowwise=True) compare.print() Output# [----------------------- Batched dot ------------------------] | mul/sum | bmm 1 threads: --------------------------------------------------- 64 x 473 (discontiguous) | 10000 | 40000 16384 x 12642115 (discontiguous) | 31 | 78 8192 x 892 | 4800 | 20400 512 x 64 (discontiguous) | 110000 | 400000 493 x 27 (discontiguous) | 1100 | 2440 118 x 32 (discontiguous) | 870 | 2030 16 x 495 (discontiguous) | 23600 | 24000 488 x 62374 | 90000 | 100000 240372 x 69 | 40000 | 16000 40156 x 32 (discontiguous) | 2670 | 5000 Times are in microseconds (us). 8. Collecting instruction counts with Callgrind# One of the challenges of optimizing code is the variation and opacity of wall time. There are many sources of non-determinism, from adaptive clock speeds to resource contention with other processes. Furthermore, end-to-end time gives no insight into where time is being spent, which is really what we\u2019re interested in when optimizing code. A complementary approach is to also collect instruction counts. These counts are a proxy metric and do not capture all aspects of performance (e.g. memory or I/O bound tasks), however they do have several useful properties. Instruction counts are reproducible, insensitive to environmental variation, and offer fine grained insight into where a program is spending cycles. To see the utility of instruction counts, let us look at how we might reduce the overhead of batched_dot_mul_sum. The obvious solution is to move it to C++, so we avoid going between Python and C++ multiple times. Fortunately, the source is nearly identical. One question that we have to ask in C++ is whether we should take arguments by value or reference. batched_dot_src = \"\"\"\\ /* ---- Python ---- */ // def batched_dot_mul_sum(a, b): // return a.mul(b).sum(-1) torch::Tensor batched_dot_mul_sum_v0( const torch::Tensor a, const torch::Tensor b) { return a.mul(b).sum(-1); } torch::Tensor batched_dot_mul_sum_v1( const torch::Tensor\u0026 a, const torch::Tensor\u0026 b) { return a.mul(b).sum(-1); } \"\"\" # PyTorch makes it easy to test our C++ implementations by providing a utility # to JIT compile C++ source into Python extensions: import os from torch.utils import cpp_extension cpp_lib = cpp_extension.load_inline( name=\u0027cpp_lib\u0027, cpp_sources=batched_dot_src, extra_cflags=[\u0027-O3\u0027], extra_include_paths=[ # `load_inline` needs to know where to find ``pybind11`` headers. os.path.join(os.getenv(\u0027CONDA_PREFIX\u0027), \u0027include\u0027) ], functions=[\u0027batched_dot_mul_sum_v0\u0027, \u0027batched_dot_mul_sum_v1\u0027] ) # `load_inline` will create a shared object that is loaded into Python. When we collect # instruction counts Timer will create a subprocess, so we need to re-import it. The # import process is slightly more complicated for C extensions, but that\u0027s all we\u0027re # doing here. module_import_str = f\"\"\"\\ # https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path import importlib.util spec = importlib.util.spec_from_file_location(\"cpp_lib\", {repr(cpp_lib.__file__)}) cpp_lib = importlib.util.module_from_spec(spec) spec.loader.exec_module(cpp_lib)\"\"\" import textwrap def pretty_print(result): \"\"\"Import machinery for ``cpp_lib.so`` can get repetitive to look at.\"\"\" print(repr(result).replace(textwrap.indent(module_import_str, \" \"), \" import cpp_lib\")) t_baseline = benchmark.Timer( stmt=\u0027batched_dot_mul_sum(x, x)\u0027, setup=\u0027\u0027\u0027\\ from __main__ import batched_dot_mul_sum x = torch.randn(2, 2)\u0027\u0027\u0027) t0 = benchmark.Timer( stmt=\u0027cpp_lib.batched_dot_mul_sum_v0(x, x)\u0027, setup=f\u0027\u0027\u0027\\ {module_import_str} x = torch.randn(2, 2)\u0027\u0027\u0027) t1 = benchmark.Timer( stmt=\u0027cpp_lib.batched_dot_mul_sum_v1(x, x)\u0027, setup=f\u0027\u0027\u0027\\ {module_import_str} x = torch.randn(2, 2)\u0027\u0027\u0027) # Moving to C++ did indeed reduce overhead, but it\u0027s hard to tell which # calling convention is more efficient. v1 (call with references) seems to # be a bit faster, but it\u0027s within measurement error. pretty_print(t_baseline.blocked_autorange()) pretty_print(t0.blocked_autorange()) pretty_print(t1.blocked_autorange()) Output# \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8\u003e batched_dot_mul_sum(x, x) setup: from __main__ import batched_dot_mul_sum x = torch.randn(2, 2) 6.92 us 1 measurement, 100000 runs , 1 thread \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8\u003e cpp_lib.batched_dot_mul_sum_v0(x, x) setup: import cpp_lib x = torch.randn(2, 2) 5.29 us 1 measurement, 100000 runs , 1 thread \u003ctorch.utils.benchmark.utils.common.Measurement object at 0x7fb16935d2e8\u003e cpp_lib.batched_dot_mul_sum_v1(x, x) setup: import cpp_lib x = torch.randn(2, 2) 5.22 us 1 measurement, 100000 runs , 1 thread # Let\u0027s use ``Callgrind`` to determine which is better. stats_v0 = t0.collect_callgrind() stats_v1 = t1.collect_callgrind() pretty_print(stats_v0) pretty_print(stats_v1) # `.as_standardized` removes file names and some path prefixes, and makes # it easier to read the function symbols. stats_v0 = stats_v0.as_standardized() stats_v1 = stats_v1.as_standardized() # `.delta` diffs the instruction counts, and `.denoise` removes several # functions in the Python interpreter that are known to have significant # jitter. delta = stats_v1.delta(stats_v0).denoise() # `.transform` is a convenience API for transforming function names. It is # useful for increasing cancelation when ``diff-ing`` instructions, as well as # just generally improving readability. replacements = ( (\"???:void pybind11\", \"pybind11\"), (\"batched_dot_mul_sum_v0\", \"batched_dot_mul_sum_v1\"), (\"at::Tensor, at::Tensor\", \"...\"), (\"at::Tensor const\u0026, at::Tensor const\u0026\", \"...\"), (\"auto torch::detail::wrap_pybind_function_impl_\", \"wrap_pybind_function_impl_\"), ) for before, after in replacements: delta = delta.transform(lambda l: l.replace(before, after)) # We can use print options to control how much of the function to display. torch.set_printoptions(linewidth=160) # Once parsed, the instruction counts make clear that passing `a` and `b` # by reference is more efficient as it skips some ``c10::TensorImpl`` bookkeeping # for the intermediate Tensors, and is also works better with ``pybind11``. This # is consistent with our noisy wall time observations. print(delta) \u003ctorch.utils.benchmark.utils.valgrind_wrapper.timer_interface.CallgrindStats object at 0x7fb0f06e7630\u003e cpp_lib.batched_dot_mul_sum_v0(x, x) setup: import cpp_lib x = torch.randn(2, 2) All Noisy symbols removed Instructions: 2392671 2392671 Baseline: 4367 4367 100 runs per measurement, 1 thread Warning: PyTorch was not built with debug symbols. Source information may be limited. Rebuild with REL_WITH_DEB_INFO=1 for more detailed results. \u003ctorch.utils.benchmark.utils.valgrind_wrapper.timer_interface.CallgrindStats object at 0x7fb10400d208\u003e cpp_lib.batched_dot_mul_sum_v1(x, x) setup: import cpp_lib x = torch.randn(2, 2) All Noisy symbols removed Instructions: 2378978 2378978 Baseline: 4367 4367 100 runs per measurement, 1 thread Warning: PyTorch was not built with debug symbols. Source information may be limited. Rebuild with REL_WITH_DEB_INFO=1 for more detailed results. \u003ctorch.utils.benchmark.utils.valgrind_wrapper.timer_interface.FunctionCounts object at 0x7fb1000ab358\u003e 86 ???:0x000000000020d9e0 56 ???:0x000000000020db10 -1100 pybind11::cpp_function::initialize\u003cwrap_pybind_function_impl_\u003cat::Tensor ... r (\u0026)(...), std::integer_sequence\u003cunsigned long, 0ul, 1ul\u003e)::{lambda(...) -1600 ???:wrap_pybind_function_impl_\u003cat::Tensor (\u0026)(...), 0ul, 1ul\u003e(at::Tensor (\u0026)(...), std::integer_sequence\u003cunsigned long, 0ul, 1ul\u003e)::{lambda(...) -5200 ???:c10::intrusive_ptr\u003cc10::TensorImpl, c10::UndefinedTensorImpl\u003e::reset_() -5935 ???:0x000000000022c0e0 Total: -13693 Learn More# Take a look at these other recipes to continue your learning: PyTorch Profiler Download Jupyter notebook: benchmark.ipynb Download Python source code: benchmark.py Download zipped: benchmark.zip",
+       "author": {
+         "@type": "Organization",
+         "name": "PyTorch Contributors",
+         "url": "https://pytorch.org"
+       },
+       "image": "../../_static/img/pytorch_seo.png",
+       "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "/recipes/recipes/benchmark.html"
+       },
+       "datePublished": "2023-01-01T00:00:00Z",
+       "dateModified": "2023-01-01T00:00:00Z"
+     }
+ </script>
+<script>
+    // Tutorials Call to action event tracking
+    $("[data-behavior='call-to-action-event']").on('click', function () {
+      fbq('trackCustom', "Download", {
+        tutorialTitle: $('h1:first').text(),
+        downloadLink: this.href,
+        tutorialLink: window.location.href,
+        downloadTitle: $(this).attr("data-response")
+      });
+      if (typeof gtag === 'function') {
+        gtag('event', 'click', {
+          'event_category': $(this).attr("data-response"),
+          'event_label': $("h1").first().text(),
+          'tutorial_link': window.location.href
+        });
+      }
+    });
+  </script>
+</body>
+</body></html>

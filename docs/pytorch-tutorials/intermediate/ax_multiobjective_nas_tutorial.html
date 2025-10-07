@@ -1,0 +1,1543 @@
+
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Multi-Objective NAS with Ax — PyTorch Tutorials 2.8.0+cu128 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css?v=536c50fe" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/theme.css?v=047068a3" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css?v=d2d258e8" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-binder.css?v=f4aeca0c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-dataframe.css?v=2082cf3c" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex-math.css?v=91adb8b6" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/documentation_options.js?v=bffbcef7"></script>
+<script src="../_static/doctools.js?v=888ff710"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/katex.min.js?v=be8ff15f"></script>
+<script src="../_static/auto-render.min.js?v=ad136472"></script>
+<script src="../_static/katex_autorenderer.js?v=bebc588a"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'intermediate/ax_multiobjective_nas_tutorial';</script>
+<link href="https://docs.pytorch.org/tutorials/intermediate/ax_multiobjective_nas_tutorial.html" rel="canonical"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="tensorboard_profiler_tutorial.html" rel="next" title="PyTorch Profiler With TensorBoard"/>
+<link href="../beginner/hyperparameter_tuning_tutorial.html" rel="prev" title="Hyperparameter tuning with Ray Tune"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+<script>
+  if (window.location.hostname === 'docs.pytorch.org' || window.location.hostname === 'docs-preview.pytorch.org') {
+    const script = document.createElement('script');
+    script.src = 'https://cmp.osano.com/16A0DbT9yDNIaQkvZ/31b1b91a-e0b6-47ea-bde2-7f2bd13dbe5c/osano.js?variant=one';
+    document.head.appendChild(script);
+  }
+</script>
+<script>
+  // Cookie banner for non-LF projects
+  document.addEventListener('DOMContentLoaded', function () {
+    // Hide cookie banner on local environments and LF owned docs
+    if (window.location.hostname === 'localhost' ||
+      window.location.hostname === '0.0.0.0' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === 'docs.pytorch.org' ||
+      window.location.hostname === 'docs-preview.pytorch.org' ||
+      window.location.hostname.startsWith('192.168.')) {
+      const banner = document.querySelector('.cookie-banner-wrapper');
+      if (banner) {
+        banner.style.display = 'none';
+      }
+    }
+  });
+</script>
+<!-- Conditional CSS for header and footer height adjustment -->
+<link crossorigin="anonymous" href="../_static/css/theme.css" rel="stylesheet" type="text/css"/>
+<script src="../_static/js/theme.js" type="text/javascript"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&amp;display=swap" rel="stylesheet"/>
+<meta content="../_static/img/pytorch_seo.png" property="og:image"/>
+<link crossorigin="anonymous" href="../_static/webfonts/all.min.css" rel="stylesheet"/>
+<meta content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval' blob:;" http-equiv="Content-Security-Policy"/>
+<meta content="tutorials" name="pytorch_project"/>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-T8XT4PS" style="display:none;visibility:hidden" width="0"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<!-- Google Tag Manager -->
+<script>(function (w, d, s, l, i) {
+    w[l] = w[l] || []; w[l].push({
+      'gtm.start':
+        new Date().getTime(), event: 'gtm.js'
+    }); var f = d.getElementsByTagName(s)[0],
+      j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    j.onload = function () {
+      window.dispatchEvent(new Event('gtm_loaded'));
+      console.log('GTM loaded successfully');
+    };
+  })(window, document, 'script', 'dataLayer', 'GTM-T8XT4PS');
+</script>
+<!-- End Google Tag Manager -->
+<!-- Facebook Pixel Code -->
+<script>
+  !function (f, b, e, v, n, t, s) {
+    if (f.fbq) return; n = f.fbq = function () {
+      n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+    };
+    if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+    n.queue = []; t = b.createElement(e); t.async = !0;
+    t.src = v; s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t, s)
+  }(window, document, 'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '243028289693773');
+  fbq('track', 'PageView');
+</script>
+<script>
+  document.documentElement.setAttribute('data-version', 'v2.8.0+cu128');
+</script>
+<noscript>
+<img height="1" src="https://www.facebook.com/tr?id=243028289693773&amp;ev=PageView&amp;noscript=1" width="1"/>
+</noscript>
+<script>
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+</script>
+<!-- End Facebook Pixel Code -->
+<!-- Repository configuration for tutorials -->
+<script>
+  // Define repository configuration for tutorial buttons using existing html_context variables
+  // Only injected when tutorial buttons are shown AND github variables are defined
+  // If either condition is false, JavaScript will fallback to default PyTorch tutorial links
+  window.repoConfig = {
+    github_repo: "pytorch/tutorials",
+    github_branch: "main",
+    colab_repo: "pytorch/tutorials",
+    colab_branch: ""
+  };
+</script>
+<!-- Script to Fix scrolling -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Fix anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+          const headerHeight =
+            (document.querySelector('.header-holder') ? document.querySelector('.header-holder').offsetHeight : 0) +
+            (document.querySelector('.bd-header') ? document.querySelector('.bd-header').offsetHeight : 0) + 20;
+
+          const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+
+          // Update URL hash without scrolling
+          history.pushState(null, null, '#' + targetId);
+        }
+      });
+    });
+  });
+</script>
+<script async="" src="https://cse.google.com/cse.js?cx=e65585f8c3ea1440e"></script>
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="en" name="docsearch:language">
+</meta></meta></head>
+<body class="pytorch-body" data-feedback-url="https://github.com/pytorch/tutorials">
+<div class="container-fluid header-holder tutorials-header" id="header-holder">
+<div class="header-container-wrapper">
+<div class="header-container">
+<a aria-label="PyTorch" class="header-logo" href="https://pytorch.org/"></a>
+<div class="main-menu">
+<ul>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Learn</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/get-started/locally">
+<span class="dropdown-title">Get Started</span>
+</a>
+<a class="nav-dropdown-item" href="https://docs.pytorch.org/tutorials">
+<span class="dropdown-title">Tutorials</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/basics/intro.html">
+<span class="dropdown-title">Learn the Basics</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/recipes/recipes_index.html">
+<span class="dropdown-title">PyTorch Recipes</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tutorials/beginner/introyt.html">
+<span class="dropdown-title">Intro to PyTorch - YouTube Series</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/webinars/">
+<span class="dropdown-title">Webinars</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Community</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://landscape.pytorch.org/" target="_blank">
+<span class="dropdown-title">Landscape</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/join-ecosystem">
+<span class="dropdown-title">Join the Ecosystem</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/community-hub/">
+<span class="dropdown-title">Community Hub</span>
+</a>
+<a class="nav-dropdown-item" href="https://discuss.pytorch.org/">
+<span class="dropdown-title">Forums</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/resources">
+<span class="dropdown-title">Developer Resources</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/contributor-awards/">
+<span class="dropdown-title">Contributor Awards</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/community-events/">
+<span class="dropdown-title">Community Events</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/programs/ambassadors/">
+<span class="dropdown-title">PyTorch Ambassadors</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Projects</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/pytorch/">
+<span class="dropdown-title">PyTorch</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/vllm/">
+<span class="dropdown-title">vLLM</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/deepspeed/">
+<span class="dropdown-title">DeepSpeed</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/projects/host-your-project/">
+<span class="dropdown-title">Host Your Project</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span> Docs</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://docs.pytorch.org/docs/stable/index.html">
+<span class="dropdown-title">PyTorch</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/domains">
+<span class="dropdown-title">Domains</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>Blogs &amp; News</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/blog/">
+<span class="dropdown-title">Blog</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/announcements">
+<span class="dropdown-title">Announcements</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/case-studies/">
+<span class="dropdown-title">Case Studies</span>
+<a class="nav-dropdown-item" href="https://pytorch.org/events">
+<span class="dropdown-title">Events</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/newsletter">
+<span class="dropdown-title">Newsletter</span>
+</a>
+</a></div>
+</div></li>
+<li class="main-menu-item">
+<div class="resources-dropdown" data-toggle="resources-dropdown" id="resourcesDropdownButton">
+<a class="with-down-arrow">
+<span>About</span>
+</a>
+<div class="resources-dropdown-menu">
+<a class="nav-dropdown-item" href="https://pytorch.org/foundation">
+<span class="dropdown-title">PyTorch Foundation</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/members">
+<span class="dropdown-title">Members</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/governing-board">
+<span class="dropdown-title">Governing Board</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/tac">
+<span class="dropdown-title">Technical Advisory Council</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/credits">
+<span class="dropdown-title">Cloud Credit Program</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/staff">
+<span class="dropdown-title">Staff</span>
+</a>
+<a class="nav-dropdown-item" href="https://pytorch.org/contact">
+<span class="dropdown-title">Contact</span>
+</a>
+</div>
+</div>
+</li>
+<li class="main-menu-item">
+<div class="no-dropdown main-menu-button">
+<a data-cta="join" href="https://pytorch.org/join">
+                JOIN
+              </a>
+</div>
+</li>
+</ul>
+</div>
+<a class="main-menu-open-button" data-behavior="open-mobile-menu" href="#">
+<i class="fa-solid fa-ellipsis"></i>
+</a>
+</div>
+</div>
+</div>
+<!-- Begin Mobile Menu -->
+<div class="mobile-main-menu">
+<div class="container-fluid">
+<div class="header-container-wrapper">
+<div class="mobile-main-menu-header-container">
+<a class="main-menu-close-button" data-behavior="close-mobile-menu" href="#">
+</a>
+</div>
+</div>
+</div>
+<div class="mobile-main-menu-links-container">
+<div class="main-menu">
+<ul>
+<li class="resources-mobile-menu-title">
+<a>Learn</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/get-started/locally">Get Started</a>
+</li>
+<li>
+<a href="https://docs.pytorch.org/tutorials">Tutorials</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/basics/intro.html">Learn the Basics</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/recipes/recipes_index.html">PyTorch Recipes</a>
+</li>
+<li>
+<a href="https://pytorch.org/tutorials/beginner/introyt.html">Introduction to PyTorch - YouTube Series</a>
+</li>
+<li>
+<a href="https://pytorch.org/webinars/">Webinars</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Community</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://landscape.pytorch.org/">Landscape</a>
+</li>
+<li>
+<a href="https://pytorch.org/join-ecosystem">Join the Ecosystem</a>
+</li>
+<li>
+<a href="https://pytorch.org/community-hub/">Community Hub</a>
+</li>
+<li>
+<a href="https://discuss.pytorch.org/">Forums</a>
+</li>
+<li>
+<a href="https://pytorch.org/resources">Developer Resources</a>
+</li>
+<li>
+<a href="https://pytorch.org/contributor-awards/">Contributor Awards</a>
+</li>
+<li>
+<a href="https://pytorch.org/community-events/">Community Events</a>
+</li>
+<li>
+<a href="https://pytorch.org/programs/ambassadors/">PyTorch Ambassadors</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Projects</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/projects/pytorch/">PyTorch</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/vllm/">vLLM</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/deepspeed/">DeepSpeed</a>
+</li>
+<li>
+<a href="https://pytorch.org/projects/host-your-project/">Host Your Project</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Docs</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://docs.pytorch.org/docs/stable/index.html">PyTorch</a>
+</li>
+<li>
+<a href="https://pytorch.org/domains">Domains</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>Blog &amp; News</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/blog/">Blog</a>
+</li>
+<li>
+<a href="https://pytorch.org/announcements">Announcements</a>
+</li>
+<li>
+<a href="https://pytorch.org/case-studies/">Case Studies</a>
+</li>
+<li>
+<a href="https://pytorch.org/events">Events</a>
+</li>
+<li>
+<a href="https://pytorch.org/newsletter">Newsletter</a>
+</li>
+</ul>
+<li class="resources-mobile-menu-title">
+<a>About</a>
+</li>
+<ul class="resources-mobile-menu-items">
+<li>
+<a href="https://pytorch.org/foundation">PyTorch Foundation</a>
+</li>
+<li>
+<a href="https://pytorch.org/members">Members</a>
+</li>
+<li>
+<a href="https://pytorch.org/governing-board">Governing Board</a>
+</li>
+<li>
+<a href="https://pytorch.org/tac">Technical Advisory Council</a>
+</li>
+<li>
+<a href="https://pytorch.org/credits">Cloud Credit Program</a>
+</li>
+<li>
+<a href="https://pytorch.org/staff">Staff</a>
+</li>
+<li>
+<a href="https://pytorch.org/contact">Contact</a>
+</li>
+</ul>
+</ul>
+</div>
+</div>
+</div>
+<!-- End Mobile Menu -->
+<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<input class="sidebar-toggle" id="pst-primary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+<input class="sidebar-toggle" id="pst-secondary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+</div>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="navbar-header-items__start">
+<div class="navbar-item">
+<a class="version" href="../index.html">v2.8.0+cu128</a>
+</div>
+</div>
+<div class="navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../intro.html">
+    Intro
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../compilers_index.html">
+    Compilers
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../domains.html">
+    Domains
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../distributed.html">
+    Distributed
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../extension.html">
+    Extension
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../recipes_index.html">
+    Recipes
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://x.com/PyTorch" rel="noopener" target="_blank" title="X"><i aria-hidden="true" class="fa-brands fa-x-twitter fa-lg"></i>
+<span class="sr-only">X</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/pytorch/tutorials" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://dev-discuss.pytorch.org/" rel="noopener" target="_blank" title="Discourse"><i aria-hidden="true" class="fa-brands fa-discourse fa-lg"></i>
+<span class="sr-only">Discourse</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/torch/" rel="noopener" target="_blank" title="PyPi"><i aria-hidden="true" class="fa-brands fa-python fa-lg"></i>
+<span class="sr-only">PyPi</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../intro.html">
+    Intro
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../compilers_index.html">
+    Compilers
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../domains.html">
+    Domains
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../distributed.html">
+    Distributed
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../deep-dive.html">
+    Deep Dive
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../extension.html">
+    Extension
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../ecosystem.html">
+    Ecosystem
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../recipes_index.html">
+    Recipes
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://x.com/PyTorch" rel="noopener" target="_blank" title="X"><i aria-hidden="true" class="fa-brands fa-x-twitter fa-lg"></i>
+<span class="sr-only">X</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/pytorch/tutorials" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://dev-discuss.pytorch.org/" rel="noopener" target="_blank" title="Discourse"><i aria-hidden="true" class="fa-brands fa-discourse fa-lg"></i>
+<span class="sr-only">Discourse</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/torch/" rel="noopener" target="_blank" title="PyPi"><i aria-hidden="true" class="fa-brands fa-python fa-lg"></i>
+<span class="sr-only">PyPi</span></a>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../beginner/hyperparameter_tuning_tutorial.html">Hyperparameter tuning with Ray Tune</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Multi-Objective NAS with Ax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensorboard_profiler_tutorial.html">PyTorch Profiler With TensorBoard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="realtime_rpi.html">Real Time Inference on Raspberry Pi 4 and 5 (40 fps!)</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="../ecosystem.html">Ecosystem</a></li>
+<li aria-current="page" class="breadcrumb-item active">Multi-Object...</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="header-article-items__end">
+<div class="header-article-item">
+<div class="rating">
+    Rate this Page
+    <div class="stars">
+<span class="star" data-behavior="tutorial-rating" data-count="1" data-value="1">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="2" data-value="2">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="3" data-value="3">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="4" data-value="4">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="5" data-value="5">★</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article" id="pytorch-article">
+<!-- Hidden breadcrumb schema for SEO only -->
+<div itemscope="" itemtype="https://schema.org/BreadcrumbList" style="display:none;">
+<div itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<link href="../ecosystem.html" itemprop="item"/>
+<meta content="Ecosystem" itemprop="name"/>
+<meta content="1" itemprop="position"/>
+</div>
+<div itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<meta content="Multi-Objective NAS with Ax" itemprop="name"/>
+<meta content="2" itemprop="position"/>
+</div>
+</div>
+<script>
+      if ((window.location.href.indexOf("/unstable/") != -1) && (window.location.href.indexOf("/unstable/unstable_index") < 1)) {
+        var div = '<div class="prototype-banner"><i class="fa fa-flask" aria-hidden="true"></i> <strong>Unstable feature:</strong> Not typically available in binary distributions like PyPI. Early stage for feedback and testing.</div>'
+        document.addEventListener('DOMContentLoaded', function () {
+          document.getElementById("pytorch-article").insertAdjacentHTML('afterBegin', div);
+        });
+      }
+    </script>
+<div class="pytorch-call-to-action-links">
+<div id="tutorial-type">intermediate/ax_multiobjective_nas_tutorial</div>
+<a data-behavior="call-to-action-event" data-response="Run in Google Colab" id="colab-link" target="_blank">
+<div id="google-colab-link">
+<img class="call-to-action-img" src="../_static/img/pytorch-colab.svg"/>
+<div class="call-to-action-desktop-view">Run in Google Colab</div>
+<div class="call-to-action-mobile-view">Colab</div>
+</div>
+</a>
+<a data-behavior="call-to-action-event" data-response="Download Notebook" id="notebook-link">
+<div id="download-notebook-link">
+<img class="call-to-action-notebook-img" src="../_static/img/pytorch-download.svg"/>
+<div class="call-to-action-desktop-view">Download Notebook</div>
+<div class="call-to-action-mobile-view">Notebook</div>
+</div>
+</a>
+<a data-behavior="call-to-action-event" data-response="View on Github" id="github-link" target="_blank">
+<div id="github-view-link">
+<img class="call-to-action-img" src="../_static/img/pytorch-github.svg"/>
+<div class="call-to-action-desktop-view">View on GitHub</div>
+<div class="call-to-action-mobile-view">GitHub</div>
+</div>
+</a>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-intermediate-ax-multiobjective-nas-tutorial-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="multi-objective-nas-with-ax">
+<span id="sphx-glr-intermediate-ax-multiobjective-nas-tutorial-py"></span><h1>Multi-Objective NAS with Ax<a class="headerlink" href="#multi-objective-nas-with-ax" title="Link to this heading">#</a></h1><p class="date-info-last-verified" style="color: #6c6c6d; font-size: small;">Created On: Oct 02, 2025 | Last Updated: Oct 02, 2025 | Last Verified: Nov 05, 2024</p>
+<p><strong>Authors:</strong> <a class="reference external" href="https://github.com/dme65">David Eriksson</a>,
+<a class="reference external" href="https://github.com/Balandat">Max Balandat</a>,
+and the Adaptive Experimentation team at Meta.</p>
+<p>In this tutorial, we show how to use <a class="reference external" href="https://ax.dev/">Ax</a> to run
+multi-objective neural architecture search (NAS) for a simple neural
+network model on the popular MNIST dataset. While the underlying
+methodology would typically be used for more complicated models and
+larger datasets, we opt for a tutorial that is easily runnable
+end-to-end on a laptop in less than 20 minutes.</p>
+<p>In many NAS applications, there is a natural tradeoff between multiple
+objectives of interest. For instance, when deploying models on-device
+we may want to maximize model performance (for example, accuracy), while
+simultaneously minimizing competing metrics like power consumption,
+inference latency, or model size in order to satisfy deployment
+constraints. Often, we may be able to reduce computational requirements
+or latency of predictions substantially by accepting minimally lower
+model performance. Principled methods for exploring such tradeoffs
+efficiently are key enablers of scalable and sustainable AI, and have
+many successful applications at Meta - see for instance our
+<a class="reference external" href="https://research.facebook.com/blog/2021/07/optimizing-model-accuracy-and-latency-using-bayesian-multi-objective-neural-architecture-search/">case study</a>
+on a Natural Language Understanding model.</p>
+<p>In our example here, we will tune the widths of two hidden layers,
+the learning rate, the dropout probability, the batch size, and the
+number of training epochs. The goal is to trade off performance
+(accuracy on the validation set) and model size (the number of
+model parameters).</p>
+<p>This tutorial makes use of the following PyTorch libraries:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/PyTorchLightning/pytorch-lightning">PyTorch Lightning</a> (specifying the model and training loop)</p></li>
+<li><p><a class="reference external" href="https://github.com/pytorch/torchx">TorchX</a> (for running training jobs remotely / asynchronously)</p></li>
+<li><p><a class="reference external" href="https://github.com/pytorch/botorch">BoTorch</a> (the Bayesian Optimization library powering Ax’s algorithms)</p></li>
+</ul>
+<section id="defining-the-torchx-app">
+<h2>Defining the TorchX App<a class="headerlink" href="#defining-the-torchx-app" title="Link to this heading">#</a></h2>
+<p>Our goal is to optimize the PyTorch Lightning training job defined in
+<a class="reference external" href="https://github.com/pytorch/tutorials/tree/main/intermediate_source/mnist_train_nas.py">mnist_train_nas.py</a>.
+To do this using TorchX, we write a helper function that takes in
+the values of the architecture and hyperparameters of the training
+job and creates a <a class="reference external" href="https://pytorch.org/torchx/latest/basics.html">TorchX AppDef</a>
+with the appropriate settings.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torchx</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchx</span><span class="w"> </span><span class="kn">import</span> <span class="n">specs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchx.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span>
+    <span class="n">log_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">hidden_size_1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">hidden_size_2</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">trial_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">specs</span><span class="o">.</span><span class="n">AppDef</span><span class="p">:</span>
+
+    <span class="c1"># define the log path so we can pass it to the TorchX ``AppDef``</span>
+    <span class="k">if</span> <span class="n">trial_idx</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">trial_idx</span><span class="p">))</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">python</span><span class="p">(</span>
+        <span class="c1"># command line arguments to the training script</span>
+        <span class="s2">"--log_path"</span><span class="p">,</span>
+        <span class="n">log_path</span><span class="p">,</span>
+        <span class="s2">"--hidden_size_1"</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">hidden_size_1</span><span class="p">),</span>
+        <span class="s2">"--hidden_size_2"</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">hidden_size_2</span><span class="p">),</span>
+        <span class="s2">"--learning_rate"</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">),</span>
+        <span class="s2">"--epochs"</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">epochs</span><span class="p">),</span>
+        <span class="s2">"--dropout"</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">dropout</span><span class="p">),</span>
+        <span class="s2">"--batch_size"</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">batch_size</span><span class="p">),</span>
+        <span class="c1"># other config options</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"trainer"</span><span class="p">,</span>
+        <span class="n">script</span><span class="o">=</span><span class="s2">"mnist_train_nas.py"</span><span class="p">,</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">torchx</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">TORCHX_IMAGE</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="setting-up-the-runner">
+<h2>Setting up the Runner<a class="headerlink" href="#setting-up-the-runner" title="Link to this heading">#</a></h2>
+<p>Ax’s <a class="reference external" href="https://ax.dev/api/core.html#ax.core.runner.Runner">Runner</a>
+abstraction allows writing interfaces to various backends.
+Ax already comes with Runner for TorchX, and so we just need to
+configure it. For the purpose of this tutorial we run jobs locally
+in a fully asynchronous fashion.</p>
+<p>In order to launch them on a cluster, you can instead specify a
+different TorchX scheduler and adjust the configuration appropriately.
+For example, if you have a Kubernetes cluster, you just need to change the
+scheduler from <code class="docutils literal notranslate"><span class="pre">local_cwd</span></code> to <code class="docutils literal notranslate"><span class="pre">kubernetes</span></code>).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ax.runners.torchx</span><span class="w"> </span><span class="kn">import</span> <span class="n">TorchXRunner</span>
+
+<span class="c1"># Make a temporary dir to log our results into</span>
+<span class="n">log_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+
+<span class="n">ax_runner</span> <span class="o">=</span> <span class="n">TorchXRunner</span><span class="p">(</span>
+    <span class="n">tracker_base</span><span class="o">=</span><span class="s2">"/tmp/"</span><span class="p">,</span>
+    <span class="n">component</span><span class="o">=</span><span class="n">trainer</span><span class="p">,</span>
+    <span class="c1"># NOTE: To launch this job on a cluster instead of locally you can</span>
+    <span class="c1"># specify a different scheduler and adjust arguments appropriately.</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="s2">"local_cwd"</span><span class="p">,</span>
+    <span class="n">component_const_params</span><span class="o">=</span><span class="p">{</span><span class="s2">"log_path"</span><span class="p">:</span> <span class="n">log_dir</span><span class="p">},</span>
+    <span class="n">cfg</span><span class="o">=</span><span class="p">{},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="setting-up-the-searchspace">
+<h2>Setting up the <code class="docutils literal notranslate"><span class="pre">SearchSpace</span></code><a class="headerlink" href="#setting-up-the-searchspace" title="Link to this heading">#</a></h2>
+<p>First, we define our search space. Ax supports both range parameters
+of type integer and float as well as choice parameters which can have
+non-numerical types such as strings.
+We will tune the hidden sizes, learning rate, dropout, and number of
+epochs as range parameters and tune the batch size as an ordered choice
+parameter to enforce it to be a power of 2.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ChoiceParameter</span><span class="p">,</span>
+    <span class="n">ParameterType</span><span class="p">,</span>
+    <span class="n">RangeParameter</span><span class="p">,</span>
+    <span class="n">SearchSpace</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># NOTE: In a real-world setting, hidden_size_1 and hidden_size_2</span>
+    <span class="c1"># should probably be powers of 2, but in our simple example this</span>
+    <span class="c1"># would mean that ``num_params`` can't take on that many values, which</span>
+    <span class="c1"># in turn makes the Pareto frontier look pretty weird.</span>
+    <span class="n">RangeParameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"hidden_size_1"</span><span class="p">,</span>
+        <span class="n">lower</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">upper</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+        <span class="n">parameter_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">RangeParameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"hidden_size_2"</span><span class="p">,</span>
+        <span class="n">lower</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">upper</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+        <span class="n">parameter_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">RangeParameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"learning_rate"</span><span class="p">,</span>
+        <span class="n">lower</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+        <span class="n">upper</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span>
+        <span class="n">parameter_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+        <span class="n">log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">RangeParameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"epochs"</span><span class="p">,</span>
+        <span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">upper</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">parameter_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">RangeParameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"dropout"</span><span class="p">,</span>
+        <span class="n">lower</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">upper</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">parameter_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">ChoiceParameter</span><span class="p">(</span>  <span class="c1"># NOTE: ``ChoiceParameters`` don't require log-scale</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"batch_size"</span><span class="p">,</span>
+        <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+        <span class="n">parameter_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">is_ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">sort_values</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">search_space</span> <span class="o">=</span> <span class="n">SearchSpace</span><span class="p">(</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+    <span class="c1"># NOTE: In practice, it may make sense to add a constraint</span>
+    <span class="c1"># hidden_size_2 &lt;= hidden_size_1</span>
+    <span class="n">parameter_constraints</span><span class="o">=</span><span class="p">[],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="setting-up-metrics">
+<h2>Setting up Metrics<a class="headerlink" href="#setting-up-metrics" title="Link to this heading">#</a></h2>
+<p>Ax has the concept of a <a class="reference external" href="https://ax.dev/api/core.html#metric">Metric</a>
+that defines properties of outcomes and how observations are obtained
+for these outcomes. This allows e.g. encoding how data is fetched from
+some distributed execution backend and post-processed before being
+passed as input to Ax.</p>
+<p>In this tutorial we will use
+<a class="reference external" href="https://ax.dev/tutorials/multiobjective_optimization.html">multi-objective optimization</a>
+with the goal of maximizing the validation accuracy and minimizing
+the number of model parameters. The latter represents a simple proxy
+of model latency, which is hard to estimate accurately for small ML
+models (in an actual application we would benchmark the latency while
+running the model on-device).</p>
+<p>In our example TorchX will run the training jobs in a fully asynchronous
+fashion locally and write the results to the <code class="docutils literal notranslate"><span class="pre">log_dir</span></code> based on the trial
+index (see the <code class="docutils literal notranslate"><span class="pre">trainer()</span></code> function above). We will define a metric
+class that is aware of that logging directory. By subclassing
+<a class="reference external" href="https://ax.dev/api/metrics.html?highlight=tensorboardcurvemetric#ax.metrics.tensorboard.TensorboardCurveMetric">TensorboardCurveMetric</a>
+we get the logic to read and parse the TensorBoard logs for free.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.metrics.tensorboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorboardMetric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorboard.backend.event_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">plugin_event_multiplexer</span> <span class="k">as</span> <span class="n">event_multiplexer</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyTensorboardMetric</span><span class="p">(</span><span class="n">TensorboardMetric</span><span class="p">):</span>
+
+    <span class="c1"># NOTE: We need to tell the new TensorBoard metric how to get the id /</span>
+    <span class="c1"># file handle for the TensorBoard logs from a trial. In this case</span>
+    <span class="c1"># our convention is to just save a separate file per trial in</span>
+    <span class="c1"># the prespecified log dir.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_event_multiplexer_for_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
+        <span class="n">mul</span> <span class="o">=</span> <span class="n">event_multiplexer</span><span class="o">.</span><span class="n">EventMultiplexer</span><span class="p">(</span><span class="n">max_reload_threads</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">mul</span><span class="o">.</span><span class="n">AddRunsFromDirectory</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">index</span><span class="p">))</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">mul</span><span class="o">.</span><span class="n">Reload</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">mul</span>
+
+    <span class="c1"># This indicates whether the metric is queryable while the trial is</span>
+    <span class="c1"># still running. We don't use this in the current tutorial, but Ax</span>
+    <span class="c1"># utilizes this to implement trial-level early-stopping functionality.</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_available_while_running</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>Now we can instantiate the metrics for accuracy and the number of
+model parameters. Here <cite>curve_name</cite> is the name of the metric in the
+TensorBoard logs, while <cite>name</cite> is the metric name used internally
+by Ax. We also specify <cite>lower_is_better</cite> to indicate the favorable
+direction of the two metrics.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">val_acc</span> <span class="o">=</span> <span class="n">MyTensorboardMetric</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"val_acc"</span><span class="p">,</span>
+    <span class="n">tag</span><span class="o">=</span><span class="s2">"val_acc"</span><span class="p">,</span>
+    <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model_num_params</span> <span class="o">=</span> <span class="n">MyTensorboardMetric</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"num_params"</span><span class="p">,</span>
+    <span class="n">tag</span><span class="o">=</span><span class="s2">"num_params"</span><span class="p">,</span>
+    <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="setting-up-the-optimizationconfig">
+<h2>Setting up the <code class="docutils literal notranslate"><span class="pre">OptimizationConfig</span></code><a class="headerlink" href="#setting-up-the-optimizationconfig" title="Link to this heading">#</a></h2>
+<p>The way to tell Ax what it should optimize is by means of an
+<a class="reference external" href="https://ax.dev/api/core.html#module-ax.core.optimization_config">OptimizationConfig</a>.
+Here we use a <code class="docutils literal notranslate"><span class="pre">MultiObjectiveOptimizationConfig</span></code> as we will
+be performing multi-objective optimization.</p>
+<p>Additionally, Ax supports placing constraints on the different
+metrics by specifying objective thresholds, which bound the region
+of interest in the outcome space that we want to explore. For this
+example, we will constrain the validation accuracy to be at least
+0.94 (94%) and the number of model parameters to be at most 80,000.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiObjective</span><span class="p">,</span> <span class="n">Objective</span><span class="p">,</span> <span class="n">ObjectiveThreshold</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ax.core.optimization_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiObjectiveOptimizationConfig</span>
+
+
+<span class="n">opt_config</span> <span class="o">=</span> <span class="n">MultiObjectiveOptimizationConfig</span><span class="p">(</span>
+    <span class="n">objective</span><span class="o">=</span><span class="n">MultiObjective</span><span class="p">(</span>
+        <span class="n">objectives</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">Objective</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">val_acc</span><span class="p">,</span> <span class="n">minimize</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">Objective</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">model_num_params</span><span class="p">,</span> <span class="n">minimize</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">objective_thresholds</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ObjectiveThreshold</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">val_acc</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="mf">0.94</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">ObjectiveThreshold</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">model_num_params</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="mi">80_000</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-the-ax-experiment">
+<h2>Creating the Ax Experiment<a class="headerlink" href="#creating-the-ax-experiment" title="Link to this heading">#</a></h2>
+<p>In Ax, the <a class="reference external" href="https://ax.dev/api/core.html#ax.core.experiment.Experiment">Experiment</a>
+object is the object that stores all the information about the problem
+setup.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiment</span>
+
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"torchx_mnist"</span><span class="p">,</span>
+    <span class="n">search_space</span><span class="o">=</span><span class="n">search_space</span><span class="p">,</span>
+    <span class="n">optimization_config</span><span class="o">=</span><span class="n">opt_config</span><span class="p">,</span>
+    <span class="n">runner</span><span class="o">=</span><span class="n">ax_runner</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="choosing-the-generation-strategy">
+<h2>Choosing the Generation Strategy<a class="headerlink" href="#choosing-the-generation-strategy" title="Link to this heading">#</a></h2>
+<p>A <a class="reference external" href="https://ax.dev/api/modelbridge.html#ax.modelbridge.generation_strategy.GenerationStrategy">GenerationStrategy</a>
+is the abstract representation of how we would like to perform the
+optimization. While this can be customized (if you’d like to do so, see
+<a class="reference external" href="https://ax.dev/tutorials/generation_strategy.html">this tutorial</a>),
+in most cases Ax can automatically determine an appropriate strategy
+based on the search space, optimization config, and the total number
+of trials we want to run.</p>
+<p>Typically, Ax chooses to evaluate a number of random configurations
+before starting a model-based Bayesian Optimization strategy.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">total_trials</span> <span class="o">=</span> <span class="mi">48</span>  <span class="c1"># total evaluation budget</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ax.modelbridge.dispatch_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">choose_generation_strategy</span>
+
+<span class="n">gs</span> <span class="o">=</span> <span class="n">choose_generation_strategy</span><span class="p">(</span>
+    <span class="n">search_space</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">search_space</span><span class="p">,</span>
+    <span class="n">optimization_config</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">optimization_config</span><span class="p">,</span>
+    <span class="n">num_trials</span><span class="o">=</span><span class="n">total_trials</span><span class="p">,</span>
+  <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configuring-the-scheduler">
+<h2>Configuring the Scheduler<a class="headerlink" href="#configuring-the-scheduler" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Scheduler</span></code> acts as the loop control for the optimization.
+It communicates with the backend to launch trials, check their status,
+and retrieve results. In the case of this tutorial, it is simply reading
+and parsing the locally saved logs. In a remote execution setting,
+it would call APIs. The following illustration from the Ax
+<a class="reference external" href="https://ax.dev/tutorials/scheduler.html">Scheduler tutorial</a>
+summarizes how the Scheduler interacts with external systems used to run
+trial evaluations:</p>
+<img alt="../_static/img/ax_scheduler_illustration.png" src="../_static/img/ax_scheduler_illustration.png"/>
+<p>The <code class="docutils literal notranslate"><span class="pre">Scheduler</span></code> requires the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> and the <code class="docutils literal notranslate"><span class="pre">GenerationStrategy</span></code>.
+A set of options can be passed in via <code class="docutils literal notranslate"><span class="pre">SchedulerOptions</span></code>. Here, we
+configure the number of total evaluations as well as <code class="docutils literal notranslate"><span class="pre">max_pending_trials</span></code>,
+the maximum number of trials that should run concurrently. In our
+local setting, this is the number of training jobs running as individual
+processes, while in a remote execution setting, this would be the number
+of machines you want to use in parallel.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.service.scheduler</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scheduler</span><span class="p">,</span> <span class="n">SchedulerOptions</span>
+
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">(</span>
+    <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
+    <span class="n">generation_strategy</span><span class="o">=</span><span class="n">gs</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="n">SchedulerOptions</span><span class="p">(</span>
+        <span class="n">total_trials</span><span class="o">=</span><span class="n">total_trials</span><span class="p">,</span> <span class="n">max_pending_trials</span><span class="o">=</span><span class="mi">4</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="running-the-optimization">
+<h2>Running the optimization<a class="headerlink" href="#running-the-optimization" title="Link to this heading">#</a></h2>
+<p>Now that everything is configured, we can let Ax run the optimization
+in a fully automated fashion. The Scheduler will periodically check
+the logs for the status of all currently running trials, and if a
+trial completes the scheduler will update its status on the
+experiment and fetch the observations needed for the Bayesian
+optimization algorithm.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">scheduler</span><span class="o">.</span><span class="n">run_all_trials</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="evaluating-the-results">
+<h2>Evaluating the results<a class="headerlink" href="#evaluating-the-results" title="Link to this heading">#</a></h2>
+<p>We can now inspect the result of the optimization using helper
+functions and visualizations included with Ax.</p>
+<p>First, we generate a dataframe with a summary of the results
+of the experiment. Each row in this dataframe corresponds to a
+trial (that is, a training job that was run), and contains information
+on the status of the trial, the parameter configuration that was
+evaluated, and the metric values that were observed. This provides
+an easy way to sanity check the optimization.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.service.utils.report_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">exp_to_df</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">exp_to_df</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also visualize the Pareto frontier of tradeoffs between the
+validation accuracy and the number of model parameters.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Ax uses Plotly to produce interactive plots, which allow you to
+do things like zoom, crop, or hover in order to view details
+of components of the plot. Try it out, and take a look at the
+<a class="reference external" href="https://ax.dev/tutorials/visualizations.html">visualization tutorial</a>
+if you’d like to learn more).</p>
+</div>
+<p>The final optimization results are shown in the figure below where
+the color corresponds to the iteration number for each trial.
+We see that our method was able to successfully explore the
+trade-offs and found both large models with high validation
+accuracy as well as small models with comparatively lower
+validation accuracy.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.service.utils.report_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_pareto_frontier_scatter_2d_plotly</span>
+
+<span class="n">_pareto_frontier_scatter_2d_plotly</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To better understand what our surrogate models have learned about
+the black box objectives, we can take a look at the leave-one-out
+cross validation results. Since our models are Gaussian Processes,
+they not only provide point predictions but also uncertainty estimates
+about these predictions. A good model means that the predicted means
+(the points in the figure) are close to the 45 degree line and that the
+confidence intervals cover the 45 degree line with the expected frequency
+(here we use 95% confidence intervals, so we would expect them to contain
+the true observation 95% of the time).</p>
+<p>As the figures below show, the model size (<code class="docutils literal notranslate"><span class="pre">num_params</span></code>) metric is
+much easier to model than the validation accuracy (<code class="docutils literal notranslate"><span class="pre">val_acc</span></code>) metric.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.modelbridge.cross_validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_diagnostics</span><span class="p">,</span> <span class="n">cross_validate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ax.plot.diagnostic</span><span class="w"> </span><span class="kn">import</span> <span class="n">interact_cross_validation_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ax.utils.notebook.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">init_notebook_plotting</span><span class="p">,</span> <span class="n">render</span>
+
+<span class="n">cv</span> <span class="o">=</span> <span class="n">cross_validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">gs</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># The surrogate model is stored on the ``GenerationStrategy``</span>
+<span class="n">compute_diagnostics</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span>
+
+<span class="n">interact_cross_validation_plotly</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also make contour plots to better understand how the different
+objectives depend on two of the input parameters. In the figure below,
+we show the validation accuracy predicted by the model as a function
+of the two hidden sizes. The validation accuracy clearly increases
+as the hidden sizes increase.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ax.plot.contour</span><span class="w"> </span><span class="kn">import</span> <span class="n">interact_contour_plotly</span>
+
+<span class="n">interact_contour_plotly</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">gs</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">metric_name</span><span class="o">=</span><span class="s2">"val_acc"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, we show the number of model parameters as a function of
+the hidden sizes in the figure below and see that it also increases
+as a function of the hidden sizes (the dependency on <code class="docutils literal notranslate"><span class="pre">hidden_size_1</span></code>
+is much larger).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">interact_contour_plotly</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">gs</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">metric_name</span><span class="o">=</span><span class="s2">"num_params"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading">#</a></h2>
+<p>We thank the TorchX team (in particular Kiuk Chung and Tristan Rice)
+for their help with integrating TorchX with Ax.</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-intermediate-ax-multiobjective-nas-tutorial-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ad03db8275f44695d56f05ca66e808fa/ax_multiobjective_nas_tutorial.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ax_multiobjective_nas_tutorial.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c0785c0d27d3df6cda96113d46c18927/ax_multiobjective_nas_tutorial.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ax_multiobjective_nas_tutorial.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/9bfc608198e84b9c1ae1a8e44a60fbc2/ax_multiobjective_nas_tutorial.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">ax_multiobjective_nas_tutorial.zip</span></code></a></p>
+</div>
+</div>
+</section>
+</section>
+</article>
+</article>
+<footer class="bd-footer-article">
+<div class="footer-article-items footer-article__inner">
+<div class="footer-article-item">
+<div class="feedback">
+<div class="rating">
+    Rate this Page
+    <div class="stars">
+<span class="star" data-behavior="tutorial-rating" data-count="1" data-value="1">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="2" data-value="2">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="3" data-value="3">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="4" data-value="4">★</span>
+<span class="star" data-behavior="tutorial-rating" data-count="5" data-value="5">★</span>
+</div>
+</div>
+<div class="feedback-send">
+<button class="feedback-btn" data-bs-placement="bottom" data-bs-title="Create a GitHub Issue" data-bs-toggle="tooltip" data-gtm="feedback-btn-click" onclick="openGitHubIssue()">Send Feedback
+    </button>
+</div>
+</div>
+<div class="prev-next-area">
+<a class="left-prev" href="../beginner/hyperparameter_tuning_tutorial.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Hyperparameter tuning with Ray Tune</p>
+</div>
+</a>
+<a class="right-next" href="tensorboard_profiler_tutorial.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">PyTorch Profiler With TensorBoard</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+<div class="footer-info">
+<p class="copyright">
+    
+      
+        © Copyright 2024, PyTorch.
+      
+      <br/>
+</p>
+<p class="theme-version">
+    Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+  </p>
+</div>
+</div>
+</div>
+</footer>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="../beginner/hyperparameter_tuning_tutorial.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Hyperparameter tuning with Ray Tune</p>
+</div>
+</a>
+<a class="right-next" href="tensorboard_profiler_tutorial.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">PyTorch Profiler With TensorBoard</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-the-torchx-app">Defining the TorchX App</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-runner">Setting up the Runner</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-searchspace">Setting up the <code class="docutils literal notranslate"><span class="pre">SearchSpace</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-metrics">Setting up Metrics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-optimizationconfig">Setting up the <code class="docutils literal notranslate"><span class="pre">OptimizationConfig</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-ax-experiment">Creating the Ax Experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-generation-strategy">Choosing the Generation Strategy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-scheduler">Configuring the Scheduler</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-optimization">Running the optimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-results">Evaluating the results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+</nav></div>
+<div class="sidebar-secondary-item">
+<div class="sidebar-heading">PyTorch Libraries</div>
+<ul style="list-style-type: none; padding: 0; padding-bottom: 80px;">
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/ao" style="color: var(--pst-color-text-muted)">torchao</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchrec" style="color: var(--pst-color-text-muted)">torchrec</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchft" style="color: var(--pst-color-text-muted)">torchft</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/torchcodec" style="color: var(--pst-color-text-muted)">TorchCodec</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/vision" style="color: var(--pst-color-text-muted)">torchvision</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/executorch" style="color: var(--pst-color-text-muted)">ExecuTorch</a></li>
+<li><a class="nav-link nav-external" href="https://docs.pytorch.org/xla" style="color: var(--pst-color-text-muted)">PyTorch on XLA Devices</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+<div class="container-fluid docs-tutorials-resources" id="docs-tutorials-resources">
+<div class="container">
+<div class="row">
+<div class="col-md-4">
+<h2>Docs</h2>
+<p>Access comprehensive developer documentation for PyTorch</p>
+<a class="with-right-arrow" href="https://docs.pytorch.org/docs/stable/index.html">View Docs</a>
+</div>
+<div class="col-md-4">
+<h2>Tutorials</h2>
+<p>Get in-depth tutorials for beginners and advanced developers</p>
+<a class="with-right-arrow" href="https://docs.pytorch.org/tutorials">View Tutorials</a>
+</div>
+<div class="col-md-4">
+<h2>Resources</h2>
+<p>Find development resources and get your questions answered</p>
+<a class="with-right-arrow" href="https://pytorch.org/resources">View Resources</a>
+</div>
+</div>
+</div>
+</div>
+<footer class="site-footer">
+<div class="container footer-container">
+<div class="newsletter" id="newsletter">
+<p class="newsletter__title is-style-max-width-800"><strong>Stay in touch</strong> for updates, event info, and
+        the latest news</p>
+<script charset="utf-8" src="//js.hsforms.net/forms/embed/v2.js" type="text/javascript"></script>
+<script>
+        hbspt.forms.create({
+          region: "na1",
+          portalId: "8112310",
+          formId: "2fb2231c-000b-4ec5-88a0-1ab242549c9e"
+        });
+      </script>
+<p class="newsletter__privacy">By submitting this form, I consent to receive marketing emails from the LF and its
+        projects regarding their events, training, research, developments, and related announcements. I understand that
+        I can unsubscribe at any time using the links in the footers of the emails I receive. <a href="https://www.linuxfoundation.org/privacy/">Privacy Policy</a>.</p>
+</div>
+<div class="lf-grid">
+<ul class="social-links">
+<li><a href="https://www.facebook.com/pytorch" target="_blank" title="PyTorch on Facebook">
+<svg aria-label="Facebook" viewbox="-0.51 -0.26 26.45 26.45" xmlns="http://www.w3.org/2000/svg">
+<path d="M25.497 13.075c0-2.45-.698-4.848-2.011-6.911a12.765 12.765 0 0 0-5.398-4.73A12.671 12.671 0 0 0 11.008.38a12.705 12.705 0 0 0-6.529 2.95A12.827 12.827 0 0 0 .563 9.358a12.896 12.896 0 0 0-.07 7.201 12.831 12.831 0 0 0 3.801 6.103 12.709 12.709 0 0 0 6.471 3.078v-8.957H7.53v-3.708h3.235v-2.824c0-3.213 1.903-4.988 4.813-4.988.956.014 1.909.097 2.852.25V8.67h-1.607a1.83 1.83 0 0 0-1.518.497 1.854 1.854 0 0 0-.561 1.505v2.404h3.535l-.563 3.708h-2.97v8.957a12.725 12.725 0 0 0 7.697-4.337 12.87 12.87 0 0 0 3.054-8.328z" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://twitter.com/pytorch" target="_blank" title="PyTorch on X">
+<svg aria-label="X" viewbox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+<path d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34M36.01 19.54H76.66l187.13 262.13h-40.66" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://www.youtube.com/pytorch" target="_blank" title="PyTorch on YouTube">
+<svg aria-label="YouTube" viewbox="0.21 0.27 34.45 25.07" xmlns="http://www.w3.org/2000/svg">
+<path d="M33.729 6.084s-.327-2.33-1.317-3.356a4.691 4.691 0 0 0-3.32-1.432c-4.634-.34-11.589-.34-11.589-.34h-.014s-6.954 0-11.59.342a4.692 4.692 0 0 0-3.32 1.432c-.993 1.025-1.315 3.354-1.315 3.354a52.189 52.189 0 0 0-.331 5.473v2.566c.014 1.829.125 3.656.331 5.472 0 0 .322 2.33 1.316 3.36 1.26 1.345 2.916 1.3 3.653 1.445 2.65.26 11.263.34 11.263.34s6.96-.01 11.597-.353a4.691 4.691 0 0 0 3.32-1.432c.993-1.026 1.316-3.356 1.316-3.356.206-1.817.316-3.644.33-5.473v-2.57a52.26 52.26 0 0 0-.33-5.472zM14.076 17.232V7.729l8.951 4.768-8.95 4.735z" fill="currentColor"></path>
+</svg>
+</a></li>
+<li><a href="https://www.linkedin.com/company/pytorch" target="_blank" title="PyTorch on LinkedIn">
+<svg aria-label="LinkedIn" viewbox="-10.23 -10.23 531.96 531.96" xmlns="http://www.w3.org/2000/svg">
+<rect fill="currentColor" height="512" rx="0" width="512"></rect>
+<circle cx="142" cy="138" fill="#000" r="37"></circle>
+<path d="M244 194v198M142 194v198" stroke="#000" stroke-width="66"></path>
+<path d="M276 282c0-20 13-40 36-40 24 0 33 18 33 45v105h66V279c0-61-32-89-76-89-34 0-51 19-59 32" fill="#000"></path>
+</svg>
+</a></li>
+<li><a href="https://pytorch.slack.com" target="_blank" title="PyTorch Slack">
+<svg aria-label="Slack" viewbox="0.16 -0.03 21.19 21.19" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.896 13.27a2.147 2.147 0 0 1-2.141 2.142A2.147 2.147 0 0 1 .613 13.27c0-1.178.963-2.141 2.142-2.141h2.141v2.141zm1.08 0c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.363a2.147 2.147 0 0 1-2.142 2.141 2.147 2.147 0 0 1-2.141-2.142V13.27zm2.141-8.6a2.147 2.147 0 0 1-2.141-2.14c0-1.18.962-2.142 2.141-2.142s2.142.963 2.142 2.141v2.142H8.117zm0 1.08c1.179 0 2.141.962 2.141 2.141a2.147 2.147 0 0 1-2.141 2.142H2.755A2.147 2.147 0 0 1 .613 7.89c0-1.179.963-2.141 2.142-2.141h5.362zm8.599 2.141c0-1.179.963-2.141 2.141-2.141 1.179 0 2.143.962 2.143 2.14a2.147 2.147 0 0 1-2.142 2.142h-2.141V7.89zm-1.08 0a2.147 2.147 0 0 1-2.141 2.142 2.147 2.147 0 0 1-2.141-2.142V2.53c0-1.178.962-2.141 2.141-2.141s2.142.963 2.142 2.141v5.362zm-2.141 8.6c1.179 0 2.142.962 2.142 2.14a2.147 2.147 0 0 1-2.142 2.142 2.147 2.147 0 0 1-2.141-2.141V16.49h2.141zm0-1.08a2.147 2.147 0 0 1-2.141-2.141c0-1.179.962-2.142 2.141-2.142h5.362c1.179 0 2.142.963 2.142 2.142a2.147 2.147 0 0 1-2.142 2.142h-5.362z" fill="currentColor">
+</path>
+</svg>
+</a></li>
+<li><a href="https://pytorch.org/wechat" title="PyTorch on WeChat">
+<svg aria-label="WeChat" viewbox="0.14 -0.17 38.02 33.02" xmlns="http://www.w3.org/2000/svg">
+<path d="M26.289 10.976a12.972 12.972 0 0 0-8.742 3.53 10.386 10.386 0 0 0-3.224 8.795c-1.326-.164-2.535-.345-3.75-.448a2.332 2.332 0 0 0-1.273.216c-1.18.666-2.311 1.418-3.652 2.255.246-1.112.405-2.087.687-3.024a1.15 1.15 0 0 0-.523-1.52C1.737 17.902.02 13.601 1.307 9.165c1.189-4.1 4.11-6.587 8.077-7.884A13.54 13.54 0 0 1 24.18 5.617a10.135 10.135 0 0 1 2.109 5.359zM10.668 9.594a1.564 1.564 0 0 0-2.095-1.472 1.52 1.52 0 0 0-.895 1.964 1.502 1.502 0 0 0 1.391.966 1.545 1.545 0 0 0 1.598-1.46v.002zm8.15-1.566a1.567 1.567 0 0 0-1.528 1.543 1.528 1.528 0 0 0 1.571 1.492 1.52 1.52 0 0 0 1.375-2.117 1.518 1.518 0 0 0-1.415-.919l-.003.001z" fill="currentColor">
+</path>
+<path d="M33.914 32.137c-1.075-.478-2.062-1.196-3.11-1.306-1.049-.11-2.145.494-3.24.605a10.821 10.821 0 0 1-8.781-2.864c-4.682-4.33-4.013-10.97 1.403-14.518 4.811-3.154 11.874-2.102 15.268 2.273a8.671 8.671 0 0 1-1.002 12.095c-1.046.929-1.422 1.693-.751 2.917.102.257.174.525.213.798zM21.68 20.292a1.264 1.264 0 1 0 .01-2.528 1.264 1.264 0 0 0-.01 2.528zm7.887-2.526a1.266 1.266 0 0 0-1.256 1.21 1.247 1.247 0 1 0 1.256-1.21z" fill="currentColor">
+</path>
+</svg>
+</a></li>
+</ul>
+</div>
+<div class="privacy-policy">
+<div class="copyright">
+<p>
+          © PyTorch. Copyright © The Linux Foundation®. All rights reserved. The Linux Foundation has registered
+          trademarks and uses trademarks. For more information, including terms of use, privacy policy, and trademark
+          usage, please see our <a href="https://www.linuxfoundation.org/legal/policies">Policies</a> page. <a href="https://www.linuxfoundation.org/trademark-usage">Trademark Usage</a>. <a href="http://www.linuxfoundation.org/privacy">Privacy Policy</a>.
+        </p>
+</div>
+</div>
+</div>
+</footer>
+<div class="cookie-banner-wrapper">
+<div class="container">
+<p class="gdpr-notice">To analyze traffic and optimize your experience, we serve cookies on this site. By clicking or navigating, you agree to allow our usage of cookies. As the current maintainers of this site, Facebook’s Cookies Policy applies. Learn more, including about available controls: <a href="https://www.facebook.com/policies/cookies/">Cookies Policy</a>.</p>
+<img class="close-button" src="../_static/img/pytorch-x.svg"/>
+</div>
+</div>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item">
+<p class="copyright">
+    
+      © Copyright 2024, PyTorch.
+      <br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+</p>
+</div>
+</div>
+<div class="footer-items__end">
+<div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+</div>
+</div>
+</footer>
+<script type="application/ld+json">
+    {
+       "@context": "https://schema.org",
+       "@type": "Article",
+       "name": "Multi-Objective NAS with Ax",
+       "headline": "Multi-Objective NAS with Ax",
+       "description": "PyTorch Documentation. Explore PyTorch, an open-source machine learning library that accelerates the path from research prototyping to production deployment. Discover tutorials, API references, and guides to help you build and deploy deep learning models efficiently.",
+       "url": "/intermediate/ax_multiobjective_nas_tutorial.html",
+       "articleBody": "Note Go to the end to download the full example code. Multi-Objective NAS with Ax# Authors: David Eriksson, Max Balandat, and the Adaptive Experimentation team at Meta. In this tutorial, we show how to use Ax to run multi-objective neural architecture search (NAS) for a simple neural network model on the popular MNIST dataset. While the underlying methodology would typically be used for more complicated models and larger datasets, we opt for a tutorial that is easily runnable end-to-end on a laptop in less than 20 minutes. In many NAS applications, there is a natural tradeoff between multiple objectives of interest. For instance, when deploying models on-device we may want to maximize model performance (for example, accuracy), while simultaneously minimizing competing metrics like power consumption, inference latency, or model size in order to satisfy deployment constraints. Often, we may be able to reduce computational requirements or latency of predictions substantially by accepting minimally lower model performance. Principled methods for exploring such tradeoffs efficiently are key enablers of scalable and sustainable AI, and have many successful applications at Meta - see for instance our case study on a Natural Language Understanding model. In our example here, we will tune the widths of two hidden layers, the learning rate, the dropout probability, the batch size, and the number of training epochs. The goal is to trade off performance (accuracy on the validation set) and model size (the number of model parameters). This tutorial makes use of the following PyTorch libraries: PyTorch Lightning (specifying the model and training loop) TorchX (for running training jobs remotely / asynchronously) BoTorch (the Bayesian Optimization library powering Ax\u2019s algorithms) Defining the TorchX App# Our goal is to optimize the PyTorch Lightning training job defined in mnist_train_nas.py. To do this using TorchX, we write a helper function that takes in the values of the architecture and hyperparameters of the training job and creates a TorchX AppDef with the appropriate settings. from pathlib import Path import torchx from torchx import specs from torchx.components import utils def trainer( log_path: str, hidden_size_1: int, hidden_size_2: int, learning_rate: float, epochs: int, dropout: float, batch_size: int, trial_idx: int = -1, ) -\u003e specs.AppDef: # define the log path so we can pass it to the TorchX ``AppDef`` if trial_idx \u003e= 0: log_path = Path(log_path).joinpath(str(trial_idx)).absolute().as_posix() return utils.python( # command line arguments to the training script \"--log_path\", log_path, \"--hidden_size_1\", str(hidden_size_1), \"--hidden_size_2\", str(hidden_size_2), \"--learning_rate\", str(learning_rate), \"--epochs\", str(epochs), \"--dropout\", str(dropout), \"--batch_size\", str(batch_size), # other config options name=\"trainer\", script=\"mnist_train_nas.py\", image=torchx.version.TORCHX_IMAGE, ) Setting up the Runner# Ax\u2019s Runner abstraction allows writing interfaces to various backends. Ax already comes with Runner for TorchX, and so we just need to configure it. For the purpose of this tutorial we run jobs locally in a fully asynchronous fashion. In order to launch them on a cluster, you can instead specify a different TorchX scheduler and adjust the configuration appropriately. For example, if you have a Kubernetes cluster, you just need to change the scheduler from local_cwd to kubernetes). import tempfile from ax.runners.torchx import TorchXRunner # Make a temporary dir to log our results into log_dir = tempfile.mkdtemp() ax_runner = TorchXRunner( tracker_base=\"/tmp/\", component=trainer, # NOTE: To launch this job on a cluster instead of locally you can # specify a different scheduler and adjust arguments appropriately. scheduler=\"local_cwd\", component_const_params={\"log_path\": log_dir}, cfg={}, ) Setting up the SearchSpace# First, we define our search space. Ax supports both range parameters of type integer and float as well as choice parameters which can have non-numerical types such as strings. We will tune the hidden sizes, learning rate, dropout, and number of epochs as range parameters and tune the batch size as an ordered choice parameter to enforce it to be a power of 2. from ax.core import ( ChoiceParameter, ParameterType, RangeParameter, SearchSpace, ) parameters = [ # NOTE: In a real-world setting, hidden_size_1 and hidden_size_2 # should probably be powers of 2, but in our simple example this # would mean that ``num_params`` can\u0027t take on that many values, which # in turn makes the Pareto frontier look pretty weird. RangeParameter( name=\"hidden_size_1\", lower=16, upper=128, parameter_type=ParameterType.INT, log_scale=True, ), RangeParameter( name=\"hidden_size_2\", lower=16, upper=128, parameter_type=ParameterType.INT, log_scale=True, ), RangeParameter( name=\"learning_rate\", lower=1e-4, upper=1e-2, parameter_type=ParameterType.FLOAT, log_scale=True, ), RangeParameter( name=\"epochs\", lower=1, upper=4, parameter_type=ParameterType.INT, ), RangeParameter( name=\"dropout\", lower=0.0, upper=0.5, parameter_type=ParameterType.FLOAT, ), ChoiceParameter( # NOTE: ``ChoiceParameters`` don\u0027t require log-scale name=\"batch_size\", values=[32, 64, 128, 256], parameter_type=ParameterType.INT, is_ordered=True, sort_values=True, ), ] search_space = SearchSpace( parameters=parameters, # NOTE: In practice, it may make sense to add a constraint # hidden_size_2 \u003c= hidden_size_1 parameter_constraints=[], ) Setting up Metrics# Ax has the concept of a Metric that defines properties of outcomes and how observations are obtained for these outcomes. This allows e.g. encoding how data is fetched from some distributed execution backend and post-processed before being passed as input to Ax. In this tutorial we will use multi-objective optimization with the goal of maximizing the validation accuracy and minimizing the number of model parameters. The latter represents a simple proxy of model latency, which is hard to estimate accurately for small ML models (in an actual application we would benchmark the latency while running the model on-device). In our example TorchX will run the training jobs in a fully asynchronous fashion locally and write the results to the log_dir based on the trial index (see the trainer() function above). We will define a metric class that is aware of that logging directory. By subclassing TensorboardCurveMetric we get the logic to read and parse the TensorBoard logs for free. from ax.metrics.tensorboard import TensorboardMetric from tensorboard.backend.event_processing import plugin_event_multiplexer as event_multiplexer class MyTensorboardMetric(TensorboardMetric): # NOTE: We need to tell the new TensorBoard metric how to get the id / # file handle for the TensorBoard logs from a trial. In this case # our convention is to just save a separate file per trial in # the prespecified log dir. def _get_event_multiplexer_for_trial(self, trial): mul = event_multiplexer.EventMultiplexer(max_reload_threads=20) mul.AddRunsFromDirectory(Path(log_dir).joinpath(str(trial.index)).as_posix(), None) mul.Reload() return mul # This indicates whether the metric is queryable while the trial is # still running. We don\u0027t use this in the current tutorial, but Ax # utilizes this to implement trial-level early-stopping functionality. @classmethod def is_available_while_running(cls): return False Now we can instantiate the metrics for accuracy and the number of model parameters. Here curve_name is the name of the metric in the TensorBoard logs, while name is the metric name used internally by Ax. We also specify lower_is_better to indicate the favorable direction of the two metrics. val_acc = MyTensorboardMetric( name=\"val_acc\", tag=\"val_acc\", lower_is_better=False, ) model_num_params = MyTensorboardMetric( name=\"num_params\", tag=\"num_params\", lower_is_better=True, ) Setting up the OptimizationConfig# The way to tell Ax what it should optimize is by means of an OptimizationConfig. Here we use a MultiObjectiveOptimizationConfig as we will be performing multi-objective optimization. Additionally, Ax supports placing constraints on the different metrics by specifying objective thresholds, which bound the region of interest in the outcome space that we want to explore. For this example, we will constrain the validation accuracy to be at least 0.94 (94%) and the number of model parameters to be at most 80,000. from ax.core import MultiObjective, Objective, ObjectiveThreshold from ax.core.optimization_config import MultiObjectiveOptimizationConfig opt_config = MultiObjectiveOptimizationConfig( objective=MultiObjective( objectives=[ Objective(metric=val_acc, minimize=False), Objective(metric=model_num_params, minimize=True), ], ), objective_thresholds=[ ObjectiveThreshold(metric=val_acc, bound=0.94, relative=False), ObjectiveThreshold(metric=model_num_params, bound=80_000, relative=False), ], ) Creating the Ax Experiment# In Ax, the Experiment object is the object that stores all the information about the problem setup. from ax.core import Experiment experiment = Experiment( name=\"torchx_mnist\", search_space=search_space, optimization_config=opt_config, runner=ax_runner, ) Choosing the Generation Strategy# A GenerationStrategy is the abstract representation of how we would like to perform the optimization. While this can be customized (if you\u2019d like to do so, see this tutorial), in most cases Ax can automatically determine an appropriate strategy based on the search space, optimization config, and the total number of trials we want to run. Typically, Ax chooses to evaluate a number of random configurations before starting a model-based Bayesian Optimization strategy. total_trials = 48 # total evaluation budget from ax.modelbridge.dispatch_utils import choose_generation_strategy gs = choose_generation_strategy( search_space=experiment.search_space, optimization_config=experiment.optimization_config, num_trials=total_trials, ) Configuring the Scheduler# The Scheduler acts as the loop control for the optimization. It communicates with the backend to launch trials, check their status, and retrieve results. In the case of this tutorial, it is simply reading and parsing the locally saved logs. In a remote execution setting, it would call APIs. The following illustration from the Ax Scheduler tutorial summarizes how the Scheduler interacts with external systems used to run trial evaluations: The Scheduler requires the Experiment and the GenerationStrategy. A set of options can be passed in via SchedulerOptions. Here, we configure the number of total evaluations as well as max_pending_trials, the maximum number of trials that should run concurrently. In our local setting, this is the number of training jobs running as individual processes, while in a remote execution setting, this would be the number of machines you want to use in parallel. from ax.service.scheduler import Scheduler, SchedulerOptions scheduler = Scheduler( experiment=experiment, generation_strategy=gs, options=SchedulerOptions( total_trials=total_trials, max_pending_trials=4 ), ) Running the optimization# Now that everything is configured, we can let Ax run the optimization in a fully automated fashion. The Scheduler will periodically check the logs for the status of all currently running trials, and if a trial completes the scheduler will update its status on the experiment and fetch the observations needed for the Bayesian optimization algorithm. scheduler.run_all_trials() Evaluating the results# We can now inspect the result of the optimization using helper functions and visualizations included with Ax. First, we generate a dataframe with a summary of the results of the experiment. Each row in this dataframe corresponds to a trial (that is, a training job that was run), and contains information on the status of the trial, the parameter configuration that was evaluated, and the metric values that were observed. This provides an easy way to sanity check the optimization. from ax.service.utils.report_utils import exp_to_df df = exp_to_df(experiment) df.head(10) We can also visualize the Pareto frontier of tradeoffs between the validation accuracy and the number of model parameters. Tip Ax uses Plotly to produce interactive plots, which allow you to do things like zoom, crop, or hover in order to view details of components of the plot. Try it out, and take a look at the visualization tutorial if you\u2019d like to learn more). The final optimization results are shown in the figure below where the color corresponds to the iteration number for each trial. We see that our method was able to successfully explore the trade-offs and found both large models with high validation accuracy as well as small models with comparatively lower validation accuracy. from ax.service.utils.report_utils import _pareto_frontier_scatter_2d_plotly _pareto_frontier_scatter_2d_plotly(experiment) To better understand what our surrogate models have learned about the black box objectives, we can take a look at the leave-one-out cross validation results. Since our models are Gaussian Processes, they not only provide point predictions but also uncertainty estimates about these predictions. A good model means that the predicted means (the points in the figure) are close to the 45 degree line and that the confidence intervals cover the 45 degree line with the expected frequency (here we use 95% confidence intervals, so we would expect them to contain the true observation 95% of the time). As the figures below show, the model size (num_params) metric is much easier to model than the validation accuracy (val_acc) metric. from ax.modelbridge.cross_validation import compute_diagnostics, cross_validate from ax.plot.diagnostic import interact_cross_validation_plotly from ax.utils.notebook.plotting import init_notebook_plotting, render cv = cross_validate(model=gs.model) # The surrogate model is stored on the ``GenerationStrategy`` compute_diagnostics(cv) interact_cross_validation_plotly(cv) We can also make contour plots to better understand how the different objectives depend on two of the input parameters. In the figure below, we show the validation accuracy predicted by the model as a function of the two hidden sizes. The validation accuracy clearly increases as the hidden sizes increase. from ax.plot.contour import interact_contour_plotly interact_contour_plotly(model=gs.model, metric_name=\"val_acc\") Similarly, we show the number of model parameters as a function of the hidden sizes in the figure below and see that it also increases as a function of the hidden sizes (the dependency on hidden_size_1 is much larger). interact_contour_plotly(model=gs.model, metric_name=\"num_params\") Acknowledgments# We thank the TorchX team (in particular Kiuk Chung and Tristan Rice) for their help with integrating TorchX with Ax. Download Jupyter notebook: ax_multiobjective_nas_tutorial.ipynb Download Python source code: ax_multiobjective_nas_tutorial.py Download zipped: ax_multiobjective_nas_tutorial.zip",
+       "author": {
+         "@type": "Organization",
+         "name": "PyTorch Contributors",
+         "url": "https://pytorch.org"
+       },
+       "image": "../_static/img/pytorch_seo.png",
+       "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "/intermediate/ax_multiobjective_nas_tutorial.html"
+       },
+       "datePublished": "2023-01-01T00:00:00Z",
+       "dateModified": "2023-01-01T00:00:00Z"
+     }
+ </script>
+<script>
+    // Tutorials Call to action event tracking
+    $("[data-behavior='call-to-action-event']").on('click', function () {
+      fbq('trackCustom', "Download", {
+        tutorialTitle: $('h1:first').text(),
+        downloadLink: this.href,
+        tutorialLink: window.location.href,
+        downloadTitle: $(this).attr("data-response")
+      });
+      if (typeof gtag === 'function') {
+        gtag('event', 'click', {
+          'event_category': $(this).attr("data-response"),
+          'event_label': $("h1").first().text(),
+          'tutorial_link': window.location.href
+        });
+      }
+    });
+  </script>
+</body>
+</body></html>
